@@ -1,250 +1,142 @@
-import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { MapPin, Star, Calendar, Clock, IndianRupee, Mountain, Bot, ArrowRight, ChevronLeft, Compass, Utensils } from 'lucide-react'
+import {
+  ArrowLeft, ArrowRight, CalendarDays, Clock3, Compass, IndianRupee,
+  MapPin, Sparkles
+} from 'lucide-react'
+import { Link, useParams } from 'react-router-dom'
 import { destinations } from '../data/destinations'
 import PageTransition from '../components/layout/PageTransition'
 
 export default function DestinationDetails() {
   const { slug } = useParams()
-  const destination = destinations.find((d) => d.slug === slug)
+  const destination = destinations.find((item) => item.slug === slug)
 
   if (!destination) {
     return (
       <PageTransition>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold font-[family-name:var(--font-heading)] text-text-primary mb-4">
-              Destination Not Found
-            </h1>
-            <p className="text-text-secondary mb-8">We couldn't find this destination.</p>
-            <Link to="/destinations" className="btn-primary inline-flex items-center gap-2">
-              <ChevronLeft size={16} />
-              Browse Destinations
-            </Link>
+        <section className="page-section pt-36">
+          <div className="page-shell text-center">
+            <Compass size={28} className="mx-auto text-am-orange" />
+            <h1 className="mt-5 text-4xl font-semibold">That place is not on this map.</h1>
+            <Link to="/destinations" className="button-primary mt-7">Back to the atlas</Link>
           </div>
-        </div>
+        </section>
       </PageTransition>
     )
   }
 
-  const examplePrompts = [
-    `What can I do in ${destination.name} for 3 days?`,
-    `Can I visit ${destination.name} under ₹15,000?`,
-    `What should I avoid during monsoon?`,
-  ]
-
   return (
     <PageTransition>
-      {/* Hero Image */}
-      <section className="relative h-[68vh] min-h-[520px] overflow-hidden">
-        <img
-          src={destination.image}
-          alt={destination.name}
-          className="w-full h-full object-cover transition-transform duration-[1800ms] hover:scale-[1.025]"
-          onError={(e) => {
-            e.currentTarget.onerror = null
-            e.currentTarget.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/50 to-navy-950/20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-navy-950/60 to-transparent" />
+      <section className="relative min-h-[82svh] overflow-hidden">
+        <img src={destination.image} alt={destination.name} className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,15,.35),rgba(7,17,15,.06)_36%,rgba(7,17,15,.96)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,17,15,.76),transparent_64%)]" />
 
-        {/* Back link */}
-        <div className="absolute top-24 lg:top-28 left-0 right-0">
-          <div className="page-shell">
-            <Link
-              to="/destinations"
-              className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
-            >
-              <ChevronLeft size={16} />
-              All Destinations
-            </Link>
-          </div>
-        </div>
+        <div className="page-shell relative z-10 flex min-h-[82svh] flex-col justify-between pb-10 pt-28">
+          <Link to="/destinations" className="inline-flex w-fit items-center gap-2 text-xs font-bold text-white/72 hover:text-white">
+            <ArrowLeft size={14} />
+            Back to atlas
+          </Link>
 
-        {/* Title overlay */}
-        <div className="absolute bottom-0 left-0 right-0 pb-10 lg:pb-14">
-          <div className="container-max mx-auto px-4 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin size={18} className="text-am-orange" />
-                <span className="text-sm text-text-secondary">{destination.categories.join(' • ')}</span>
-              </div>
-              <h1 className="font-[family-name:var(--font-heading)] text-5xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.05em] text-text-primary mb-4">
-                {destination.name}
-              </h1>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <Star size={16} className="text-am-gold fill-am-gold" />
-                  <span className="text-sm font-semibold text-text-primary">{destination.rating}</span>
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: .65 }}
+            className="max-w-4xl"
+          >
+            <div className="eyebrow mb-4">
+              <MapPin size={12} className="text-am-orange" />
+              {destination.categories.join(' • ')}
+            </div>
+            <h1 className="display max-w-[9ch]">{destination.name}</h1>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/72">{destination.description}</p>
+
+            <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                [CalendarDays, 'Best time', destination.bestTime],
+                [Clock3, 'Stay', destination.suggestedDays],
+                [IndianRupee, 'Budget', destination.budget],
+                [Compass, 'Rating', destination.rating + '/5'],
+              ].map(([Icon, label, value]) => (
+                <div key={label} className="border-t border-white/16 pt-3">
+                  <Icon size={13} className="text-am-gold" />
+                  <p className="mt-2 text-[10px] font-bold uppercase tracking-[.14em] text-white/45">{label}</p>
+                  <p className="mt-1 text-xs font-semibold text-white/86">{value}</p>
                 </div>
-                {destination.suggestedDays && (
-                  <span className="text-sm text-text-secondary">{destination.suggestedDays}</span>
-                )}
-              </div>
-            </motion.div>
-          </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      <div className="page-shell py-14 lg:py-20">
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_390px] gap-10 lg:gap-16">
-          {/* Main Content */}
-          <div className="space-y-12">
-            {/* About */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-            >
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold mb-4">About</h2>
-              <p className="text-text-secondary leading-relaxed">{destination.about}</p>
-            </motion.section>
+      <section className="page-section">
+        <div className="page-shell grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <div>
+            <div className="eyebrow mb-4">Why it stays with you</div>
+            <h2 className="display-sm max-w-[11ch]">
+              More than a pin
+              <span className="serif-accent"> on a map.</span>
+            </h2>
+            <p className="lede mt-6 max-w-3xl">{destination.about}</p>
 
-            {/* Top Attractions */}
-            {destination.topAttractions && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold mb-5">Top Attractions</h2>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {destination.topAttractions.map((attr, i) => (
-                    <div key={i} className="flex items-center gap-3 glass-card rounded-xl p-4 border border-border-subtle">
-                      <Compass size={16} className="text-am-orange shrink-0" />
-                      <span className="text-sm text-text-primary">{attr}</span>
+            <div className="mt-12 grid gap-8 md:grid-cols-2">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[.15em] text-am-orange">Places to anchor the trip</p>
+                <div className="mt-5 space-y-0">
+                  {destination.topAttractions?.map((item, index) => (
+                    <div key={item} className="flex gap-4 border-t border-white/8 py-4">
+                      <span className="font-[family-name:var(--font-heading)] text-sm text-text-muted">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="text-sm font-semibold">{item}</span>
                     </div>
                   ))}
                 </div>
-              </motion.section>
-            )}
+              </div>
 
-            {/* Things to Do */}
-            {destination.thingsToDo && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold mb-5">Things to Do</h2>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {destination.thingsToDo.map((thing, i) => (
-                    <div key={i} className="flex items-center gap-3 glass-card rounded-xl p-4 border border-border-subtle">
-                      <Mountain size={16} className="text-am-cyan shrink-0" />
-                      <span className="text-sm text-text-primary">{thing}</span>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[.15em] text-am-cyan">Ways to experience it</p>
+                <div className="mt-5 space-y-0">
+                  {destination.thingsToDo?.map((item, index) => (
+                    <div key={item} className="flex gap-4 border-t border-white/8 py-4">
+                      <span className="font-[family-name:var(--font-heading)] text-sm text-text-muted">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="text-sm font-semibold">{item}</span>
                     </div>
                   ))}
                 </div>
-              </motion.section>
-            )}
-
-            {/* Nearby */}
-            {destination.nearby && (
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="font-[family-name:var(--font-heading)] text-2xl font-bold mb-5">Nearby Places</h2>
-                <div className="flex flex-wrap gap-3">
-                  {destination.nearby.map((place, i) => (
-                    <span key={i} className="px-4 py-2 rounded-full bg-navy-700/40 border border-border-subtle text-sm text-text-secondary">
-                      {place}
-                    </span>
-                  ))}
-                </div>
-              </motion.section>
-            )}
+              </div>
+            </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Info Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="travel-panel rounded-[1.5rem] p-6 sticky top-24"
-            >
-              <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold mb-5">Quick Info</h3>
-
-              <div className="space-y-4 mb-6">
-                {[
-                  { icon: Calendar, label: 'Best Time', value: destination.bestTime, color: '#F6A623' },
-                  { icon: IndianRupee, label: 'Budget Range', value: destination.budget, color: '#7DDC48' },
-                  { icon: Clock, label: 'Suggested Duration', value: destination.suggestedDays, color: '#16C7D9' },
-                ].filter(r => r.value).map((row) => (
-                  <div key={row.label} className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${row.color}12` }}>
-                      <row.icon size={16} style={{ color: row.color }} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-text-muted">{row.label}</p>
-                      <p className="text-sm font-medium text-text-primary">{row.value}</p>
-                    </div>
-                  </div>
-                ))}
+          <aside className="lg:sticky lg:top-28 lg:self-start">
+            <div className="surface rounded-art p-5">
+              <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
+                <Sparkles size={14} />
+                Turn inspiration into a route
               </div>
-
-              {destination.weather && (
-                <div className="p-3 rounded-xl bg-navy-800/50 border border-border-subtle mb-6">
-                  <p className="text-xs text-text-muted mb-1">Weather</p>
-                  <p className="text-sm text-text-secondary">{destination.weather}</p>
-                </div>
-              )}
-
-              <Link
-                to="/plan"
-                className="btn-primary w-full text-sm flex items-center justify-center gap-2 py-3"
-              >
-                Plan a Trip to {destination.name}
-                <ArrowRight size={16} />
+              <p className="mt-3 text-sm leading-6 text-text-secondary">
+                Use this destination as the starting point for the adaptive trip planner or ask Manzilo to reason about it.
+              </p>
+              <Link to="/plan" className="button-primary mt-5 w-full">
+                Plan {destination.name}
+                <ArrowRight size={14} />
               </Link>
-            </motion.div>
-
-            {/* Manzilo Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="travel-panel rounded-[1.5rem] p-6 border-am-purple/15"
-            >
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-am-cyan to-am-purple flex items-center justify-center">
-                  <Bot size={14} className="text-white" />
-                </div>
-                <span className="text-sm font-semibold text-text-primary">Ask Manzilo about {destination.name}</span>
-              </div>
-              <div className="space-y-2 mb-5">
-                {examplePrompts.map((prompt, i) => (
-                  <Link
-                    key={i}
-                    to="/manzilo"
-                    className="block p-3 rounded-xl bg-navy-800/40 border border-border-subtle text-sm text-text-secondary hover:text-text-primary hover:border-am-purple/20 transition-all"
-                  >
-                    "{prompt}"
-                  </Link>
-                ))}
-              </div>
-              <Link
-                to="/manzilo"
-                className="text-sm text-am-cyan hover:text-am-teal transition-colors inline-flex items-center gap-1.5"
-              >
-                Chat with Manzilo <ArrowRight size={14} />
+              <Link to="/features" className="button-ghost mt-2 w-full">
+                Ask Manzilo first
               </Link>
-            </motion.div>
-          </div>
+            </div>
+
+            {destination.nearby?.length > 0 && (
+              <div className="mt-5 border-t border-white/8 pt-5">
+                <p className="text-[10px] font-bold uppercase tracking-[.15em] text-text-muted">Keep wandering</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {destination.nearby.map((place) => (
+                    <span key={place} className="ai-chip">{place}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
         </div>
-      </div>
+      </section>
     </PageTransition>
   )
 }
