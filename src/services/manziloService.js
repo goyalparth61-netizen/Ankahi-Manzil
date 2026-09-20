@@ -29,7 +29,7 @@ export async function chatWithManzilo(message) {
   }
 }
 
-export async function getManziloSuggestion(tripId, context) {
+export async function getManziloSuggestion(_tripId, _context) {
   await simulateDelay()
   return {
     success: true,
