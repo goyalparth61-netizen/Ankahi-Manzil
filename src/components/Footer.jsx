@@ -1,4 +1,4 @@
-import { Compass } from 'lucide-react'
+import { Compass, Linkedin, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const groups = [
@@ -19,10 +19,12 @@ const groups = [
     ],
   },
   {
-    title: 'Ankahi',
+    title: 'Team CiPher',
     links: [
       ['Our story', '/about'],
-      ['Home', '/'],
+      ['Project history', '/history'],
+      ['Meet the team', '/team'],
+      ['Contact us', '/contact'],
     ],
   },
 ]
@@ -38,9 +40,18 @@ export default function Footer() {
               <span className="brand-word">Ankahi Manzil</span>
             </Link>
             <p className="max-w-sm text-sm leading-7 text-text-secondary">
-              A travel discovery and adaptive planning concept for finding places that feel personal,
-              then keeping the journey useful when plans change.
+              A travel discovery and adaptive planning experience by Team CiPher—built around finding meaningful places and keeping journeys useful when plans change.
             </p>
+            <div className="mt-5 flex gap-2">
+              <Link to="/team" className="button-ghost" aria-label="Meet Team CiPher">
+                <Linkedin size={14} />
+                Team
+              </Link>
+              <Link to="/contact" className="button-ghost" aria-label="Contact Team CiPher">
+                <Mail size={14} />
+                Contact
+              </Link>
+            </div>
           </div>
 
           {groups.map((group) => (
@@ -54,7 +65,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-note">
-          <span>© 2026 Ankahi Manzil</span>
+          <span>© 2026 Ankahi Manzil • Team CiPher</span>
           <span>Frontend demo • local data • mock service layer</span>
         </div>
       </div>
