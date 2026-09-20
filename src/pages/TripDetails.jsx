@@ -1,403 +1,245 @@
-import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Calendar, MapPin, IndianRupee, Clock, Bot, ArrowRight,
-  ShieldCheck, AlertTriangle, CloudRain, CheckCircle2, ChevronLeft,
-  Building2, Landmark, UtensilsCrossed, Mountain, ShoppingBag, Eye,
-  RefreshCw, Share2, Download, Check
+  AlertTriangle, ArrowLeft, Bot, CalendarDays, Check, Clock3, Compass,
+  IndianRupee, MapPin, RefreshCw, Share2
 } from 'lucide-react'
+import { Link, useParams } from 'react-router-dom'
+import { destinations } from '../data/destinations'
 import PageTransition from '../components/layout/PageTransition'
 
-const tripDataMap = {
-  'manali-2026': {
-    title: 'Himalayan High Altitude Escape',
-    destination: 'Manali',
-    image: '/images/dest-manali.jpg',
-    dates: 'Oct 14 – Oct 18, 2026',
-    duration: '4 Days, 3 Nights',
-    travelers: 'Couple (2 Adults)',
-    budgetTotal: 24000,
-    budgetSpent: 18450,
-    status: 'Active Monitoring',
-    breakdown: [
-      { category: 'Stay (Boutique Villa)', spent: 9200, cap: 11000 },
-      { category: 'Local Cabs & Transfers', spent: 3800, cap: 4500 },
-      { category: 'Artisan Dining & Cafes', spent: 3450, cap: 5000 },
-      { category: 'Activities & Permits', spent: 2000, cap: 3500 },
-    ],
-    days: [
-      {
-        dayNum: 1,
-        date: 'Oct 14',
-        title: 'Arrival, Pine Forest Stroll & Acclimatization',
-        activities: [
-          { time: '09:30', title: 'Private Transfer from Bhuntar', desc: 'Pre-verified scenic valley route', cost: 1200, icon: Building2 },
-          { time: '12:00', title: 'Check-in at Apple Orchard Villa', desc: 'Early check-in confirmed by Manzilo', cost: 0, icon: Building2 },
-          { time: '13:30', title: 'Trout Dining at Old Manali', desc: 'Locally caught fresh river fish specialty', cost: 950, icon: UtensilsCrossed },
-          { time: '16:00', title: 'Hadimba Wooden Temple', desc: '16th century pagoda temple in deodar woods', cost: 100, icon: Landmark },
-          { time: '19:00', title: 'Mall Road Craft Exploration', desc: 'Himachali woolens & handloom souvenirs', cost: 800, icon: ShoppingBag },
-        ],
-      },
-      {
-        dayNum: 2,
-        date: 'Oct 15',
-        title: 'Solang Valley High Pass & Alpine Meadows',
-        activities: [
-          { time: '08:00', title: 'Early Departure to Solang', desc: 'Scheduled before peak tourist traffic', cost: 800, icon: Mountain },
-          { time: '10:30', title: 'Paragliding & Ropeway', desc: 'Gliding over snow-capped ridges', cost: 2200, icon: Mountain, isVulnerable: true },
-          { time: '13:30', title: 'Himalayan Ridge Cafe Lunch', desc: 'Warm thukpa and apple strudel', cost: 650, icon: UtensilsCrossed },
-          { time: '16:00', title: 'Jogini Waterfall Trek', desc: 'Gentle 45-min forest trail with valley views', cost: 0, icon: Mountain },
-          { time: '20:00', title: 'Bonfire & Acoustic Starlit Dinner', desc: 'Courtyard dinner under cedar trees', cost: 1400, icon: UtensilsCrossed },
-        ],
-      },
-      {
-        dayNum: 3,
-        date: 'Oct 16',
-        title: 'Atal Tunnel & Sissu Cold Desert Gateway',
-        activities: [
-          { time: '08:30', title: 'Scenic Crossing via Atal Tunnel', desc: 'World’s longest highway tunnel above 10,000 ft', cost: 1200, icon: Mountain },
-          { time: '10:30', title: 'Sissu Waterfall & Poplar Groves', desc: 'Lahaul valley crystal water cascade', cost: 0, icon: Mountain },
-          { time: '13:30', title: 'Traditional Lahauli Lunch', desc: 'Siddu, local butter tea and dumplings', cost: 500, icon: UtensilsCrossed },
-          { time: '17:00', title: 'Return & Relaxing Spa Session', desc: 'Herbal hot stone therapy at cottage', cost: 1800, icon: Building2 },
-        ],
-      },
-    ],
-  },
+function buildTrip(id) {
+  let saved = null
+  try {
+    saved = JSON.parse(localStorage.getItem('am_saved_trips') || '[]').find((item) => item.id === id)
+  } catch {
+    saved = null
+  }
+
+  if (saved) {
+    const destination = destinations.find((item) => item.slug === saved.slug) || destinations.find((item) => item.name === saved.destination) || destinations[1]
+    return {
+      id,
+      title: saved.destination + ' personal journey',
+      destination: destination.name,
+      image: saved.image || destination.image,
+      dates: 'Custom schedule',
+      days: saved.daysData || [],
+      budgetTotal: saved.totalBudget || 20000,
+      budgetSpent: saved.plannedCost || 0,
+      status: 'Saved locally',
+    }
+  }
+
+  const destination = id === 'goa-2026'
+    ? destinations.find((item) => item.slug === 'goa')
+    : id === 'jaipur-2026'
+      ? destinations.find((item) => item.slug === 'jaipur')
+      : destinations.find((item) => item.slug === 'manali')
+
+  const dayCount = id === 'goa-2026' ? 5 : id === 'jaipur-2026' ? 3 : 4
+  const total = id === 'goa-2026' ? 35000 : id === 'jaipur-2026' ? 15000 : 24000
+  const spent = id === 'goa-2026' ? 28000 : id === 'jaipur-2026' ? 13200 : 18450
+
+  const days = Array.from({ length: Math.min(dayCount, 4) }, (_, dayIndex) => {
+    const pool = [...(destination.topAttractions || []), ...(destination.thingsToDo || [])]
+    return {
+      dayNumber: dayIndex + 1,
+      title: dayIndex === 0 ? 'Arrival + first impression' : dayIndex === 1 ? 'Signature experiences' : 'Local rhythm + open space',
+      stops: [
+        { time: '09:00', title: dayIndex === 0 ? 'Arrival & settle in' : pool[dayIndex] || 'Morning exploration', cost: 300 },
+        { time: '11:30', title: pool[dayIndex + 1] || 'Local landmark', cost: 600 },
+        { time: '14:00', title: 'Regional lunch + pause', cost: 850 },
+        { time: '16:30', title: pool[dayIndex + 3] || 'Golden-hour stop', cost: 900 },
+      ],
+    }
+  })
+
+  return {
+    id,
+    title: id === 'goa-2026' ? 'South Goa Heritage & Coastal Circuit' : id === 'jaipur-2026' ? 'Pink City Royal Bastions Tour' : 'Himalayan High Altitude Escape',
+    destination: destination.name,
+    image: destination.image,
+    dates: id === 'goa-2026' ? 'Nov 20 – Nov 25, 2026' : id === 'jaipur-2026' ? 'Aug 10 – Aug 13, 2026' : 'Oct 14 – Oct 18, 2026',
+    days,
+    budgetTotal: total,
+    budgetSpent: spent,
+    status: id === 'jaipur-2026' ? 'Completed demo' : 'Demo monitoring',
+  }
 }
 
 export default function TripDetails() {
   const { id } = useParams()
-  const trip = tripDataMap[id] || tripDataMap['manali-2026']
-
+  const trip = useMemo(() => buildTrip(id), [id])
   const [activeDay, setActiveDay] = useState(1)
-  const [showSentinelDisruption, setShowSentinelDisruption] = useState(false)
-  const [replanApplied, setReplanApplied] = useState(false)
-  const [copiedLink, setCopiedLink] = useState(false)
+  const [disruption, setDisruption] = useState(false)
+  const [replanned, setReplanned] = useState(false)
+  const [copied, setCopied] = useState(false)
 
-  const handleCopy = () => {
-    navigator.clipboard?.writeText(window.location.href)
-    setCopiedLink(true)
-    setTimeout(() => setCopiedLink(false), 3000)
+  const active = trip.days.find((day) => day.dayNumber === activeDay) || trip.days[0]
+
+  const copy = async () => {
+    await navigator.clipboard?.writeText(window.location.href)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1500)
   }
 
   return (
     <PageTransition>
-      <div className="trip-details-page app-page relative">
-        <div className="page-shell">
-          
-          {/* Back Navigation */}
-          <Link
-            to="/trips"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-text-secondary hover:text-am-orange transition-colors mb-6"
-          >
-            <ChevronLeft size={16} />
+      <section className="app-shell">
+        <div className="page-shell px-0">
+          <Link to="/trips" className="mb-5 inline-flex items-center gap-2 text-xs font-bold text-text-secondary hover:text-white">
+            <ArrowLeft size={14} />
             Back to My Trips
           </Link>
 
-          {/* Hero Banner Card */}
-          <div className="travel-panel relative overflow-hidden rounded-[1.75rem] mb-8">
-            <div className="relative h-[24rem] sm:h-[30rem] w-full overflow-hidden">
-              <img
-                src={trip.image}
-                alt={trip.destination}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/60 to-transparent" />
-              
-              <div className="absolute top-4 right-4 flex items-center gap-2">
-                <button
-                  onClick={handleCopy}
-                  className="px-3 py-1.5 rounded-xl bg-navy-900/80 backdrop-blur-md border border-border-subtle text-xs text-text-primary flex items-center gap-1.5 hover:bg-navy-800"
-                >
-                  {copiedLink ? <Check size={14} className="text-am-green" /> : <Share2 size={14} />}
-                  {copiedLink ? 'Link Copied!' : 'Share'}
+          <div className="relative min-h-[34rem] overflow-hidden rounded-[1.7rem] border border-white/10">
+            <img src={trip.image} alt={trip.destination} className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,15,.18),rgba(7,17,15,.9)_82%,rgba(7,17,15,.98))]" />
+            <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,17,15,.72),transparent_65%)]" />
+
+            <div className="relative flex min-h-[34rem] flex-col justify-between p-5 sm:p-8">
+              <div className="flex justify-end gap-2">
+                <button type="button" className="button-ghost" onClick={copy}>
+                  {copied ? <Check size={14} /> : <Share2 size={14} />}
+                  {copied ? 'Copied' : 'Share'}
                 </button>
-                <Link
-                  to="/manzilo"
-                  className="px-3.5 py-1.5 rounded-xl bg-am-cyan text-navy-950 text-xs font-bold flex items-center gap-1.5 hover:bg-am-cyan-hover shadow-lg shadow-am-cyan/20"
-                >
+                <Link to="/manzilo" className="button-primary">
                   <Bot size={14} />
                   Ask Manzilo
                 </Link>
               </div>
 
-              <div className="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-am-green/20 border border-am-green/40 text-am-green text-xs font-bold uppercase tracking-wider mb-2">
-                    <ShieldCheck size={14} />
-                    {trip.status}
-                  </div>
-                  <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-bold text-white">
-                    {trip.title}
-                  </h1>
-                  <p className="text-xs sm:text-sm text-text-secondary mt-1 flex flex-wrap items-center gap-4">
-                    <span><Calendar size={13} className="inline mr-1 text-am-orange" /> {trip.dates}</span>
-                    <span><Clock size={13} className="inline mr-1 text-am-cyan" /> {trip.duration}</span>
-                    <span><MapPin size={13} className="inline mr-1 text-am-gold" /> {trip.destination}</span>
-                  </p>
+              <div className="max-w-4xl">
+                <div className="eyebrow mb-4">
+                  <MapPin size={12} className="text-am-orange" />
+                  {trip.status}
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => setShowSentinelDisruption(!showSentinelDisruption)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all self-start md:self-auto ${
-                    showSentinelDisruption
-                      ? 'bg-am-orange/20 text-am-orange border-am-orange'
-                      : 'bg-navy-900/90 text-text-secondary border-border-subtle hover:text-text-primary hover:border-am-orange/40'
-                  }`}
-                >
-                  <AlertTriangle size={14} />
-                  {showSentinelDisruption ? 'Active Disruption Simulated' : 'Test Disruption Replanning'}
-                </button>
+                <h1 className="display-sm max-w-[13ch]">{trip.title}</h1>
+                <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-xs text-white/65">
+                  <span className="flex items-center gap-1.5"><Compass size={12} />{trip.destination}</span>
+                  <span className="flex items-center gap-1.5"><CalendarDays size={12} />{trip.dates}</span>
+                  <span className="flex items-center gap-1.5"><Clock3 size={12} />{trip.days.length} itinerary days</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* REAL-TIME SENTINEL MONITOR WIDGET */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            <div className="glass-card rounded-2xl p-4 border border-border-subtle">
-              <div className="text-xs text-text-secondary flex items-center gap-1.5 mb-1">
-                <CloudRain size={14} className="text-am-cyan" /> Weather Sentinel
-              </div>
-              <div className="text-sm font-bold text-text-primary">17°C • Mostly Sunny</div>
-              <div className="text-[11px] text-am-green mt-1">✓ No adverse alerts</div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <div className="surface-soft rounded-xl p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[.13em] text-text-muted">Route state</p>
+              <p className="mt-2 text-lg font-semibold text-am-green">{disruption ? 'Scenario active' : 'Stable'}</p>
+              <p className="mt-1 text-xs text-text-muted">Local demo state, not live monitoring.</p>
             </div>
-
-            <div className="glass-card rounded-2xl p-4 border border-border-subtle">
-              <div className="text-xs text-text-secondary flex items-center gap-1.5 mb-1">
-                <Clock size={14} className="text-am-orange" /> Transit Sentinel
-              </div>
-              <div className="text-sm font-bold text-text-primary">Roads Clear</div>
-              <div className="text-[11px] text-am-green mt-1">✓ Rohtang Pass open</div>
+            <div className="surface-soft rounded-xl p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[.13em] text-text-muted">Budget planned</p>
+              <p className="mt-2 text-lg font-semibold text-am-gold">₹{trip.budgetSpent.toLocaleString('en-IN')}</p>
+              <p className="mt-1 text-xs text-text-muted">of ₹{trip.budgetTotal.toLocaleString('en-IN')}</p>
             </div>
-
-            <div className="glass-card rounded-2xl p-4 border border-border-subtle">
-              <div className="text-xs text-text-secondary flex items-center gap-1.5 mb-1">
-                <Landmark size={14} className="text-am-gold" /> Venue Sentinel
-              </div>
-              <div className="text-sm font-bold text-text-primary">5 Venues Verified</div>
-              <div className="text-[11px] text-am-green mt-1">✓ Standard operating hours</div>
-            </div>
-
-            <div className="glass-card rounded-2xl p-4 border border-border-subtle">
-              <div className="text-xs text-text-secondary flex items-center gap-1.5 mb-1">
-                <ShieldCheck size={14} className="text-am-green" /> Disruption Index
-              </div>
-              <div className="text-sm font-bold text-am-green">0.03 (Very Low)</div>
-              <div className="text-[11px] text-text-muted mt-1">Adaptive buffers primed</div>
+            <div className="surface-soft rounded-xl p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[.13em] text-text-muted">Adaptation</p>
+              <p className="mt-2 text-lg font-semibold text-am-cyan">{replanned ? 'Applied' : 'Ready to demo'}</p>
+              <p className="mt-1 text-xs text-text-muted">Changes only the affected block.</p>
             </div>
           </div>
 
-          {/* SIMULATED DISRUPTION BANNER IF ACTIVE */}
-          <AnimatePresence>
-            {showSentinelDisruption && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="mb-10 p-6 rounded-2xl bg-am-orange/10 border-2 border-am-orange/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-am-orange/20 text-am-orange flex items-center justify-center shrink-0">
-                    <AlertTriangle size={20} />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-am-orange uppercase tracking-wider">
-                      Live Disruption Detected: Gusty Winds in Solang Valley
-                    </span>
-                    <h4 className="text-base font-bold text-text-primary mt-0.5">
-                      Paragliding suspended by local aviation authority for Day 2 (10:30)
-                    </h4>
-                    <p className="text-xs text-text-secondary mt-1">
-                      Manzilo identified the Naggar Castle Heritage Walk & Nicholas Roerich Art Gallery as an ideal substitute without schedule drift.
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setReplanApplied(!replanApplied)}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-bold shrink-0 flex items-center gap-2 transition-all ${
-                    replanApplied
-                      ? 'bg-am-green/20 text-am-green border border-am-green/40'
-                      : 'bg-am-orange text-white hover:bg-am-orange-hover shadow-lg shadow-am-orange/20'
-                  }`}
-                >
-                  {replanApplied ? (
-                    <>
-                      <CheckCircle2 size={16} /> Replan Active
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw size={16} /> Apply Replan
-                    </>
-                  )}
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="grid lg:grid-cols-[1fr_360px] gap-8">
-            {/* Left: Day tabs & activities */}
-            <div>
-              {/* Day selection tabs */}
-              <div className="flex items-center gap-2 border-b border-border-subtle pb-4 mb-6">
-                {trip.days.map(d => (
-                  <button
-                    key={d.dayNum}
-                    type="button"
-                    onClick={() => setActiveDay(d.dayNum)}
-                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                      activeDay === d.dayNum
-                        ? 'bg-am-orange text-white shadow-md shadow-am-orange/20'
-                        : 'bg-navy-900/60 text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    Day 0{d.dayNum} ({d.date})
-                  </button>
-                ))}
-              </div>
-
-              {/* Day timeline */}
-              {trip.days
-                .filter(d => d.dayNum === activeDay)
-                .map(d => (
-                  <div key={d.dayNum} className="space-y-4">
-                    <div className="p-4 rounded-xl bg-navy-900/40 border border-border-subtle mb-4">
-                      <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary">
-                        {d.title}
-                      </h3>
-                      <p className="text-xs text-text-secondary mt-0.5">
-                        Route sequence optimized for minimal mountain transit times.
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      {d.activities.map((act, idx) => {
-                        const Icon = act.icon
-                        const isDisrupted = showSentinelDisruption && act.isVulnerable && !replanApplied
-                        const isReplanned = showSentinelDisruption && act.isVulnerable && replanApplied
-
-                        return (
-                          <div
-                            key={idx}
-                            className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 ${
-                              isDisrupted
-                                ? 'bg-am-orange/10 border-am-orange/40'
-                                : isReplanned
-                                ? 'bg-am-cyan/10 border-am-cyan/40'
-                                : 'bg-navy-900/40 border-border-subtle hover:bg-navy-900/70'
-                            }`}
-                          >
-                            <div className="flex items-start gap-4">
-                              <span className={`font-mono text-xs sm:text-sm font-bold w-14 shrink-0 pt-0.5 ${
-                                isDisrupted ? 'text-am-orange line-through' : 'text-am-cyan'
-                              }`}>
-                                {act.time}
-                              </span>
-
-                              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                                isDisrupted
-                                  ? 'bg-am-orange/20 text-am-orange'
-                                  : isReplanned
-                                  ? 'bg-am-cyan/20 text-am-cyan'
-                                  : 'bg-navy-800 text-text-secondary'
-                              }`}>
-                                <Icon size={18} />
-                              </div>
-
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <h4 className={`text-sm sm:text-base font-bold ${
-                                    isDisrupted ? 'text-am-orange line-through' : 'text-text-primary'
-                                  }`}>
-                                    {isReplanned ? 'Naggar Castle & Roerich Gallery' : act.title}
-                                  </h4>
-                                  {isDisrupted && (
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-am-orange/20 text-am-orange">
-                                      High Winds Suspended
-                                    </span>
-                                  )}
-                                  {isReplanned && (
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-am-cyan/20 text-am-cyan">
-                                      Manzilo Substituted
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-xs text-text-secondary mt-1">
-                                  {isReplanned
-                                    ? 'Historical medieval castle & Russian artist gallery unaffected by weather.'
-                                    : act.desc}
-                                </p>
-                              </div>
-                            </div>
-
-                            <span className="font-mono text-xs font-bold text-text-primary shrink-0">
-                              {act.cost === 0 ? 'Free' : `₹${act.cost}`}
-                            </span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-            </div>
-
-            {/* Right: Budget breakdown & Quick info */}
-            <div className="space-y-6">
-              <div className="glass-card rounded-2xl p-6 border border-border-subtle">
-                <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-text-primary mb-4 flex items-center justify-between">
-                  <span>Budget Tracking</span>
-                  <span className="font-mono text-am-gold">₹{trip.budgetSpent.toLocaleString()} / ₹{trip.budgetTotal.toLocaleString()}</span>
-                </h3>
-
-                <div className="space-y-3">
-                  {trip.breakdown.map((item, idx) => (
-                    <div key={idx} className="text-xs">
-                      <div className="flex items-center justify-between text-text-secondary mb-1">
-                        <span>{item.category}</span>
-                        <span className="font-mono font-medium text-text-primary">
-                          ₹{item.spent} / ₹{item.cap}
-                        </span>
-                      </div>
-                      <div className="w-full h-1.5 bg-navy-900 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-am-cyan rounded-full"
-                          style={{ width: `${(item.spent / item.cap) * 100}%` }}
-                        />
-                      </div>
-                    </div>
+          <div className="mt-4 app-layout">
+            <main className="app-panel">
+              <div className="border-b border-white/8 p-4">
+                <div className="flex gap-2 overflow-x-auto">
+                  {trip.days.map((day) => (
+                    <button
+                      key={day.dayNumber}
+                      type="button"
+                      className="ai-chip"
+                      data-active={activeDay === day.dayNumber}
+                      onClick={() => setActiveDay(day.dayNumber)}
+                    >
+                      Day {day.dayNumber}
+                    </button>
                   ))}
                 </div>
+              </div>
 
-                <div className="mt-6 pt-4 border-t border-border-subtle flex items-center justify-between text-xs">
-                  <span className="text-text-secondary">Unallocated Contingency</span>
-                  <span className="font-mono font-bold text-am-green">
-                    ₹{(trip.budgetTotal - trip.budgetSpent).toLocaleString()}
-                  </span>
+              <div className="p-4 sm:p-5">
+                <h2 className="text-xl font-semibold">{active?.title}</h2>
+                <div className="mt-4 space-y-2">
+                  {active?.stops?.map((stop, index) => {
+                    const affected = disruption && activeDay === 1 && index === 3
+                    return (
+                      <motion.div key={stop.time} layout className="ai-route-row">
+                        <span className="font-mono text-[11px] text-text-muted">{stop.time}</span>
+                        <span className="ai-route-dot">{affected ? <AlertTriangle size={11} /> : <Check size={11} />}</span>
+                        <div>
+                          <p className={affected && !replanned ? 'text-sm font-semibold text-am-orange line-through' : 'text-sm font-semibold'}>
+                            {affected && replanned ? 'Indoor local culture stop + café buffer' : stop.title}
+                          </p>
+                          <p className="mt-1 text-[11px] text-text-muted">
+                            {affected && replanned ? 'Replacement chosen to preserve return time' : 'Estimated activity cost ₹' + (stop.cost || 0)}
+                          </p>
+                        </div>
+                        <span className="text-[10px] font-bold text-am-green">{affected ? (replanned ? 'Updated' : 'Affected') : 'Fits'}</span>
+                      </motion.div>
+                    )
+                  })}
                 </div>
               </div>
+            </main>
 
-              {/* Local Travel Essentials */}
-              <div className="glass-card rounded-2xl p-6 border border-border-subtle space-y-3">
-                <h4 className="font-bold text-sm text-text-primary">Destination Essentials</h4>
-                <ul className="text-xs text-text-secondary space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-am-orange">•</span> Layered woolens & thermal innerwear recommended
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-am-orange">•</span> Green Tax token already logged for Kullu boundary
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-am-orange">•</span> Jio & Airtel 5G active in town; spotty in high passes
-                  </li>
-                </ul>
+            <aside className="space-y-3">
+              <div className="app-panel app-panel-pad">
+                <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
+                  <Bot size={14} />
+                  Manzilo explanation
+                </div>
+                <p className="mt-3 text-sm leading-6 text-text-secondary">
+                  {disruption
+                    ? replanned
+                      ? 'Only the vulnerable afternoon block was replaced. Earlier stops and the return window stay unchanged.'
+                      : 'This demo scenario marks the final outdoor stop as unavailable. Apply the replan to see the smallest-change strategy.'
+                    : 'The route is stable. Trigger a disruption to demonstrate adaptive itinerary behavior.'}
+                </p>
               </div>
-            </div>
+
+              <button
+                type="button"
+                className="button-ghost w-full"
+                onClick={() => {
+                  setDisruption((value) => !value)
+                  setReplanned(false)
+                }}
+              >
+                <AlertTriangle size={14} />
+                {disruption ? 'Clear disruption' : 'Simulate disruption'}
+              </button>
+
+              <AnimatePresence>
+                {disruption && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    type="button"
+                    className="button-soft w-full"
+                    onClick={() => setReplanned(true)}
+                  >
+                    <RefreshCw size={14} />
+                    {replanned ? 'Replan active' : 'Apply smallest-change replan'}
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              <div className="app-panel app-panel-pad">
+                <div className="flex items-center gap-2 text-xs font-bold">
+                  <IndianRupee size={14} className="text-am-gold" />
+                  Budget remaining
+                </div>
+                <p className="mt-3 text-2xl font-semibold">₹{Math.max(0, trip.budgetTotal - trip.budgetSpent).toLocaleString('en-IN')}</p>
+              </div>
+            </aside>
           </div>
         </div>
-      </div>
+      </section>
     </PageTransition>
   )
 }
