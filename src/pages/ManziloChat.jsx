@@ -193,7 +193,9 @@ export default function ManziloChat() {
 
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => setMessages(initialMessages)}
+                aria-label="Clear Manzilo conversation"
                 className="p-2 rounded-xl bg-navy-900 border border-border-subtle text-text-secondary hover:text-text-primary text-xs flex items-center gap-1.5"
                 title="Clear conversation"
               >
@@ -358,6 +360,7 @@ export default function ManziloChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                aria-label="Message Manzilo"
                 placeholder="Ask Manzilo about itineraries, rain disruptions, budgeting, or venue hours..."
                 className="flex-1 bg-navy-900/90 border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-am-cyan transition-colors"
               />
@@ -366,6 +369,7 @@ export default function ManziloChat() {
                 type="button"
                 onClick={() => handleSend()}
                 disabled={!input.trim()}
+                aria-label="Send message to Manzilo"
                 className="p-3 rounded-xl bg-am-orange hover:bg-am-orange-hover disabled:opacity-40 disabled:cursor-not-allowed text-white transition-all shadow-lg shadow-am-orange/20"
               >
                 <Send size={18} />
