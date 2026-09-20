@@ -32,25 +32,23 @@ export default function Profile() {
           <div className="travel-panel rounded-[1.75rem] p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               <div className="relative">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80"
-                  alt="User Avatar"
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-am-orange"
-                />
-                <div className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-am-green border-2 border-navy-950 text-white" title="Sentinel Active">
+                <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-am-orange/25 bg-am-orange/10 text-am-orange sm:h-24 sm:w-24">
+                  <User size={34} />
+                </div>
+                <div className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-am-green border-2 border-navy-950 text-white" title="Sentinel demo active">
                   <ShieldCheck size={14} />
                 </div>
               </div>
 
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-am-orange/15 text-am-orange border border-am-orange/30 text-xs font-bold uppercase tracking-wider mb-1.5">
-                  Pro Traveler
+                  Demo traveler profile
                 </div>
                 <h1 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-text-primary">
-                  Devansh Verma
+                  Your Travel DNA
                 </h1>
                 <p className="text-xs sm:text-sm text-text-secondary">
-                  devansh.verma@example.com • Member since 2024
+                  Personalize how the current frontend demo plans and adapts journeys.
                 </p>
               </div>
             </div>
