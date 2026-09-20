@@ -1,102 +1,105 @@
 # Ankahi Manzil
 
-Ankahi Manzil is a travel discovery and adaptive journey-planning frontend concept focused on a simple idea:
+Ankahi Manzil is a full-stack adaptive travel platform concept built around three connected experiences:
 
-> Discover places that are not on everyone’s list, then build a journey that can still be useful when the plan changes.
+1. **Discover** meaningful destinations beyond the obvious.
+2. **Plan** a trip around duration, travelers, pace, interests and budget.
+3. **Adapt** the trip when disruptions affect the itinerary.
 
-The current `frontend` branch is a React demo. It contains curated local destination data, an interactive planner, locally saved trips, simulated disruption/replanning, and a mock Manzilo conversational service.
+The `frontend` branch now contains both the redesigned React frontend and the integrated FastAPI backend under `backend/`.
 
-## Product Problem
+## Product Experience
 
-Most travel interfaces separate inspiration from planning. Discovery becomes a card catalog, itinerary builders become forms, and AI is often presented as marketing copy instead of an actual interface.
+### Discover
 
-Ankahi Manzil combines three product modes:
-
-1. **Discover** — browse destinations as an editorial travel atlas.
-2. **Plan** — turn destination, pace, budget, travelers and interests into a sample day-by-day journey.
-3. **Adapt** — demonstrate how a vulnerable itinerary block can be replaced without rebuilding the entire trip.
-
-## Current Experience
-
-### Home
-
-The homepage is an image-led editorial travel experience built around the message:
-
-**Discover the places that aren’t on everyone’s list.**
-
-It includes immersive destination storytelling, asymmetric destination emphasis, and a direct path into the AI experience and planner.
-
-### Explore
-
-`/destinations` provides search and category filtering over the local destination dataset. Destinations are deliberately presented with mixed visual hierarchy rather than as a uniform card grid.
-
-### Manzilo Studio
-
-`/features` is an interactive AI product demonstration rather than a marketing feature page.
-
-Users can:
-
-- switch between Discover, Build and Adapt modes
-- select a travel mood
-- change budget context
-- inspect recommendation reasoning
-- view a generated route
-- trigger a visual replan scenario
-- continue into the full Manzilo conversation or Journey Composer
+- Editorial travel homepage
+- Searchable destination atlas
+- Destination detail stories
+- Backend-powered destination catalog with local fallback
 
 ### Journey Composer
 
-`/plan` keeps the existing planning functionality while presenting it as a product workspace.
+`/plan` sends planner inputs to:
 
-Inputs include:
+```text
+POST /api/trips/plan
+```
 
-- destination
-- duration
-- travelers
-- budget
-- pace
-- interests
-
-The page uses the mock `tripService` boundary and local destination data to produce a sample journey. A generated journey can be saved to browser localStorage.
+When FastAPI is online, the UI renders the backend-generated `daysData`, budget breakdown and persisted trip ID. If the API is unavailable, the frontend falls back to a local demo plan.
 
 ### My Trips
 
-`/trips` combines built-in demo journeys with trips saved from the Journey Composer.
-
-Saved trips use:
+`/trips` loads persisted trips from:
 
 ```text
-localStorage key: am_saved_trips
+GET /api/trips
 ```
 
-### Trip Detail
+The UI falls back to browser cache and built-in demo journeys when required.
 
-`/trips/:id` displays the itinerary and provides a local disruption/replan demonstration.
+### Trip Intelligence
 
-For locally saved planner trips, the detail route reads the matching browser-stored plan when available.
+`/trips/:id` supports:
 
-### Manzilo Chat
+- backend trip loading
+- Sentinel monitoring
+- simulated disruption detection
+- replan requests
+- backend refresh after a successful replan
 
-`/manzilo` connects to the existing `manziloService.js` mock abstraction.
+Endpoints:
 
-The service currently supports demo responses for:
+```text
+GET  /api/trips/{id}
+POST /api/trips/{id}/monitor
+GET  /api/trips/{id}/disruptions
+POST /api/trips/{id}/replan
+```
 
-- general planning
-- Manali
-- Goa
-- budget-related prompts
+### Manzilo
 
-No production AI provider is connected on this branch.
+`/manzilo` is connected to the FastAPI Manzilo orchestrator:
 
-### Travel Preferences
+```text
+POST /api/manzilo/chat
+POST /api/manzilo/suggestion
+```
 
-`/profile` is a demo preference workspace. It is not backed by authentication or a user database.
+The frontend preserves:
 
-### History, Team and Contact
+- `conversationId`
+- latest saved `tripId` context
+- backend rich widgets
+- fallback responses when the backend or AI provider is unavailable
 
-`/history` presents the product evolution without inventing release dates. `/team` introduces Team CiPher members Parth Goyal (B.Tech CSE — Cyber Security) and Archi Sharma (B.Tech CSE — AI & ML) with LinkedIn and project-Gmail actions. `/contact` uses a real frontend Gmail compose flow; no fake backend submission is shown.
+### Profile
 
-## Technology Stack
+`/profile` reads and updates:
+
+```text
+GET   /api/profile
+PATCH /api/profile
+```
+
+Supported persisted fields include:
+
+- travel style
+- preferred interests
+- budget preference
+- saved destinations
+- Sentinel enabled state
+
+### Team and Contact
+
+The product also includes:
+
+- `/history` — product evolution
+- `/team` — Team CiPher
+- `/contact` — Gmail-based contact flow
+
+## Tech Stack
+
+### Frontend
 
 - React 19
 - React Router 7
@@ -106,203 +109,281 @@ No production AI provider is connected on this branch.
 - Lucide React
 - Oxlint
 
-No additional UI framework was introduced for the frontend reset.
+### Backend
 
-## Architecture
+- Python 3.12+
+- FastAPI
+- Pydantic v2
+- SQLAlchemy 2.x
+- Alembic
+- SQLite fallback
+- PostgreSQL / Supabase compatible
+- httpx
+- pytest
+
+### AI / External Integrations
+
+Backend integrations support:
+
+- OpenRouter
+- OpenAI
+- Gemini
+- Groq
+- OpenWeather
+- Google Maps
+- Google Places
+
+All provider keys are optional for deterministic/local functionality; the backend includes graceful fallbacks.
+
+## Repository Structure
 
 ```text
-Browser
-  |
-  v
-React + React Router
-  |
-  +-- Shared shell
-  |   +-- Navbar
-  |   +-- Footer
-  |   +-- PageTransition
-  |
-  +-- Discovery
-  |   +-- Home
-  |   +-- Destinations
-  |   +-- DestinationDetails
-  |
-  +-- Intelligence
-  |   +-- Features / Manzilo Studio
-  |   +-- ManziloChat
-  |   +-- HowItWorks
-  |
-  +-- Journey workspace
-  |   +-- TripPlanner
-  |   +-- MyTrips
-  |   +-- TripDetails
-  |   +-- Profile
-  |
-  +-- Local data
-  |   +-- src/data/destinations.js
-  |
-  +-- Mock service boundaries
-      +-- destinationService.js
-      +-- tripService.js
-      +-- manziloService.js
+.
+├── backend/
+│   ├── app/
+│   │   ├── agents/
+│   │   ├── api/
+│   │   ├── core/
+│   │   ├── integrations/
+│   │   ├── models/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   └── main.py
+│   ├── alembic/
+│   ├── tests/
+│   ├── requirements.txt
+│   └── .env.example
+├── src/
+│   ├── components/
+│   ├── data/
+│   ├── pages/
+│   ├── services/
+│   │   ├── apiClient.js
+│   │   ├── destinationService.js
+│   │   ├── tripService.js
+│   │   ├── manziloService.js
+│   │   └── profileService.js
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .env.example
+├── package.json
+└── vite.config.js
 ```
 
-See `docs/ARCHITECTURE.md` for implementation details.
+## Frontend Environment
 
-## Routes
+Copy the root example:
 
-| Route | Purpose |
-| --- | --- |
-| `/` | Editorial discovery homepage |
-| `/destinations` | Search/filter travel atlas |
-| `/destinations/:slug` | Immersive destination story |
-| `/features` | Interactive Manzilo Studio |
-| `/how-it-works` | Adaptive planning loop |
-| `/plan` | Journey Composer |
-| `/trips` | Local/demo trip library |
-| `/trips/:id` | Trip detail + replan demo |
-| `/manzilo` | Mock conversational workspace |
-| `/profile` | Demo travel preferences |
-| `/about` | Product story |
-| `/history` | Product evolution and project history |
-| `/team` | Team CiPher member profiles and professional links |
-| `/contact` | Functional Gmail-based contact experience |
-| `*` | Branded 404 |
+```powershell
+copy .env.example .env
+```
 
-## Backend and API Status
+Default local configuration:
 
-There is **no production backend in this branch**.
+```env
+VITE_API_BASE_URL=http://localhost:8000/api
+VITE_API_USER_ID=
+```
 
-The current service files are mock asynchronous abstractions:
+`VITE_API_USER_ID` is optional. If omitted, the backend uses its development guest user.
 
-- `destinationService.js`
-- `tripService.js`
-- `manziloService.js`
+## Backend Environment
 
-They are intentionally kept as integration boundaries so a future backend can replace the implementation without forcing route components to know backend details.
+From `backend/`:
 
-## Authentication
+```powershell
+copy .env.example .env
+```
 
-There is currently **no authentication implementation** on this branch.
+Important values:
 
-The profile route is a frontend preference demo only.
+```env
+APP_ENV=development
+HOST=0.0.0.0
+PORT=8000
+FRONTEND_URL=http://localhost:5173
 
-## Environment Variables
+DATABASE_URL=
 
-No environment variables are currently required.
+LLM_PROVIDER=openrouter
+LLM_MODEL=openai/gpt-5-nano
 
-There is no `.env.example` because this branch does not use external API credentials.
+OPENROUTER_API_KEY=
+OPENAI_API_KEY=
+GEMINI_API_KEY=
+GROQ_API_KEY=
 
-If a real backend or AI provider is added, keep secrets server-side and document only browser-safe Vite variables.
+WEATHER_PROVIDER=openweather
+WEATHER_API_KEY=
+MAPS_API_KEY=
+PLACES_API_KEY=
+```
 
-## Installation
+If `DATABASE_URL` is empty, the backend uses local SQLite.
 
-Requirements:
+## Run the Full Stack Locally
 
-- Node.js 20+ recommended
-- npm
+### Terminal 1 — Backend
 
-```bash
-git clone https://github.com/goyalparth61-netizen/Ankahi-Manzil.git
-cd Ankahi-Manzil
-git checkout frontend
+```powershell
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
+
+Backend:
+
+```text
+http://localhost:8000
+API:  http://localhost:8000/api
+Docs: http://localhost:8000/docs
+```
+
+### Terminal 2 — Frontend
+
+From repository root:
+
+```powershell
 npm ci
-```
-
-## Development
-
-```bash
+copy .env.example .env
 npm run dev
 ```
 
-## Lint
+Frontend:
 
-```bash
-npm run lint
+```text
+http://localhost:5173
 ```
 
-## Production Build
+## API Overview
 
-```bash
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/api/health` | Backend health |
+| GET | `/api/destinations` | Destination catalog |
+| GET | `/api/destinations/{slug}` | Destination details |
+| POST | `/api/trips/plan` | Generate + persist trip |
+| GET | `/api/trips` | List user trips |
+| GET | `/api/trips/{id}` | Full trip details |
+| PATCH | `/api/trips/{id}` | Update trip |
+| DELETE | `/api/trips/{id}` | Delete trip |
+| POST | `/api/trips/{id}/monitor` | Sentinel monitoring cycle |
+| GET | `/api/trips/{id}/disruptions` | Active disruptions |
+| POST | `/api/trips/{id}/replan` | Replan around disruption |
+| POST | `/api/manzilo/chat` | Context-aware Manzilo chat |
+| POST | `/api/manzilo/suggestion` | Predictive suggestion |
+| GET | `/api/profile` | Get travel profile |
+| PATCH | `/api/profile` | Update travel profile |
+
+## Frontend Fallback Strategy
+
+The frontend is resilient by design:
+
+- destination API failure → local destination dataset
+- trip planner failure → local generated plan
+- trip list/detail failure → localStorage or built-in demo
+- Manzilo failure → local response fallback
+- profile failure → local default profile
+- monitoring/replan failure → presentation-safe local fallback
+
+This allows hackathon demos to remain usable even if an external provider or deployed backend is temporarily unavailable.
+
+## Database
+
+The backend uses SQLAlchemy.
+
+Local default:
+
+```text
+SQLite: backend/ankahi_manzil.db
+```
+
+For hosted deployment, set `DATABASE_URL` to a PostgreSQL/Supabase connection string.
+
+Apply migrations with:
+
+```powershell
+cd backend
+alembic upgrade head
+```
+
+## Testing
+
+Frontend:
+
+```powershell
+npm run lint
 npm run build
 ```
 
-## Preview
+Backend:
 
-```bash
-npm run preview
+```powershell
+cd backend
+pytest -v
 ```
+
+GitHub Actions runs both frontend quality checks and backend tests on the `frontend` branch.
 
 ## Deployment
 
-The branch builds as a Vite single-page application.
+### Frontend
 
-Typical static-host settings:
+Typical static frontend settings:
 
 ```text
-Install: npm ci
-Build: npm run build
+Build command: npm run build
 Output: dist
 ```
 
-Because React Router uses `BrowserRouter`, the deployment host must rewrite unknown application routes to `index.html`.
+Set:
 
-## Design System
+```env
+VITE_API_BASE_URL=https://YOUR-BACKEND-DOMAIN/api
+```
 
-The reset design system lives in `src/index.css`.
+### Backend
 
-The current visual direction uses:
+Run:
 
-- deep forest/navy surfaces rather than generic SaaS blue
-- warm sand/ember highlights
-- editorial typography with selective serif accents
-- cinematic full-bleed photography
-- asymmetric destination composition
-- restrained borders instead of heavy shadows
-- product-workspace layouts for AI/planning screens
-- motion primarily for transitions, reveal and state change
+```text
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
 
-## Accessibility
+Set:
 
-Current baseline includes:
+```env
+FRONTEND_URL=https://YOUR-FRONTEND-DOMAIN
+```
 
-- semantic navigation
-- keyboard-focus treatment
-- labeled form controls
-- accessible switch semantics
-- reduced-motion support
-- descriptive image alt text where images are meaningful
-- skip-to-content navigation
+and configure database/provider environment variables as needed.
 
-Further production work should add automated accessibility testing.
+## Authentication
 
-## CI
+There is no full authentication flow yet.
 
-`.github/workflows/frontend-ci.yml` runs on pushes and pull requests targeting `frontend`:
-
-1. `npm ci`
-2. `npm run lint`
-3. `npm run build`
-
-## Future Improvements
-
-- production authentication
-- server-side trip persistence
-- real mapping/geospatial service
-- live weather and transit integrations
-- production AI/LLM integration for Manzilo
-- server-side validation and rate limiting
-- end-to-end and component tests
-- verified booking/partner integrations
-- production analytics and error reporting
+The backend currently resolves a user through the optional `X-User-ID` header and otherwise falls back to a development guest identity. This keeps trip/profile persistence user-scoped without inventing an authentication system that is not implemented yet.
 
 ## Team CiPher
 
 - **Parth Goyal** — B.Tech CSE, Cyber Security
 - **Archi Sharma** — B.Tech CSE, Artificial Intelligence & Machine Learning
 
-Repository: `goyalparth61-netizen/Ankahi-Manzil`
+## Future Improvements
 
-Git history remains the authoritative technical contribution record.
+- production authentication
+- real account/session management
+- deployed database persistence
+- production monitoring providers
+- live maps UI
+- booking partner integrations
+- end-to-end browser tests
+- production telemetry and error monitoring
 
 ## License
 
