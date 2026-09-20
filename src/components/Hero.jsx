@@ -1,207 +1,159 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Sparkles, ArrowRight, MapPin, Route, ShieldCheck } from 'lucide-react'
+import {
+  ArrowRight, Compass, MapPin, Route, ShieldCheck, Sparkles
+} from 'lucide-react'
+
+const insightCards = [
+  { icon: MapPin, label: 'Hidden-first discovery', value: 'Places worth the detour', tone: 'text-am-orange bg-am-orange/10' },
+  { icon: Route, label: 'Adaptive planning', value: 'Plans that can move', tone: 'text-am-cyan bg-am-cyan/10' },
+  { icon: ShieldCheck, label: 'Manzilo sentinel', value: 'Ready for disruption', tone: 'text-am-green bg-am-green/10' },
+]
 
 export default function Hero() {
   return (
-    <section id="hero" className="hero-shell relative min-h-screen flex items-center overflow-hidden">
-      {/* Background gradient orbs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/6 w-[500px] h-[500px] bg-am-orange/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/6 w-[400px] h-[400px] bg-am-cyan/5 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-am-blue/3 rounded-full blur-[150px]" />
+    <section id="hero" className="relative min-h-[100svh] overflow-hidden">
+      <div className="absolute inset-0">
+        <img
+          src="/images/hero-traveler.jpg"
+          alt=""
+          className="h-full w-full object-cover object-center opacity-35"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,17,26,.98)_0%,rgba(3,17,26,.9)_38%,rgba(3,17,26,.42)_72%,rgba(3,17,26,.78)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,17,26,.32)_0%,rgba(3,17,26,.06)_55%,rgba(3,17,26,1)_100%)]" />
       </div>
 
-      <div className="page-shell pt-28 lg:pt-36 pb-16 lg:pb-24">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* LEFT — Text Content */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          className="absolute left-[7%] top-[18%] h-64 w-64 rounded-full border border-white/5"
+          animate={{ scale: [1, 1.06, 1], opacity: [.3, .55, .3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute right-[8%] top-[22%] h-28 w-28 rounded-full border border-am-cyan/15"
+          animate={{ y: [0, -12, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
+
+      <div className="page-shell relative z-10 grid min-h-[100svh] items-center gap-10 pb-14 pt-28 lg:grid-cols-[1.06fr_.94fr] lg:pb-16 lg:pt-32">
+        <div className="max-w-4xl">
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: .55 }}
+            className="kicker mb-6"
           >
-            {/* Pill badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-navy-700/60 border border-border-subtle text-xs font-medium text-text-secondary mb-8"
-            >
-              <Sparkles size={14} className="text-am-gold" />
-              <span>Adaptive journeys • hidden stories • smarter detours</span>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-              className="font-[family-name:var(--font-heading)] text-5xl sm:text-6xl lg:text-7xl xl:text-[5.2rem] font-bold leading-[1.05] tracking-tight mb-6"
-            >
-              <span className="text-text-primary">Find the journey</span>
-              <br />
-              <span className="gradient-text-warm">no guidebook can script.</span>
-            </motion.h1>
-
-            {/* Tagline */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-lg lg:text-xl text-text-secondary/80 font-light italic mb-4 tracking-wide"
-            >
-              Ankahi Manzil — where the obvious route ends, your story begins.
-            </motion.p>
-
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="text-base lg:text-lg text-text-secondary leading-relaxed max-w-xl mb-10"
-            >
-              Discover meaningful Indian escapes, shape a trip around your pace and budget,
-              and let Manzilo adapt the plan when weather, timing or travel conditions change.
-              Less itinerary stress. More room for the unexpected.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-              className="flex flex-wrap gap-4"
-            >
-              <Link to="/plan" className="btn-primary text-base flex items-center gap-2 px-7 py-3.5">
-                <span>Start Planning</span>
-                <span>→</span>
-              </Link>
-              <Link
-                to="/how-it-works"
-                className="btn-secondary text-base flex items-center gap-2 px-7 py-3.5"
-              >
-                <ArrowRight size={16} className="text-am-orange" />
-                <span>Explore How It Works</span>
-              </Link>
-            </motion.div>
+            <Sparkles size={14} className="text-am-gold" />
+            Discover the India between the postcards
           </motion.div>
 
-          {/* RIGHT — Cinematic Image */}
-          <motion.div
-            initial={{ opacity: 0, x: 40, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ delay: 0.4, duration: 0.9, ease: 'easeOut' }}
-            className="relative hero-visual"
+          <motion.h1
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: .08, duration: .7, ease: [0.22, 1, 0.36, 1] }}
+            className="display-title max-w-[12ch]"
           >
-            {/* Main image container */}
-            <div className="hero-image-frame relative rounded-[2rem] overflow-hidden group">
-              {/* Glow effects */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-am-orange/20 via-am-blue/10 to-am-cyan/20 rounded-3xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-700" />
+            Find places
+            <span className="block gradient-text-warm">worth getting lost for.</span>
+          </motion.h1>
 
-              <div className="relative rounded-3xl overflow-hidden border border-border-subtle">
-                <img
-                  src="/images/hero-traveler.jpg"
-                  alt="Solo traveler overlooking mountains at sunrise"
-                  className="w-full h-[430px] sm:h-[520px] lg:h-[620px] object-cover transition-transform duration-[2s] group-hover:scale-105"
-                  loading="eager"
-                />
-                {/* Cinematic overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-navy-950/20 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-r from-navy-950/30 to-transparent" />
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: .2, duration: .6 }}
+            className="copy-lg mt-7 max-w-2xl"
+          >
+            Ankahi Manzil turns curiosity into a living journey — discover meaningful destinations,
+            shape a trip around your pace and budget, and let Manzilo adapt when the road changes.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: .3, duration: .55 }}
+            className="mt-8 flex flex-wrap gap-3"
+          >
+            <Link to="/destinations" className="btn-primary">
+              <Compass size={17} />
+              Explore destinations
+            </Link>
+            <Link to="/plan" className="btn-secondary">
+              Plan with Manzilo
+              <ArrowRight size={16} />
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: .45, duration: .7 }}
+            className="mt-10 grid max-w-2xl gap-3 sm:grid-cols-3"
+          >
+            {insightCards.map(({ icon: Icon, label, value, tone }) => (
+              <div key={label} className="rounded-2xl border border-white/7 bg-navy-950/55 p-4 backdrop-blur-xl">
+                <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-xl ${tone}`}>
+                  <Icon size={15} />
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-[.16em] text-text-muted">{label}</p>
+                <p className="mt-1 text-sm font-semibold text-text-primary">{value}</p>
               </div>
-            </div>
-
-            {/* Airplane route SVG */}
-            <svg
-              className="absolute -top-4 -left-8 w-40 h-32 pointer-events-none"
-              viewBox="0 0 160 128"
-              fill="none"
-            >
-              <motion.path
-                d="M10 100 C 40 60, 80 20, 140 30"
-                stroke="rgba(255,255,255,0.15)"
-                strokeWidth="1.5"
-                strokeDasharray="4 6"
-                fill="none"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ delay: 1.2, duration: 2, ease: 'easeInOut' }}
-              />
-              <motion.g
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 3 }}
-              >
-                <text x="130" y="26" fill="rgba(255,255,255,0.5)" fontSize="16" transform="rotate(-15, 130, 26)">✈</text>
-              </motion.g>
-            </svg>
-
-            <motion.div
-              initial={{ opacity: 0, x: -14, y: 8 }}
-              animate={{ opacity: 1, x: 0, y: 0 }}
-              transition={{ delay: 1.05, duration: 0.55 }}
-              className="hero-float-card absolute left-3 top-8 sm:-left-7 sm:top-16 rounded-2xl px-4 py-3"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-am-orange/15 text-am-orange">
-                  <MapPin size={17} />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Discovery mode</p>
-                  <p className="text-sm font-semibold text-text-primary">Beyond the obvious</p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 14, y: 8 }}
-              animate={{ opacity: 1, x: 0, y: 0 }}
-              transition={{ delay: 1.2, duration: 0.55 }}
-              className="hero-float-card absolute -right-2 top-[38%] hidden rounded-2xl px-4 py-3 sm:block lg:-right-8"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-am-cyan/15 text-am-cyan">
-                  <Route size={17} />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Adaptive route</p>
-                  <p className="text-sm font-semibold text-text-primary">Plans that can move</p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.35, duration: 0.55 }}
-              className="hero-float-card absolute bottom-5 left-4 rounded-2xl px-4 py-3 sm:bottom-8 sm:left-7"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-am-green/15 text-am-green">
-                  <ShieldCheck size={17} />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Manzilo</p>
-                  <p className="text-sm font-semibold text-text-primary">Ready for detours</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Floating handwritten text */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.5, duration: 0.8 }}
-              className="absolute -bottom-2 -right-2 lg:bottom-8 lg:-right-6 bg-navy-950/70 backdrop-blur-sm border border-border-subtle rounded-2xl px-5 py-4"
-            >
-              <p className="text-xs lg:text-sm text-text-secondary/70 italic leading-relaxed font-light">
-                New Places<br />
-                New Stories<br />
-                <span className="text-am-gold/80">Same You</span>
-              </p>
-            </motion.div>
+            ))}
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 34, scale: .97 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          transition={{ delay: .18, duration: .8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative hidden h-[68vh] min-h-[540px] lg:block"
+        >
+          <div className="absolute inset-y-0 right-0 w-[76%] overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,.42)]">
+            <img
+              src="/images/dest-manali.jpg"
+              alt="Snow-covered Manali mountains"
+              className="h-full w-full object-cover transition-transform duration-[1800ms] hover:scale-[1.035]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy-950/88 via-transparent to-navy-950/10" />
+            <div className="absolute inset-x-0 bottom-0 p-7">
+              <p className="text-[10px] font-bold uppercase tracking-[.18em] text-am-cyan">Featured escape</p>
+              <div className="mt-2 flex items-end justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl font-bold">Manali</h2>
+                  <p className="mt-1 text-sm text-white/65">Mountains • Adventure • Nature</p>
+                </div>
+                <Link
+                  to="/destinations/manali"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/25 backdrop-blur-md hover:bg-white/10"
+                  aria-label="Explore Manali"
+                >
+                  <ArrowRight size={17} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-8 left-0 w-[42%] overflow-hidden rounded-[1.5rem] border border-white/10 bg-navy-950 shadow-[0_26px_70px_rgba(0,0,0,.4)]">
+            <img src="/images/dest-goa.jpg" alt="Goa coastline" className="h-52 w-full object-cover" />
+            <div className="p-4">
+              <p className="text-[10px] uppercase tracking-[.14em] text-text-muted">For the slow days</p>
+              <p className="mt-1 font-semibold">Goa, beyond the party map</p>
+            </div>
+          </div>
+
+          <div className="absolute left-[12%] top-10 rounded-2xl border border-white/10 bg-navy-950/78 px-4 py-3 backdrop-blur-xl">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-am-orange/12 text-am-orange">
+                <MapPin size={16} />
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[.14em] text-text-muted">Discovery signal</p>
+                <p className="text-sm font-semibold">Less obvious. More memorable.</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )
