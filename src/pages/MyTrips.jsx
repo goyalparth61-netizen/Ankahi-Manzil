@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, CalendarDays, Compass, Plus, Route } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -46,31 +46,31 @@ const defaults = [
 const tabs = ['all', 'active', 'upcoming', 'completed']
 
 export default function MyTrips() {
-  const [trips, setTrips] = useState(defaults)
-  const [filter, setFilter] = useState('all')
-
-  useEffect(() => {
+  const [trips] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('am_saved_trips') || '[]')
-      if (Array.isArray(saved) && saved.length) {
-        const mapped = saved.map((item) => ({
-          id: item.id,
-          destination: item.destination,
-          title: item.destination + ' personal journey',
-          image: item.image || '/images/dest-manali.jpg',
-          dates: 'Custom schedule',
-          days: item.days || 4,
-          statusType: 'active',
-          totalBudget: item.totalBudget || 20000,
-          spent: item.plannedCost || 0,
-          note: 'Saved from Journey Composer',
-        }))
-        setTrips([...mapped, ...defaults])
-      }
+      if (!Array.isArray(saved) || saved.length === 0) return defaults
+
+      const mapped = saved.map((item) => ({
+        id: item.id,
+        destination: item.destination,
+        title: item.destination + ' personal journey',
+        image: item.image || '/images/dest-manali.jpg',
+        dates: 'Custom schedule',
+        days: item.days || 4,
+        statusType: 'active',
+        totalBudget: item.totalBudget || 20000,
+        spent: item.plannedCost || 0,
+        note: 'Saved from Journey Composer',
+      }))
+
+      return [...mapped, ...defaults]
     } catch (error) {
       console.error('Unable to read saved trips', error)
+      return defaults
     }
-  }, [])
+  })
+  const [filter, setFilter] = useState('all')
 
   const visible = useMemo(
     () => trips.filter((trip) => filter === 'all' || trip.statusType === filter),
