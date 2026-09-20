@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Compass } from 'lucide-react'
+import { ArrowRight, Compass, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function CTA() {
@@ -8,60 +8,45 @@ export default function CTA() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section className="section-padding relative overflow-hidden" ref={ref}>
-      <div className="container-max mx-auto">
+    <section className="section-padding" ref={ref}>
+      <div className="page-shell">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="relative rounded-3xl overflow-hidden"
+          transition={{ duration: .65 }}
+          className="relative min-h-[32rem] overflow-hidden rounded-[2rem] border border-white/8 shadow-[0_36px_100px_rgba(0,0,0,.32)]"
         >
-          {/* Background image */}
-          <div className="absolute inset-0">
-            <img
-              src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1400&q=80"
-              alt="Mountain panorama at sunset"
-              className="w-full h-full object-cover"
-              loading="lazy"
-              onError={(e) => {
-                e.target.style.display = 'none'
-              }}
-            />
-            {/* Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-r from-navy-950/95 via-navy-950/80 to-navy-950/60" />
-            <div className="absolute inset-0 bg-gradient-to-t from-navy-950/40 to-transparent" />
-          </div>
+          <img
+            src="/images/dest-goa.jpg"
+            alt="Coastal travel landscape"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,17,26,.98)_0%,rgba(3,17,26,.9)_42%,rgba(3,17,26,.32)_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-950/70 via-transparent to-transparent" />
 
-          {/* Content */}
-          <div className="relative px-8 py-16 lg:px-16 lg:py-20 flex flex-col lg:flex-row items-center justify-between gap-10">
-            <div className="flex items-start gap-5 max-w-2xl">
-              {/* Compass icon */}
-              <motion.div
-                animate={inView ? { rotate: [0, 15, -15, 0] } : {}}
-                transition={{ delay: 0.5, duration: 2, repeat: Infinity, repeatDelay: 5 }}
-                className="w-14 h-14 rounded-xl bg-am-orange/15 flex items-center justify-center shrink-0 border border-am-orange/20"
-                style={{ boxShadow: '0 0 30px rgba(255,107,53,0.2)' }}
-              >
-                <Compass size={24} className="text-am-orange" />
-              </motion.div>
-
-              <div>
-                <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary mb-3 leading-tight">
-                  Ready to explore your next chapter?
-                </h2>
-                <p className="text-base lg:text-lg text-text-secondary">
-                  Let Ankahi Manzil plan it, monitor it, and take you there.
-                </p>
-              </div>
+          <div className="relative flex min-h-[32rem] max-w-3xl flex-col justify-center p-7 sm:p-10 lg:p-14">
+            <div className="kicker mb-5">
+              <Sparkles size={14} className="text-am-gold" />
+              Your next story starts before the booking
             </div>
-
-            <Link
-              to="/plan"
-              className="btn-primary text-base px-8 py-4 flex items-center gap-2 shrink-0"
-            >
-              Start Planning
-              <span>→</span>
-            </Link>
+            <h2 className="section-title max-w-[11ch]">
+              Don’t just pick a place.
+              <span className="block gradient-text-warm">Build the journey around it.</span>
+            </h2>
+            <p className="copy-lg mt-6 max-w-xl">
+              Choose a destination, set your pace and budget, and see how Ankahi Manzil turns a travel idea into an adaptive itinerary.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/plan" className="btn-primary">
+                <Compass size={16} />
+                Start planning
+              </Link>
+              <Link to="/destinations" className="btn-secondary">
+                Browse the atlas
+                <ArrowRight size={15} />
+              </Link>
+            </div>
           </div>
         </motion.div>
       </div>
