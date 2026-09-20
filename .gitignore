@@ -1,3 +1,18 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.db
+*.sqlite3
+
 # Logs
 logs
 *.log
@@ -22,3 +37,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+

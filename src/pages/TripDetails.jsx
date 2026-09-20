@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -8,6 +8,17 @@ import {
   RefreshCw, Share2, Download, Check
 } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
+import { getTripById, monitorTrip, replanTrip } from '../services/tripService'
+
+const getIconForTag = (tag) => {
+  const t = (tag || '').toLowerCase()
+  if (t.includes('food') || t.includes('dining')) return UtensilsCrossed
+  if (t.includes('culture') || t.includes('heritage')) return Landmark
+  if (t.includes('adventure') || t.includes('nature') || t.includes('scenic')) return Mountain
+  if (t.includes('leisure') || t.includes('craft') || t.includes('shopping')) return ShoppingBag
+  if (t.includes('logistics') || t.includes('hotel')) return Building2
+  return Eye
+}
 
 const tripDataMap = {
   'manali-2026': {
@@ -68,18 +79,67 @@ const tripDataMap = {
 
 export default function TripDetails() {
   const { id } = useParams()
-  const trip = tripDataMap[id] || tripDataMap['manali-2026']
+  const [trip, setTrip] = useState(() => tripDataMap[id] || tripDataMap['manali-2026'])
 
   const [activeDay, setActiveDay] = useState(1)
   const [showSentinelDisruption, setShowSentinelDisruption] = useState(false)
   const [replanApplied, setReplanApplied] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
 
+  useEffect(() => {
+    async function fetchTrip() {
+      if (tripDataMap[id]) return
+      try {
+        const data = await getTripById(id)
+        if (data && (data.tripId || data.id)) {
+          const daysList = (data.daysCompat || data.daysData || []).map((d, i) => ({
+            dayNum: d.dayNum || d.dayNumber || (i + 1),
+            date: d.date || `Day ${i + 1}`,
+            title: d.title || `Day ${i + 1} Itinerary`,
+            activities: (d.activities || []).map(a => ({
+              time: a.time,
+              title: a.title,
+              desc: a.desc || a.description || 'Curated stop',
+              cost: a.cost !== undefined ? a.cost : (a.estimated_cost || 0),
+              isVulnerable: !!(a.isVulnerable || a.is_vulnerable),
+              icon: a.icon || getIconForTag(a.tag || a.category)
+            }))
+          }))
+
+          const breakdown = data.breakdownList || [
+            { category: 'Stay & Lodging', spent: Math.round((data.plannedCost || data.totalBudget || 20000) * 0.45), cap: Math.round((data.totalBudget || 20000) * 0.45) },
+            { category: 'Transit & Transfers', spent: Math.round((data.plannedCost || data.totalBudget || 20000) * 0.20), cap: Math.round((data.totalBudget || 20000) * 0.20) },
+            { category: 'Artisan Dining & Cafes', spent: Math.round((data.plannedCost || data.totalBudget || 20000) * 0.20), cap: Math.round((data.totalBudget || 20000) * 0.20) },
+            { category: 'Activities & Permits', spent: Math.round((data.plannedCost || data.totalBudget || 20000) * 0.15), cap: Math.round((data.totalBudget || 20000) * 0.15) }
+          ]
+
+          setTrip({
+            title: data.title || `${data.destination} Adaptive Expedition`,
+            destination: data.destination,
+            image: data.image || '/images/dest-manali.jpg',
+            dates: data.dates || 'Custom Scheduled',
+            duration: data.duration || `${data.days} Days`,
+            travelers: data.travelers || 'Couple (2 Adults)',
+            budgetTotal: data.totalBudget || data.budgetTotal || 20000,
+            budgetSpent: data.plannedCost || data.budgetSpent || 16000,
+            status: data.status || 'Active Monitoring',
+            breakdown,
+            days: daysList.length > 0 ? daysList : tripDataMap['manali-2026'].days
+          })
+        }
+      } catch (e) {
+        console.warn('Failed to load trip by id:', e)
+      }
+    }
+    fetchTrip()
+  }, [id])
+
   const handleCopy = () => {
     navigator.clipboard?.writeText(window.location.href)
     setCopiedLink(true)
     setTimeout(() => setCopiedLink(false), 3000)
   }
+
 
   return (
     <PageTransition>
@@ -275,7 +335,7 @@ export default function TripDetails() {
 
                     <div className="space-y-3">
                       {d.activities.map((act, idx) => {
-                        const Icon = act.icon
+                        const Icon = act.icon || getIconForTag(act.tag || act.category)
                         const isDisrupted = showSentinelDisruption && act.isVulnerable && !replanApplied
                         const isReplanned = showSentinelDisruption && act.isVulnerable && replanApplied
 

@@ -9,6 +9,17 @@ import {
 } from 'lucide-react'
 import { destinations } from '../data/destinations'
 import PageTransition from '../components/layout/PageTransition'
+import { createTripPlan, monitorTrip, replanTrip } from '../services/tripService'
+
+const getIconForTag = (tag) => {
+  const t = (tag || '').toLowerCase()
+  if (t.includes('food') || t.includes('dining')) return UtensilsCrossed
+  if (t.includes('culture') || t.includes('heritage')) return Landmark
+  if (t.includes('adventure') || t.includes('nature') || t.includes('scenic')) return Mountain
+  if (t.includes('leisure') || t.includes('craft') || t.includes('shopping')) return ShoppingBag
+  if (t.includes('logistics') || t.includes('hotel')) return Building2
+  return Eye
+}
 
 const travelStyles = [
   { id: 'relaxed', label: 'Relaxed & Leisure', desc: 'Fewer stops, more time to soak in atmosphere' },
@@ -50,30 +61,48 @@ export default function TripPlanner() {
     }
   }
 
-  const handleGeneratePlan = () => {
+  const handleGeneratePlan = async () => {
     setIsGenerating(true)
     setGenerationStep(0)
     setSimulatedDisruption(false)
     setReplanApplied(false)
 
-    // Simulate multi-agent steps
-    const stepInterval = setInterval(() => {
-      setGenerationStep(prev => {
-        if (prev >= 3) {
-          clearInterval(stepInterval)
-          setIsGenerating(false)
-          // Build generated trip object
-          const tripData = buildSampleTrip(selectedDestination, days, budget, selectedInterests)
-          setGeneratedTrip(tripData)
-          setTimeout(() => {
-            itineraryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }, 150)
-          return 3
-        }
-        return prev + 1
-      })
-    }, 700)
+    // Call backend API concurrently with visual reasoning steps
+    const planPromise = createTripPlan({
+      destination: selectedDestination,
+      days,
+      budget,
+      interests: selectedInterests,
+      travelers,
+      travelStyle: selectedStyle
+    })
+
+    // Advance agent step progress indicators
+    for (let s = 1; s <= 3; s++) {
+      await new Promise(resolve => setTimeout(resolve, 600))
+      setGenerationStep(s)
+    }
+
+    try {
+      const backendTrip = await planPromise
+      if (backendTrip && (backendTrip.tripId || backendTrip.id)) {
+        setGeneratedTrip(backendTrip)
+      } else {
+        const fallbackTrip = buildSampleTrip(selectedDestination, days, budget, selectedInterests)
+        setGeneratedTrip(fallbackTrip)
+      }
+    } catch (err) {
+      console.warn('Trip generation fallback:', err)
+      const fallbackTrip = buildSampleTrip(selectedDestination, days, budget, selectedInterests)
+      setGeneratedTrip(fallbackTrip)
+    } finally {
+      setIsGenerating(false)
+      setTimeout(() => {
+        itineraryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 150)
+    }
   }
+
 
   const buildSampleTrip = (destName, numDays, totalBudget, interests) => {
     const dest = destinations.find(d => d.name.toLowerCase() === destName.toLowerCase()) || destinations[1]
@@ -616,7 +645,7 @@ export default function TripPlanner() {
 
                       <div className="space-y-4">
                         {d.activities.map((act, idx) => {
-                          const Icon = act.icon
+                          const Icon = act.icon || getIconForTag(act.tag || act.category)
                           const isDisrupted = simulatedDisruption && act.isVulnerable && !replanApplied
                           const isReplanned = simulatedDisruption && act.isVulnerable && replanApplied
 

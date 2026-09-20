@@ -6,6 +6,7 @@ import {
   Plus, Bot, Clock, AlertTriangle, CheckCircle2, ChevronRight
 } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
+import { getTrips } from '../services/tripService'
 
 const defaultTrips = [
   {
@@ -63,32 +64,64 @@ export default function MyTrips() {
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('am_saved_trips') || '[]')
-      if (saved && saved.length > 0) {
-        // Merge saved trips with defaultTrips
-        const formattedSaved = saved.map(s => ({
-          id: s.id,
-          destination: s.destination,
-          slug: s.slug || 'manali',
-          title: `${s.destination} Adaptive Expedition`,
-          image: s.image || '/images/dest-manali.jpg',
-          dates: 'Custom Scheduled',
-          days: s.days || 4,
-          travelers: 'Self & Co.',
-          status: 'Active Monitoring',
-          statusType: 'active',
-          totalBudget: s.totalBudget || 20000,
-          spent: s.plannedCost || 16000,
-          disruptionState: 'Sentinel Guard Active',
-          nextActivity: 'Day 1 Check-in',
-        }))
-        setTrips([...formattedSaved, ...defaultTrips])
+    async function loadTrips() {
+      try {
+        const liveTrips = await getTrips()
+        if (liveTrips && liveTrips.length > 0) {
+          const liveIds = new Set(liveTrips.map(t => t.id || t.tripId))
+          const formattedLive = liveTrips.map(s => ({
+            id: s.id || s.tripId,
+            destination: s.destination,
+            slug: s.slug || 'manali',
+            title: s.title || `${s.destination} Adaptive Expedition`,
+            image: s.image || '/images/dest-manali.jpg',
+            dates: s.dates || 'Custom Scheduled',
+            days: s.days || 4,
+            travelers: s.travelers || 'Self & Co.',
+            status: s.status || 'Active Monitoring',
+            statusType: s.statusType || 'active',
+            totalBudget: s.totalBudget || 20000,
+            spent: s.spent || s.plannedCost || 16000,
+            disruptionState: s.disruptionState || 'Sentinel Guard Active',
+            nextActivity: s.nextActivity || 'Day 1 Check-in',
+          }))
+          setTrips([...formattedLive, ...defaultTrips.filter(d => !liveIds.has(d.id))])
+          return
+        }
+      } catch (e) {
+        console.warn('Live trips fetch fallback:', e)
       }
-    } catch (e) {
-      console.error(e)
+
+      // Local storage fallback
+      try {
+        const saved = JSON.parse(localStorage.getItem('am_saved_trips') || '[]')
+        if (saved && saved.length > 0) {
+          const formattedSaved = saved.map(s => ({
+            id: s.id,
+            destination: s.destination,
+            slug: s.slug || 'manali',
+            title: `${s.destination} Adaptive Expedition`,
+            image: s.image || '/images/dest-manali.jpg',
+            dates: 'Custom Scheduled',
+            days: s.days || 4,
+            travelers: 'Self & Co.',
+            status: 'Active Monitoring',
+            statusType: 'active',
+            totalBudget: s.totalBudget || 20000,
+            spent: s.plannedCost || 16000,
+            disruptionState: 'Sentinel Guard Active',
+            nextActivity: 'Day 1 Check-in',
+          }))
+          setTrips([...formattedSaved, ...defaultTrips])
+        }
+      } catch (e) {
+        console.error(e)
+      }
     }
+
+    loadTrips()
   }, [])
+
 
   const filteredTrips = trips.filter(t => {
     if (filter === 'all') return true

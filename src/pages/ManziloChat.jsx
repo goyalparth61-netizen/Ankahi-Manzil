@@ -7,6 +7,7 @@ import {
   Compass, MessageCircle, Mic, Trash2
 } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
+import { chatWithManzilo } from '../services/manziloService'
 
 const quickPrompts = [
   'Can I add paragliding in Manali tomorrow?',
@@ -30,6 +31,7 @@ export default function ManziloChat() {
   const [messages, setMessages] = useState(initialMessages)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [conversationId, setConversationId] = useState(null)
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -40,7 +42,7 @@ export default function ManziloChat() {
     scrollToBottom()
   }, [messages, isTyping])
 
-  const handleSend = (textToSend) => {
+  const handleSend = async (textToSend) => {
     const query = textToSend || input
     if (!query.trim()) return
 
@@ -55,13 +57,40 @@ export default function ManziloChat() {
     if (!textToSend) setInput('')
     setIsTyping(true)
 
-    // Generate context-aware response
-    setTimeout(() => {
+    try {
+      const res = await chatWithManzilo(query, conversationId)
+      if (res && res.conversationId) {
+        setConversationId(res.conversationId)
+      }
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      let widget = res.widget || null
+
+      if (!widget) {
+        const localSample = generateManziloResponse(query)
+        if (localSample?.widget) {
+          widget = localSample.widget
+        }
+      }
+
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          sender: 'manzilo',
+          time,
+          text: res.response || generateManziloResponse(query).text,
+          widget
+        }
+      ])
+    } catch (e) {
+      console.warn('Manzilo API chat fallback:', e)
       const response = generateManziloResponse(query)
       setMessages(prev => [...prev, response])
+    } finally {
       setIsTyping(false)
-    }, 1000)
+    }
   }
+
 
   const generateManziloResponse = (query) => {
     const q = query.toLowerCase()
