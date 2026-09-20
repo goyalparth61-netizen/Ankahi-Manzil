@@ -10,174 +10,91 @@ export default function Navbar() {
   const location = useLocation()
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
-    }
+    const handleScroll = () => setScrolled(window.scrollY > 36)
+    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false)
-  }, [location.pathname])
+  useEffect(() => setMobileOpen(false), [location.pathname])
 
   return (
     <motion.nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-navy-950/85 backdrop-blur-xl border-b border-border-subtle'
+          ? 'bg-navy-950/90 backdrop-blur-xl border-b border-border-subtle shadow-[0_8px_30px_rgba(0,0,0,0.12)]'
           : 'bg-transparent'
       }`}
-      initial={{ y: -100 }}
+      initial={{ y: -80 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      <div className="container-max mx-auto flex items-center justify-between px-4 lg:px-8 h-18 lg:h-20">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
-          {/* Mountain/Path Logo SVG */}
-          <div className="relative w-9 h-9 flex items-center justify-center">
-            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <div className="page-shell flex h-16 lg:h-20 items-center justify-between">
+        <Link to="/" className="flex shrink-0 items-center gap-2.5 group" aria-label="Ankahi Manzil home">
+          <div className="relative flex h-9 w-9 items-center justify-center">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M18 4L28 28H8L18 4Z" fill="url(#mountain-grad)" opacity="0.9" />
               <path d="M12 18L18 8L24 18" stroke="url(#path-grad)" strokeWidth="2" strokeLinecap="round" fill="none" />
               <path d="M10 26C14 20 22 20 26 26" stroke="#16C7D9" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.6" />
               <defs>
-                <linearGradient id="mountain-grad" x1="8" y1="28" x2="28" y2="4">
-                  <stop stopColor="#FF6B35" />
-                  <stop offset="1" stopColor="#16C7D9" />
-                </linearGradient>
-                <linearGradient id="path-grad" x1="12" y1="18" x2="24" y2="8">
-                  <stop stopColor="#FF8A3D" />
-                  <stop offset="1" stopColor="#F6A623" />
-                </linearGradient>
+                <linearGradient id="mountain-grad" x1="8" y1="28" x2="28" y2="4"><stop stopColor="#FF6B35" /><stop offset="1" stopColor="#16C7D9" /></linearGradient>
+                <linearGradient id="path-grad" x1="12" y1="18" x2="24" y2="8"><stop stopColor="#FF8A3D" /><stop offset="1" stopColor="#F6A623" /></linearGradient>
               </defs>
             </svg>
           </div>
-          <span className="text-lg lg:text-xl font-bold font-[family-name:var(--font-heading)] tracking-tight">
+          <span className="font-[family-name:var(--font-heading)] text-lg lg:text-xl font-bold tracking-tight whitespace-nowrap">
             <span className="text-text-primary">Ankahi</span>{' '}
             <span className="gradient-text-warm">Manzil</span>
           </span>
         </Link>
 
-        {/* Center Nav — Desktop */}
-        <div className="hidden lg:flex items-center gap-1">
+        <div className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
               end={link.path === '/'}
-              className={({ isActive }) =>
-                `relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-lg ${
-                  isActive
-                    ? 'text-text-primary'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`
-              }
+              className={({ isActive }) => `relative rounded-lg px-3.5 xl:px-4 py-2 text-sm font-medium transition-colors duration-200 ${isActive ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
             >
-              {({ isActive }) => (
-                <>
-                  {link.label}
-                  {isActive && (
-                    <motion.div
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-am-orange rounded-full"
-                      layoutId="navIndicator"
-                      transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                    />
-                  )}
-                </>
-              )}
+              {({ isActive }) => <>
+                {link.label}
+                {isActive && <motion.span className="absolute -bottom-0.5 left-1/2 h-0.5 w-5 -translate-x-1/2 rounded-full bg-am-orange" layoutId="navIndicator" transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
+              </>}
             </NavLink>
           ))}
         </div>
 
-        {/* Right — CTA + Mobile Toggle */}
-        <div className="flex items-center gap-3">
-          <Link
-            to="/plan"
-            className="hidden md:inline-flex btn-primary text-sm items-center gap-1.5"
-          >
-            Start Planning
-            <span className="ml-0.5">→</span>
-          </Link>
-
+        <div className="flex shrink-0 items-center gap-2.5">
+          <Link to="/plan" className="hidden md:inline-flex btn-primary text-sm">Start Planning <span aria-hidden="true">→</span></Link>
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="lg:hidden p-2 text-text-secondary hover:text-text-primary transition-colors"
-            aria-label="Toggle menu"
+            type="button"
+            onClick={() => setMobileOpen((open) => !open)}
+            className="lg:hidden flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-border-subtle hover:bg-navy-800/70 hover:text-text-primary"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileOpen ? <X size={21} /> : <Menu size={21} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="lg:hidden bg-navy-950/95 backdrop-blur-xl border-t border-border-subtle overflow-hidden"
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="lg:hidden overflow-hidden border-t border-border-subtle bg-navy-950/96 backdrop-blur-xl"
           >
-            <div className="px-4 py-6 flex flex-col gap-1">
-              {/* Primary Navigation */}
+            <div className="page-shell flex flex-col gap-1 py-5">
               {navLinks.map((link) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  end={link.path === '/'}
-                  className={({ isActive }) =>
-                    `px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'text-am-orange bg-navy-800'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-navy-800/50'
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
+                <NavLink key={link.path} to={link.path} end={link.path === '/'} className={({ isActive }) => `rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-navy-800 text-am-orange' : 'text-text-secondary hover:bg-navy-800/60 hover:text-text-primary'}`}>{link.label}</NavLink>
               ))}
-
-              {/* Separator */}
-              <div className="h-px bg-border-subtle my-3" />
-
-              {/* Secondary Actions */}
-              <NavLink
-                to="/trips"
-                className={({ isActive }) =>
-                  `px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2.5 ${
-                    isActive
-                      ? 'text-am-orange bg-navy-800'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-navy-800/50'
-                  }`
-                }
-              >
-                <Map size={16} />
-                My Trips
-              </NavLink>
-              <NavLink
-                to="/manzilo"
-                className={({ isActive }) =>
-                  `px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2.5 ${
-                    isActive
-                      ? 'text-am-cyan bg-navy-800'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-navy-800/50'
-                  }`
-                }
-              >
-                <MessageCircle size={16} />
-                Chat with Manzilo
-              </NavLink>
-
-              {/* Primary CTA */}
-              <Link
-                to="/plan"
-                className="btn-primary text-sm text-center mt-4"
-              >
-                Start Planning →
-              </Link>
+              <div className="my-2 h-px bg-border-subtle" />
+              <NavLink to="/trips" className={({ isActive }) => `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-navy-800 text-am-orange' : 'text-text-secondary hover:bg-navy-800/60 hover:text-text-primary'}`}><Map size={16} /> My Trips</NavLink>
+              <NavLink to="/manzilo" className={({ isActive }) => `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-navy-800 text-am-cyan' : 'text-text-secondary hover:bg-navy-800/60 hover:text-text-primary'}`}><MessageCircle size={16} /> Chat with Manzilo</NavLink>
+              <Link to="/plan" className="btn-primary mt-3 w-full text-sm">Start Planning <span aria-hidden="true">→</span></Link>
             </div>
           </motion.div>
         )}
