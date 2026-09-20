@@ -4,34 +4,10 @@ import { Link } from 'react-router-dom'
 import {
   Sparkles, Compass, Shield, Bot, ArrowRight,
   Eye, AlertTriangle, Brain, RefreshCw, CalendarDays,
-  Target, Globe, Users, CheckCircle2
+  Target, Globe, CheckCircle2
 } from 'lucide-react'
 import WhyAnkahiManzil from '../components/WhyAnkahiManzil'
 import PageTransition from '../components/layout/PageTransition'
-
-const teamMembers = [
-  {
-    name: 'Aarav Sharma',
-    role: 'AI Systems & Architecture',
-    bio: 'Pioneering dynamic agentic reasoning workflows that adapt in real time to travel perturbations.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
-    color: '#FF6B35',
-  },
-  {
-    name: 'Priya Patel',
-    role: 'Product & Behavioral Design',
-    bio: 'Designing intuitive, high-agency travel interfaces that turn chaos into calm and certainty.',
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&q=80',
-    color: '#16C7D9',
-  },
-  {
-    name: 'Rohan Mehra',
-    role: 'Real-time Geospatial & Logistics',
-    bio: 'Building hyper-local route optimization and predictive disruption detection engines.',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80',
-    color: '#8B5CF6',
-  },
-]
 
 const manziloCapabilities = [
   {
@@ -106,19 +82,17 @@ export default function About() {
   const visionRef = useRef(null)
   const isVisionInView = useInView(visionRef, { once: true, margin: '-60px' })
 
-  const teamRef = useRef(null)
-  const isTeamInView = useInView(teamRef, { once: true, margin: '-60px' })
 
   return (
     <PageTransition>
-      <div className="pt-24 lg:pt-28 pb-20 relative overflow-hidden">
+      <div className="about-page relative overflow-hidden pb-20 pt-24 lg:pt-28">
         {/* Background glow elements */}
         <div className="absolute top-20 left-1/3 w-[500px] h-[500px] bg-am-orange/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute top-1/2 right-10 w-[600px] h-[600px] bg-am-blue/5 rounded-full blur-[160px] pointer-events-none" />
 
         {/* 1. HERO SECTION */}
         <section className="section-padding pt-6 lg:pt-10 pb-16" ref={heroRef}>
-          <div className="container-max mx-auto text-center max-w-4xl">
+          <div className="container-max mx-auto max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
@@ -143,7 +117,7 @@ export default function About() {
               initial={{ opacity: 0, y: 20 }}
               animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-lg sm:text-xl text-text-secondary leading-relaxed max-w-3xl mx-auto"
+              className="copy-lg max-w-3xl"
             >
               Ankahi Manzil was created around a simple idea:{' '}
               <strong className="text-text-primary font-semibold">travel plans shouldn’t fall apart when circumstances change.</strong>{' '}
@@ -354,65 +328,7 @@ export default function About() {
           </div>
         </section>
 
-        {/* 6. TEAM SECTION */}
-        <section className="section-padding py-16 relative" ref={teamRef}>
-          <div className="container-max mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isTeamInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6 }}
-              className="text-center max-w-2xl mx-auto mb-14"
-            >
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-navy-800 text-xs font-semibold tracking-wider text-text-secondary uppercase mb-4 border border-border-subtle">
-                <Users size={14} className="text-am-purple" />
-                The Minds Behind It
-              </div>
-              <h2 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-bold mb-3">
-                Built for Travelers, by Travelers
-              </h2>
-              <p className="text-text-secondary text-sm sm:text-base">
-                An engineering and design team dedicated to redefining the modern travel operating system.
-              </p>
-            </motion.div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {teamMembers.map((member, i) => (
-                <motion.div
-                  key={member.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isTeamInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="glass-card rounded-2xl p-6 border border-border-subtle flex flex-col items-center text-center group hover:-translate-y-1 transition-all"
-                >
-                  <div className="relative mb-5">
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="w-24 h-24 rounded-full object-cover border-2 border-border-subtle group-hover:border-am-orange transition-colors"
-                    />
-                    <div
-                      className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                      style={{ background: member.color }}
-                    >
-                      ✓
-                    </div>
-                  </div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-text-primary mb-1">
-                    {member.name}
-                  </h3>
-                  <p className="text-xs font-semibold text-am-orange uppercase tracking-wider mb-3">
-                    {member.role}
-                  </p>
-                  <p className="text-xs text-text-secondary leading-relaxed">
-                    {member.bio}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 7. BOTTOM CTA */}
+        {/* BOTTOM CTA */}
         <section className="section-padding py-16">
           <div className="container-max mx-auto">
             <div className="relative glass-card rounded-3xl p-8 sm:p-14 text-center overflow-hidden border border-border-subtle">
