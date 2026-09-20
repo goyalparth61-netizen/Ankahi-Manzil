@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  AlertTriangle, ArrowRight, Bot, Brain, Check, Clock3, Compass,
+  AlertTriangle, ArrowRight, Brain, Check, Clock3, Compass,
   IndianRupee, MapPin, Route, Send, Sparkles, WandSparkles
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { destinations } from '../data/destinations'
 import PageTransition from '../components/layout/PageTransition'
+import ManziloLogo from '../components/ManziloLogo'
 
 const modes = [
   { id: 'discover', label: 'Discover', icon: Compass, hint: 'Find a place that fits the feeling.' },
@@ -87,7 +88,7 @@ export default function Features() {
           <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <div className="eyebrow mb-4">
-                <WandSparkles size={13} className="text-am-cyan" />
+                <ManziloLogo className="manzilo-logo manzilo-logo-sm" />
                 Manzilo Studio
               </div>
               <h1 className="display-sm max-w-[13ch]">
@@ -285,13 +286,12 @@ export default function Features() {
           <aside className="ai-pane">
             <div className="ai-pane-header flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="ai-orb" />
+                <ManziloLogo className="manzilo-logo manzilo-logo-sm" />
                 <div>
                   <p className="text-xs font-extrabold">Manzilo</p>
                   <p className="text-[10px] text-am-green">context active</p>
                 </div>
               </div>
-              <Bot size={15} className="text-am-cyan" />
             </div>
 
             <div className="ai-pane-body">
