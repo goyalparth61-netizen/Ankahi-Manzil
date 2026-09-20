@@ -1,551 +1,353 @@
-import { useRef, useState } from 'react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Sparkles, CalendarDays, Clock, IndianRupee, Route, Eye, AlertTriangle,
-  RefreshCw, MessageCircle, Brain, ShieldAlert, Layers, Building2,
-  Landmark, UtensilsCrossed, Mountain, ShoppingBag, ArrowRight,
-  CloudRain, Bot, Check, ArrowDown, User, Zap
+  AlertTriangle, ArrowRight, Bot, Brain, Check, Clock3, Compass,
+  IndianRupee, MapPin, Route, Send, Sparkles, WandSparkles
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { destinations } from '../data/destinations'
 import PageTransition from '../components/layout/PageTransition'
 
-function SectionBlock({ children, className = '' }) {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6 }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  )
+const modes = [
+  { id: 'discover', label: 'Discover', icon: Compass, hint: 'Find a place that fits the feeling.' },
+  { id: 'plan', label: 'Build', icon: Route, hint: 'Turn the place into a usable day.' },
+  { id: 'adapt', label: 'Adapt', icon: Brain, hint: 'See how the journey responds to change.' },
+]
+
+const moods = [
+  { id: 'mountains', label: 'Quiet mountains', categories: ['Mountains', 'Nature'] },
+  { id: 'culture', label: 'Culture + food', categories: ['Culture', 'Food'] },
+  { id: 'coast', label: 'Slow coast', categories: ['Beaches'] },
+  { id: 'adventure', label: 'High energy', categories: ['Adventure'] },
+]
+
+function buildRoute(destination) {
+  const attractions = destination.topAttractions || []
+  const things = destination.thingsToDo || []
+  return [
+    { time: '09:00', title: attractions[0] || 'Local orientation walk', note: 'Low crowd window' },
+    { time: '11:30', title: attractions[1] || things[0] || 'Signature local stop', note: 'Short transfer' },
+    { time: '14:00', title: things[0] || 'Regional lunch + pause', note: 'Budget friendly' },
+    { time: '16:30', title: attractions[2] || things[1] || 'Golden-hour experience', note: 'Flexible slot' },
+  ]
 }
 
+function modeCopy(mode, destination) {
+  if (mode === 'discover') {
+    return {
+      user: 'I want somewhere that feels different, not a checklist trip.',
+      bot: `${destination.name} fits that intent because it combines ${destination.categories.slice(0, 2).join(' and ').toLowerCase()} with enough range for a personal itinerary. I would start here, then tune the pace.`,
+      label: 'Why this place',
+    }
+  }
+
+  if (mode === 'plan') {
+    return {
+      user: `Build me a balanced day in ${destination.name} without rushing.`,
+      bot: 'I grouped the stops by sequence rather than popularity. The plan keeps one flexible slot in the afternoon so the day can absorb traffic, weather or a longer lunch.',
+      label: 'Plan logic',
+    }
+  }
+
+  return {
+    user: 'What if the afternoon outdoor stop becomes unavailable?',
+    bot: 'I would protect the morning, replace only the affected block, and preserve the same return window. The goal is to change as little as possible while keeping the day meaningful.',
+    label: 'Adaptation logic',
+  }
+}
 
 export default function Features() {
-  const [planApplied, setPlanApplied] = useState(false)
+  const [mode, setMode] = useState('discover')
+  const [mood, setMood] = useState('mountains')
+  const [selectedSlug, setSelectedSlug] = useState('manali')
+  const [budget, setBudget] = useState(20000)
+  const [applied, setApplied] = useState(false)
+
+  const moodConfig = moods.find((item) => item.id === mood)
+  const recommended = useMemo(() => {
+    return destinations.find((destination) =>
+      moodConfig.categories.some((category) => destination.categories.includes(category))
+    ) || destinations[0]
+  }, [moodConfig])
+
+  const destination = destinations.find((item) => item.slug === selectedSlug) || recommended
+  const route = buildRoute(destination)
+  const chat = modeCopy(mode, destination)
+
+  const applyRecommendation = () => {
+    setSelectedSlug(recommended.slug)
+    setApplied(true)
+    window.setTimeout(() => setApplied(false), 1800)
+  }
 
   return (
     <PageTransition>
-      <div className="feature-page">
-      {/* Hero */}
-      <section className="editorial-hero relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-am-orange/5 rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-am-purple/5 rounded-full blur-[100px]" />
+      <section className="ai-shell">
+        <div className="page-shell mb-5 px-0">
+          <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <div className="eyebrow mb-4">
+                <WandSparkles size={13} className="text-am-cyan" />
+                Manzilo Studio
+              </div>
+              <h1 className="display-sm max-w-[13ch]">
+                Don’t read about the AI.
+                <span className="block serif-accent">Use the travel intelligence.</span>
+              </h1>
+            </div>
+            <p className="lede max-w-xl lg:text-right">
+              This interactive demo uses the same local destination data and product logic as the rest
+              of the frontend. Change the intent and watch the journey surface respond.
+            </p>
+          </div>
         </div>
-        <div className="page-shell relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-navy-700/60 border border-border-subtle text-xs font-medium text-text-secondary mb-8"
-          >
-            <Sparkles size={14} className="text-am-gold" />
-            ANKAHI MANZIL FEATURES
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.7 }}
-            className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-8 max-w-3xl mx-auto"
-          >
-            Everything your journey needs.{' '}
-            <span className="gradient-text-brand">Powered by intelligence.</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.35, duration: 0.6 }}
-            className="text-base lg:text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed"
-          >
-            From the first idea to unexpected changes on the road,
-            Ankahi Manzil helps manage your entire journey.
-          </motion.p>
-        </div>
-      </section>
 
-      <div className="container-max mx-auto px-4 lg:px-8 space-y-28 lg:space-y-32 pb-28 text-center">
-
-        {/* 01 — AI Personalized Trip Planning */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                AI Personalized <span className="text-am-orange">Trip Planning</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] mb-7 max-w-2xl mx-auto">
-                Tell Manzilo your destination, dates, budget, interests and travel preferences.
-                It generates a personalized, optimized itinerary that respects your constraints and style.
-              </p>
-              <div className="space-y-3 max-w-xl mx-auto text-center">
-                {['Destination & dates', 'Budget range', 'Interests & activities', 'Travel preferences', 'Travel style (relaxed, packed, balanced)'].map((item) => (
-                  <div key={item} className="flex items-center justify-center gap-3 text-sm text-text-secondary">
-                    <div className="w-1.5 h-1.5 rounded-full bg-am-orange shrink-0" />
-                    {item}
-                  </div>
-                ))}
-              </div>
+        <div className="ai-grid">
+          <aside className="ai-pane">
+            <div className="ai-pane-header">
+              <p className="text-[10px] font-extrabold uppercase tracking-[.16em] text-text-muted">Travel mode</p>
             </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto text-center">
-              <div className="flex items-center justify-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-am-orange/12 flex items-center justify-center border border-am-orange/20">
-                  <CalendarDays size={20} className="text-am-orange" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-text-primary">Planning with Manzilo</p>
-                  <p className="text-xs text-text-secondary">Analyzing your preferences...</p>
-                </div>
-              </div>
-              <div className="space-y-3 max-w-xl mx-auto text-center">
-                {[
-                  { label: 'Destination', value: 'Manali, Himachal Pradesh' },
-                  { label: 'Duration', value: '4 Days, 3 Nights' },
-                  { label: 'Budget', value: '₹20,000' },
-                  { label: 'Interests', value: 'Nature, Adventure, Culture' },
-                  { label: 'Style', value: 'Balanced' },
-                ].map((row) => (
-                  <div key={row.label} className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 py-3 border-b border-border-subtle last:border-0 text-center">
-                    <span className="text-xs text-text-secondary">{row.label}</span>
-                    <span className="text-sm font-medium text-text-primary">{row.value}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 p-4 rounded-xl bg-am-orange/8 border border-am-orange/15 text-center">
-                <p className="text-xs text-am-orange font-medium mb-1">✨ Manzilo</p>
-                <p className="text-sm text-text-secondary">
-                  I've created a 4-day itinerary optimized for your budget and interests.
-                  Activities are grouped by location to reduce travel time.
-                </p>
-              </div>
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* 02 — Smart Day-by-Day Itinerary */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
-              <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-am-cyan" />
-                <span className="text-sm font-semibold text-text-primary">DAY 01</span>
-                <span className="text-sm text-text-secondary">Delhi → Manali</span>
-              </div>
-              <div className="p-5 space-y-1">
-                {[
-                  { time: '09:00', title: 'Hotel Check-in', Icon: Building2 },
-                  { time: '11:00', title: 'Hadimba Temple', Icon: Landmark },
-                  { time: '13:00', title: 'Lunch', Icon: UtensilsCrossed },
-                  { time: '15:30', title: 'Solang Valley', Icon: Mountain },
-                  { time: '18:30', title: 'Mall Road', Icon: ShoppingBag },
-                ].map((act, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 p-3 rounded-xl hover:bg-navy-700/30 transition-colors text-center">
-                    <span className="text-sm font-mono text-text-secondary w-14 shrink-0">{act.time}</span>
-                    <div className="relative flex flex-col items-center">
-                      <div className="w-2.5 h-2.5 rounded-full bg-am-cyan" />
-                      {i < 4 && <div className="w-px h-8 mt-1 bg-border-subtle" />}
-                    </div>
-                    <div className="flex items-center justify-center gap-2.5">
-                      <act.Icon size={16} className="text-text-secondary" />
-                      <span className="text-sm font-medium text-text-primary">{act.title}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Smart Day-by-Day <span className="text-am-cyan">Itinerary</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] max-w-2xl mx-auto">
-                Manzilo builds structured, timeline-based itineraries with activities
-                coordinated by location, opening hours, and travel time between stops.
-                Every day is organized so you spend less time commuting and more time experiencing.
-              </p>
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* 03 — Budget Intelligence */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Budget <span className="text-am-gold">Intelligence</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] max-w-2xl mx-auto">
-                Manzilo tracks your spending estimates across accommodation, transport, food,
-                and activities. It keeps your trip within budget and alerts you when a change
-                affects your spending plan.
-              </p>
-            </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto text-center">
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                {[
-                  { label: 'Total Budget', value: '₹20,000', color: '#F6A623' },
-                  { label: 'Planned', value: '₹16,850', color: '#16C7D9' },
-                  { label: 'Remaining', value: '₹3,150', color: '#7DDC48' },
-                ].map((s) => (
-                  <div key={s.label} className="text-center">
-                    <p className="text-xs text-text-secondary mb-1">{s.label}</p>
-                    <p className="text-xl font-bold font-[family-name:var(--font-heading)]" style={{ color: s.color }}>{s.value}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-3 max-w-xl mx-auto text-center">
-                {[
-                  { label: 'Stay', amount: '₹6,400', pct: 38 },
-                  { label: 'Transport', amount: '₹4,200', pct: 25 },
-                  { label: 'Food', amount: '₹3,600', pct: 21 },
-                  { label: 'Activities', amount: '₹2,650', pct: 16 },
-                ].map((row) => (
-                  <div key={row.label}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-text-secondary">{row.label}</span>
-                      <span className="text-text-primary font-medium">{row.amount}</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-navy-800">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-am-gold to-am-orange"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${row.pct}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* 04 — Route Optimization */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
-              <div className="flex items-center justify-center gap-2 mb-5">
-                <Route size={18} className="text-am-teal" />
-                <span className="text-sm font-semibold text-text-primary">Optimized Route</span>
-              </div>
-              <div className="space-y-0">
-                {[
-                  { place: 'Hotel', time: '9:00 AM', distance: '' },
-                  { place: 'Hadimba Temple', time: '11:00 AM', distance: '2.1 km' },
-                  { place: 'Local Restaurant', time: '1:00 PM', distance: '0.8 km' },
-                  { place: 'Solang Valley', time: '3:30 PM', distance: '13 km' },
-                  { place: 'Mall Road', time: '6:30 PM', distance: '14 km' },
-                ].map((stop, i) => (
-                  <div key={i}>
-                    <div className="flex items-center justify-center gap-4 py-3 text-center">
-                      <div className={`w-3 h-3 rounded-full border-2 ${i === 0 ? 'bg-am-teal border-am-teal' : 'border-am-teal/50 bg-transparent'}`} />
-                      <div className="flex-1 text-center">
-                        <p className="text-sm font-medium text-text-primary">{stop.place}</p>
-                        <p className="text-xs text-text-secondary">{stop.time}</p>
-                      </div>
-                      {stop.distance && (
-                        <span className="text-xs text-text-muted">{stop.distance}</span>
-                      )}
-                    </div>
-                    {i < 4 && (
-                      <div className="ml-1.5 h-6 border-l border-dashed border-am-teal/30" />
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 p-4 rounded-xl bg-am-teal/8 border border-am-teal/15 text-center">
-                <p className="text-xs text-am-teal">✓ Activities grouped by proximity — 40% less travel time</p>
-              </div>
-            </div>
-            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Route <span className="text-am-teal">Optimization</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] max-w-2xl mx-auto">
-                Manzilo groups nearby activities together and sequences your day to
-                minimize unnecessary travel. You spend less time in transit and more
-                time at places that matter.
-              </p>
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* 05 — Live Monitoring */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Live <span className="text-am-green">Monitoring</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] mb-7 max-w-2xl mx-auto">
-                Once your journey begins, Manzilo continuously watches relevant conditions
-                so it can alert you before problems become disruptions.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-4xl mx-auto text-center">
-              {[
-                { icon: CloudRain, label: 'Weather', status: 'Clear skies', ok: true, color: '#2697FF' },
-                { icon: Route, label: 'Transport', status: 'On schedule', ok: true, color: '#18D5B5' },
-                { icon: Clock, label: 'Opening Hours', status: 'All verified', ok: true, color: '#F6A623' },
-                { icon: AlertTriangle, label: 'Closures', status: 'None detected', ok: true, color: '#7DDC48' },
-                { icon: Layers, label: 'Availability', status: 'Confirmed', ok: true, color: '#8B5CF6' },
-                { icon: ShieldAlert, label: 'Conflicts', status: 'None found', ok: true, color: '#16C7D9' },
-              ].map((item) => (
-                <div key={item.label} className="glass-card rounded-xl p-5 border border-border-subtle text-center">
-                  <item.icon size={18} style={{ color: item.color }} className="mb-2 mx-auto" />
-                  <p className="text-sm font-medium text-text-primary mb-0.5">{item.label}</p>
-                  <p className="text-xs text-am-green">{item.status}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* 06 — Disruption Detection */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-orange/20 order-2 w-full max-w-4xl mx-auto text-center">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <AlertTriangle size={18} className="text-am-orange" />
-                <span className="text-sm font-bold text-am-orange tracking-wider">⚠ WEATHER ALERT</span>
-              </div>
-              <p className="text-sm text-text-secondary mb-4">
-                Heavy rainfall expected near Solang Valley.
-              </p>
-              <div className="bg-navy-800/50 rounded-xl p-4 border border-border-subtle text-center">
-                <p className="text-xs text-text-muted mb-2">Potentially affected:</p>
-                <div className="flex items-center justify-center gap-3">
-                  <Clock size={14} className="text-am-orange" />
-                  <span className="text-sm text-text-primary">3:30 PM — Solang Valley</span>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-am-orange animate-pulse" />
-                <span className="text-xs text-am-orange">Manzilo is evaluating alternatives...</span>
-              </div>
-            </div>
-            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Disruption <span className="text-am-blue">Detection</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] max-w-2xl mx-auto">
-                When conditions change — flight delays, weather shifts, venue closures, or transport
-                cancellations — Manzilo detects the disruption and immediately identifies which parts
-                of your itinerary are affected.
-              </p>
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* 07 — Automatic Replanning */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Automatic <span className="text-am-purple">Replanning</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] max-w-2xl mx-auto">
-                Manzilo doesn't just alert you — it reasons through alternatives,
-                evaluates them against your constraints, and presents an updated plan.
-                One tap and your journey continues.
-              </p>
-            </div>
-            <div className="space-y-4 w-full max-w-4xl mx-auto text-center">
-              <div className="glass-card rounded-xl p-5 border border-border-subtle opacity-60 text-center">
-                <p className="text-xs text-text-muted mb-1">ORIGINAL PLAN</p>
-                <p className="text-sm text-text-primary line-through">Solang Valley — 3:30 PM</p>
-              </div>
-              <div className="flex justify-center">
-                <ArrowDown size={20} className="text-am-purple" />
-              </div>
-              <div className="glass-card rounded-xl p-5 border border-am-purple/20 text-center">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <Bot size={14} className="text-am-purple" />
-                  <p className="text-xs font-semibold text-am-purple">MANZILO REPLAN</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-center gap-3 text-sm">
-                    <span className="text-am-cyan font-mono text-xs w-16">3:30 PM</span>
-                    <span className="text-text-primary">Himalayan Museum</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-3 text-sm">
-                    <span className="text-am-cyan font-mono text-xs w-16">5:00 PM</span>
-                    <span className="text-text-primary">Café</span>
-                  </div>
-                  <div className="flex items-center justify-center gap-3 text-sm">
-                    <span className="text-am-cyan font-mono text-xs w-16">6:30 PM</span>
-                    <span className="text-text-primary">Mall Road</span>
-                  </div>
-                </div>
+            <div className="ai-pane-body space-y-1">
+              {modes.map(({ id, label, icon: Icon, hint }) => (
                 <button
-                  onClick={() => { setPlanApplied(true); setTimeout(() => setPlanApplied(false), 3000) }}
-                  disabled={planApplied}
-                  className={`w-full mt-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                    planApplied
-                      ? 'bg-am-green/20 text-am-green border border-am-green/30'
-                      : 'bg-am-purple/15 text-am-purple border border-am-purple/30 hover:bg-am-purple/25'
-                  }`}
+                  key={id}
+                  type="button"
+                  className="ai-nav-item"
+                  data-active={mode === id}
+                  onClick={() => setMode(id)}
                 >
-                  {planApplied ? (<><Check size={16} /> Plan Applied!</>) : 'Apply New Plan'}
+                  <Icon size={15} />
+                  <span>
+                    <span className="block">{label}</span>
+                    <span className="mt-0.5 block text-[10px] font-medium text-text-muted">{hint}</span>
+                  </span>
                 </button>
-              </div>
-            </div>
-          </div>
-        </SectionBlock>
+              ))}
 
-        {/* 08 — Manzilo AI */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
-              <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-am-cyan to-am-purple flex items-center justify-center">
-                  <Bot size={16} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-text-primary">Manzilo</p>
-                  <p className="text-xs text-am-green">Online</p>
-                </div>
-              </div>
-              <div className="p-6 sm:p-7 space-y-5 text-center">
-                {[
-                  'Can I add paragliding tomorrow?',
-                  'What happens if my flight gets delayed?',
-                  'Find something near my hotel.',
-                  'Can I reduce tomorrow\'s budget?',
-                  'Why did you change my itinerary?',
-                ].map((q, i) => (
-                  <div key={i} className="flex justify-center">
-                    <div className="bg-am-orange/10 border border-am-orange/15 rounded-2xl px-4 py-2.5 max-w-[80%] text-center">
-                      <p className="text-sm text-text-primary">{q}</p>
-                    </div>
-                  </div>
+              <div className="my-4 rule" />
+
+              <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[.16em] text-text-muted">Trip feeling</p>
+              <div className="ai-chip-row flex-wrap">
+                {moods.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="ai-chip"
+                    data-active={mood === item.id}
+                    onClick={() => {
+                      setMood(item.id)
+                      const next = destinations.find((destination) =>
+                        item.categories.some((category) => destination.categories.includes(category))
+                      )
+                      if (next) setSelectedSlug(next.slug)
+                    }}
+                  >
+                    {item.label}
+                  </button>
                 ))}
               </div>
+
+              <div className="my-4 rule" />
+
+              <label className="field-label" htmlFor="studio-budget">Budget signal</label>
+              <div className="flex items-center justify-between gap-3 text-xs">
+                <span className="text-text-secondary">₹8k</span>
+                <strong className="text-am-gold">₹{budget.toLocaleString('en-IN')}</strong>
+                <span className="text-text-secondary">₹50k</span>
+              </div>
+              <input
+                id="studio-budget"
+                type="range"
+                min="8000"
+                max="50000"
+                step="1000"
+                value={budget}
+                onChange={(event) => setBudget(Number(event.target.value))}
+                className="range mt-2"
+              />
+
+              <button type="button" onClick={applyRecommendation} className="button-soft mt-4 w-full">
+                {applied ? <><Check size={14} /> Recommendation applied</> : <><Sparkles size={14} /> Use Manzilo pick</>}
+              </button>
             </div>
-            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                <span className="bg-gradient-to-r from-am-cyan to-am-purple bg-clip-text text-transparent">Manzilo</span> AI
-              </h2>
-              <p className="text-text-secondary leading-[1.8] mb-7 max-w-2xl mx-auto">
-                Manzilo isn't just a chatbot — it understands your journey context.
-                Ask it to modify plans, explain decisions, find alternatives, or
-                answer any question about your trip.
-              </p>
-              <Link to="/manzilo" className="btn-primary text-sm inline-flex items-center gap-2">
-                Chat with Manzilo <ArrowRight size={16} />
+          </aside>
+
+          <main className="ai-canvas">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${mode}-${destination.slug}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: .28 }}
+                className="min-h-full"
+              >
+                <div className="ai-cover">
+                  <img src={destination.image} alt={destination.name} />
+                  <div className="ai-cover-copy">
+                    <div className="mb-2 flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[.16em] text-white/60">
+                      <MapPin size={11} className="text-am-orange" />
+                      {destination.categories.slice(0, 3).join(' • ')}
+                    </div>
+                    <div className="flex flex-wrap items-end justify-between gap-3">
+                      <div>
+                        <h2 className="text-4xl font-semibold tracking-[-.05em] sm:text-5xl">{destination.name}</h2>
+                        <p className="mt-1 text-xs text-white/62">{destination.bestTime} • {destination.suggestedDays}</p>
+                      </div>
+                      <Link to={`/destinations/${destination.slug}`} className="button-ghost">
+                        Open destination <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+
+                {mode === 'discover' && (
+                  <div className="p-4 sm:p-5">
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      <div className="surface-soft rounded-xl p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-[.13em] text-text-muted">Mood match</p>
+                        <p className="mt-2 text-xl font-semibold text-am-cyan">Strong</p>
+                        <p className="mt-1 text-xs text-text-secondary">Based on selected travel feeling.</p>
+                      </div>
+                      <div className="surface-soft rounded-xl p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-[.13em] text-text-muted">Budget context</p>
+                        <p className="mt-2 text-xl font-semibold text-am-gold">₹{budget.toLocaleString('en-IN')}</p>
+                        <p className="mt-1 text-xs text-text-secondary">{destination.budget}</p>
+                      </div>
+                      <div className="surface-soft rounded-xl p-4">
+                        <p className="text-[10px] font-bold uppercase tracking-[.13em] text-text-muted">Suggested rhythm</p>
+                        <p className="mt-2 text-xl font-semibold text-am-green">Balanced</p>
+                        <p className="mt-1 text-xs text-text-secondary">{destination.suggestedDays} works well.</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 surface-soft rounded-xl p-4">
+                      <p className="text-[10px] font-bold uppercase tracking-[.13em] text-text-muted">Manzilo sees</p>
+                      <p className="mt-2 max-w-2xl text-sm leading-7 text-text-secondary">{destination.description}</p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {destination.thingsToDo?.slice(0, 4).map((thing) => (
+                          <span key={thing} className="ai-chip">{thing}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {(mode === 'plan' || mode === 'adapt') && (
+                  <div className="ai-route">
+                    <div className="flex items-center justify-between gap-3 px-1">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[.15em] text-text-muted">
+                          {mode === 'plan' ? 'Day 01 • generated route' : 'Day 01 • live route'}
+                        </p>
+                        <h3 className="mt-1 text-xl font-semibold">A day that leaves room to breathe</h3>
+                      </div>
+                      <span className="hidden rounded-full border border-white/10 px-3 py-1 text-[10px] text-text-secondary sm:inline-flex">
+                        Demo itinerary
+                      </span>
+                    </div>
+
+                    {route.map((stop, index) => {
+                      const affected = mode === 'adapt' && index === 3
+                      return (
+                        <div key={stop.time} className="ai-route-row">
+                          <span className="pt-0.5 font-mono text-[11px] text-text-muted">{stop.time}</span>
+                          <span className="ai-route-dot">
+                            {affected ? <AlertTriangle size={11} /> : <Check size={11} />}
+                          </span>
+                          <div>
+                            <p className={`text-sm font-semibold ${affected ? 'text-am-orange line-through opacity-65' : 'text-text-primary'}`}>
+                              {stop.title}
+                            </p>
+                            <p className="mt-1 text-[11px] text-text-muted">{stop.note}</p>
+                            {affected && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                className="mt-3 rounded-lg border border-am-cyan/15 bg-am-cyan/[.055] p-3"
+                              >
+                                <p className="text-[10px] font-bold uppercase tracking-[.12em] text-am-cyan">Replacement</p>
+                                <p className="mt-1 text-xs font-semibold">{destination.nearby?.[0] || 'Local cultural stop'} + café window</p>
+                                <p className="mt-1 text-[11px] text-text-secondary">Preserves the same return time and lowers the cost slightly.</p>
+                              </motion.div>
+                            )}
+                          </div>
+                          <span className="text-[10px] font-bold text-am-green">{affected ? 'Replan ready' : 'Fits'}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+
+          <aside className="ai-pane">
+            <div className="ai-pane-header flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="ai-orb" />
+                <div>
+                  <p className="text-xs font-extrabold">Manzilo</p>
+                  <p className="text-[10px] text-am-green">context active</p>
+                </div>
+              </div>
+              <Bot size={15} className="text-am-cyan" />
+            </div>
+
+            <div className="ai-pane-body">
+              <div className="space-y-2">
+                <div className="ai-message user">{chat.user}</div>
+                <motion.div
+                  key={chat.bot}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="ai-message bot"
+                >
+                  {chat.bot}
+                </motion.div>
+              </div>
+
+              <div className="my-4 rule" />
+
+              <p className="mb-3 text-[10px] font-extrabold uppercase tracking-[.15em] text-text-muted">{chat.label}</p>
+              <div className="space-y-2">
+                <div className="ai-status">
+                  <Clock3 size={14} className="mt-0.5 text-am-cyan" />
+                  <div>
+                    <strong>Time-aware sequencing</strong>
+                    <p>Stops are arranged as a usable day rather than a popularity ranking.</p>
+                  </div>
+                </div>
+                <div className="ai-status">
+                  <IndianRupee size={14} className="mt-0.5 text-am-gold" />
+                  <div>
+                    <strong>Budget context</strong>
+                    <p>The selected ₹{budget.toLocaleString('en-IN')} signal stays visible while choices change.</p>
+                  </div>
+                </div>
+                <div className="ai-status">
+                  <Brain size={14} className="mt-0.5 text-am-purple" />
+                  <div>
+                    <strong>Explainable change</strong>
+                    <p>When the demo replans, it shows what changed and what it tried to preserve.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="my-4 rule" />
+
+              <Link to="/manzilo" className="button-primary w-full">
+                Open full conversation
+                <Send size={14} />
+              </Link>
+              <Link to="/plan" className="button-ghost mt-2 w-full">
+                Build this journey
+                <ArrowRight size={14} />
               </Link>
             </div>
-          </div>
-        </SectionBlock>
-
-        {/* 09 — Conflict Detection */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Conflict <span className="text-am-blue">Detection</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] max-w-2xl mx-auto">
-                Manzilo identifies scheduling conflicts before they become problems —
-                overlapping activities, insufficient travel time between stops, or
-                venues closing before your arrival.
-              </p>
-            </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-blue/20 w-full max-w-4xl mx-auto text-center">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <ShieldAlert size={18} className="text-am-blue" />
-                <span className="text-sm font-bold text-am-blue">⚠ Schedule Conflict</span>
-              </div>
-              <div className="space-y-3 mb-4">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
-                  <span className="text-text-secondary">Activity A ends:</span>
-                  <span className="text-text-primary font-medium">4:30 PM</span>
-                </div>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
-                  <span className="text-text-secondary">Activity B starts:</span>
-                  <span className="text-text-primary font-medium">4:15 PM</span>
-                </div>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
-                  <span className="text-text-secondary">Travel required:</span>
-                  <span className="text-am-orange font-medium">35 minutes</span>
-                </div>
-              </div>
-              <div className="p-4 rounded-xl bg-am-cyan/8 border border-am-cyan/15 text-center">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Bot size={12} className="text-am-cyan" />
-                  <span className="text-xs font-semibold text-am-cyan">Manzilo recommendation</span>
-                </div>
-                <p className="text-sm text-text-secondary">Move Activity B → 5:15 PM</p>
-              </div>
-            </div>
-          </div>
-        </SectionBlock>
-
-        {/* 10 — Backup Options */}
-        <SectionBlock>
-          <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
-              <p className="text-xs font-medium text-text-muted mb-4">DISRUPTION MANAGEMENT</p>
-              <div className="space-y-3 max-w-xl mx-auto text-center">
-                <div className="p-4 rounded-xl bg-am-green/8 border border-am-green/20 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <Check size={14} className="text-am-green" />
-                    <span className="text-xs font-semibold text-am-green">PRIMARY PLAN</span>
-                  </div>
-                  <p className="text-sm text-text-primary">Solang Valley — Outdoor adventure</p>
-                </div>
-                <div className="p-4 rounded-xl bg-navy-800/50 border border-border-subtle text-center">
-                  <p className="text-xs text-text-muted mb-2">ALTERNATIVES READY</p>
-                  <div className="space-y-2">
-                    {[
-                      { name: 'Himalayan Museum', match: '92%' },
-                      { name: 'Indoor Rock Climbing', match: '87%' },
-                      { name: 'Café & Shopping', match: '78%' },
-                    ].map((alt) => (
-                      <div key={alt.name} className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
-                        <span className="text-text-secondary">{alt.name}</span>
-                        <span className="text-xs text-am-cyan font-medium">{alt.match} match</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-7">
-                Backup <span className="text-am-green">Options</span>
-              </h2>
-              <p className="text-text-secondary leading-[1.8] max-w-2xl mx-auto">
-                For every activity in your itinerary, Manzilo pre-evaluates alternatives
-                ranked by compatibility with your preferences. When disruption strikes,
-                the best backup is already waiting.
-              </p>
-            </div>
-          </div>
-        </SectionBlock>
-      </div>
-
-      {/* Bottom CTA */}
-      <section className="section-padding bg-navy-900/30 mt-4">
-        <div className="container-max mx-auto text-center">
-          <SectionBlock className="max-w-2xl mx-auto flex flex-col items-center text-center">
-            <h2 className="font-[family-name:var(--font-heading)] text-3xl lg:text-4xl font-bold mb-6">
-              Ready to let Manzilo plan your journey?
-            </h2>
-            <p className="text-text-secondary mb-9 max-w-xl mx-auto leading-relaxed">
-              Experience intelligent travel planning that adapts to you.
-            </p>
-            <Link to="/plan" className="btn-primary text-base inline-flex items-center gap-2 px-8 py-4">
-              Start Planning <ArrowRight size={18} />
-            </Link>
-          </SectionBlock>
+          </aside>
         </div>
       </section>
-      </div>
     </PageTransition>
   )
 }
