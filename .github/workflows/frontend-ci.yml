@@ -30,6 +30,20 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Smoke test production frontend
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/ankahi-frontend.log 2>&1 &
+          PREVIEW_PID=$!
+          trap "kill $PREVIEW_PID" EXIT
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /tmp/ankahi-home.html; then
+              break
+            fi
+            sleep 1
+          done
+          test -s /tmp/ankahi-home.html
+          grep -q "Ankahi Manzil" /tmp/ankahi-home.html
+
   backend-quality:
     runs-on: ubuntu-latest
     defaults:
@@ -56,3 +70,80 @@ jobs:
           LLM_PROVIDER: openrouter
           OPENROUTER_API_KEY: mock-key-for-tests
         run: pytest -v
+
+      - name: Smoke test FastAPI over HTTP
+        env:
+          APP_ENV: test
+          DATABASE_URL: sqlite:///./smoke_ankahi_manzil.db
+          LLM_PROVIDER: openrouter
+        run: |
+          alembic upgrade head
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 > /tmp/ankahi-backend.log 2>&1 &
+          API_PID=$!
+          trap "kill $API_PID; rm -f smoke_ankahi_manzil.db" EXIT
+
+          for i in {1..25}; do
+            if curl --fail --silent http://127.0.0.1:8000/api/health > /tmp/health.json; then
+              break
+            fi
+            sleep 1
+          done
+
+          python - <<'PY'
+          import json
+          import urllib.request
+
+          BASE = "http://127.0.0.1:8000/api"
+
+          def request(path, method="GET", payload=None):
+              data = None if payload is None else json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  BASE + path,
+                  data=data,
+                  method=method,
+                  headers={"Content-Type": "application/json"},
+              )
+              with urllib.request.urlopen(req, timeout=15) as response:
+                  assert response.status == 200
+                  return json.load(response)
+
+          health = request("/health")
+          assert health["status"] == "ok"
+
+          destinations = request("/destinations")
+          assert destinations["success"] is True
+          assert len(destinations["data"]) >= 12
+
+          trip = request("/trips/plan", "POST", {
+              "destination": "Manali",
+              "days": 4,
+              "budget": 20000,
+              "interests": ["Nature", "Adventure"],
+              "travelers": "Couple",
+              "travelStyle": "balanced"
+          })
+          assert trip["success"] is True
+          trip_id = trip["tripId"]
+          assert len(trip["daysData"]) == 4
+
+          trips = request("/trips")
+          assert any(item["id"] == trip_id for item in trips["data"])
+
+          detail = request(f"/trips/{trip_id}")
+          assert detail["id"] == trip_id
+
+          profile = request("/profile")
+          assert profile["success"] is True
+
+          suggestion = request("/manzilo/suggestion", "POST", {
+              "tripId": trip_id,
+              "context": "weather"
+          })
+          assert suggestion["success"] is True
+          assert suggestion["suggestion"]
+
+          monitor = request(f"/trips/{trip_id}/monitor?simulate_disruption=true", "POST", {})
+          assert monitor["success"] is True
+
+          print("Full FastAPI smoke test passed")
+          PY
