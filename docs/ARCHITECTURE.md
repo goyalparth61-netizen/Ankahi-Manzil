@@ -18,11 +18,16 @@ Routes:
 - `/destinations`
 - `/destinations/:slug`
 - `/about`
+- `/history`
+- `/team`
+- `/contact`
 
 Purpose:
 
 - create desire to travel
 - expose curated local destination data
+- communicate the product story and history
+- introduce Team CiPher and provide a direct contact path
 - move from visual discovery into planning
 
 ### 2. Intelligence
@@ -164,3 +169,14 @@ When production services are introduced:
 - profile settings are not persisted to a backend
 - there is no authentication
 - there is no live map, weather, transport or booking integration
+
+
+## Team and Contact Layer
+
+The frontend includes dedicated non-authenticated routes for project context:
+
+- `/history` — product evolution
+- `/team` — Team CiPher member cards and professional LinkedIn links
+- `/contact` — client-side contact form that opens Gmail compose with the entered message
+
+The contact form does not claim to submit data to a backend and does not store messages.
