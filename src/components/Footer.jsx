@@ -1,5 +1,6 @@
-import { Compass, UsersRound, Mail } from 'lucide-react'
+import { UsersRound, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import BrandLogo from './BrandLogo'
 
 const groups = [
   {
@@ -36,7 +37,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div>
             <Link to="/" className="brand mb-5 inline-flex">
-              <span className="brand-mark"><Compass size={17} /></span>
+              <span className="brand-mark"><BrandLogo className="h-full w-full object-cover" /></span>
               <span className="brand-word">Ankahi Manzil</span>
             </Link>
             <p className="max-w-sm text-sm leading-7 text-text-secondary">
