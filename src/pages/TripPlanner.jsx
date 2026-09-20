@@ -156,42 +156,42 @@ export default function TripPlanner() {
 
   return (
     <PageTransition>
-      <div className="pt-24 lg:pt-28 pb-24 relative">
+      <div className="relative overflow-hidden pt-32 sm:pt-36 lg:pt-40 pb-32 lg:pb-36">
         {/* Ambient background glows */}
         <div className="absolute top-10 left-1/4 w-[600px] h-[500px] bg-am-orange/5 rounded-full blur-[150px] pointer-events-none" />
         <div className="absolute top-1/2 right-1/4 w-[500px] h-[500px] bg-am-cyan/5 rounded-full blur-[150px] pointer-events-none" />
 
-        <div className="container-max mx-auto">
+        <div className="container-max mx-auto px-5 md:px-8 lg:px-12">
           {/* Header */}
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-am-orange/10 border border-am-orange/20 text-xs font-semibold tracking-wider text-am-orange uppercase mb-4">
+          <div className="text-center max-w-4xl mx-auto mb-14 lg:mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-am-orange/10 border border-am-orange/20 text-xs font-semibold tracking-[0.16em] text-am-orange uppercase mb-6">
               <Bot size={14} />
               Agentic Itinerary Architect
             </div>
-            <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+            <h1 className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight mb-6">
               Design Your <span className="gradient-text-warm">Adaptive Journey</span>
             </h1>
-            <p className="text-text-secondary text-base sm:text-lg">
+            <p className="text-text-secondary text-base sm:text-lg lg:text-xl leading-relaxed max-w-3xl mx-auto">
               Set your parameters and let Manzilo configure a precision day-by-day itinerary with automated disruption safeguards.
             </p>
           </div>
 
           {/* PLANNER CONFIGURATION CARD */}
-          <div className="glass-card rounded-2xl lg:rounded-3xl p-6 sm:p-10 border border-border-subtle max-w-5xl mx-auto mb-16 shadow-2xl">
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
+          <div className="glass-card rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 border border-border-subtle max-w-6xl mx-auto mb-24 lg:mb-28 shadow-[0_24px_80px_rgba(0,0,0,0.22)]">
+            <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-8 lg:gap-12 xl:gap-14 items-start">
               
               {/* Left Column: Core Parameters */}
-              <div className="space-y-6">
+              <div className="space-y-7">
                 {/* 1. Destination */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5 flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary mb-2.5">
                     <MapPin size={14} className="text-am-orange" />
                     Where to? (Destination)
                   </label>
                   <select
                     value={selectedDestination}
                     onChange={(e) => setSelectedDestination(e.target.value)}
-                    className="w-full bg-navy-900 border border-border-subtle rounded-xl px-4 py-3 text-text-primary text-sm focus:outline-none focus:border-am-orange transition-colors"
+                    className="w-full h-12 bg-navy-900 border border-border-subtle rounded-xl px-4 text-text-primary text-sm focus:outline-none focus:border-am-orange focus:ring-2 focus:ring-am-orange/10 transition-colors"
                   >
                     {destinations.map(d => (
                       <option key={d.slug} value={d.name} className="bg-navy-900">
@@ -202,19 +202,19 @@ export default function TripPlanner() {
                 </div>
 
                 {/* 2. Duration & Travelers */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary mb-2.5">
                       <Calendar size={14} className="text-am-cyan" />
                       Duration (Days)
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       {[3, 4, 5, 7].map(num => (
                         <button
                           key={num}
                           type="button"
                           onClick={() => setDays(num)}
-                          className={`flex-1 py-2.5 text-xs font-semibold rounded-lg border transition-all ${
+                          className={`flex-1 h-11 text-xs font-semibold rounded-lg border transition-all ${
                             days === num
                               ? 'bg-am-orange text-white border-am-orange shadow-lg shadow-am-orange/20'
                               : 'bg-navy-900/80 text-text-secondary border-border-subtle hover:text-text-primary'
@@ -227,14 +227,14 @@ export default function TripPlanner() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5 flex items-center gap-1.5">
+                    <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary mb-2.5">
                       <Users size={14} className="text-am-gold" />
                       Travelers
                     </label>
                     <select
                       value={travelers}
                       onChange={(e) => setTravelers(e.target.value)}
-                      className="w-full bg-navy-900 border border-border-subtle rounded-xl px-3 py-2.5 text-text-primary text-xs sm:text-sm focus:outline-none focus:border-am-gold"
+                      className="w-full h-11 bg-navy-900 border border-border-subtle rounded-xl px-3 text-text-primary text-xs sm:text-sm focus:outline-none focus:border-am-gold focus:ring-2 focus:ring-am-gold/10"
                     >
                       <option value="Solo">Solo Traveler</option>
                       <option value="Couple">Couple / Pair</option>
@@ -246,7 +246,7 @@ export default function TripPlanner() {
 
                 {/* 3. Budget Slider */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between gap-4 mb-3">
                     <label className="text-xs font-bold uppercase tracking-wider text-text-secondary flex items-center gap-1.5">
                       <IndianRupee size={14} className="text-am-green" />
                       Total Trip Budget
@@ -264,7 +264,7 @@ export default function TripPlanner() {
                     onChange={(e) => setBudget(Number(e.target.value))}
                     className="w-full h-2 bg-navy-800 rounded-lg appearance-none cursor-pointer accent-am-orange"
                   />
-                  <div className="flex justify-between text-[11px] text-text-muted mt-1.5">
+                  <div className="flex justify-between gap-3 text-[11px] text-text-muted mt-2 leading-relaxed">
                     <span>₹8,000 (Backpacker)</span>
                     <span>₹25,000 (Comfort)</span>
                     <span>₹60,000+ (Luxury)</span>
@@ -273,16 +273,16 @@ export default function TripPlanner() {
 
                 {/* 4. Travel Style */}
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5 flex items-center gap-1.5">
+                  <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary mb-2.5">
                     <Compass size={14} className="text-am-purple" />
                     Trip Pace & Atmosphere
                   </label>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {travelStyles.map(st => (
                       <div
                         key={st.id}
                         onClick={() => setSelectedStyle(st.id)}
-                        className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
+                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-4 ${
                           selectedStyle === st.id
                             ? 'bg-navy-800 border-am-orange/60 shadow-md'
                             : 'bg-navy-900/40 border-border-subtle hover:border-border-subtle/80'
@@ -290,7 +290,7 @@ export default function TripPlanner() {
                       >
                         <div>
                           <div className="text-sm font-semibold text-text-primary">{st.label}</div>
-                          <div className="text-xs text-text-secondary">{st.desc}</div>
+                          <div className="text-xs text-text-secondary leading-relaxed">{st.desc}</div>
                         </div>
                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
                           selectedStyle === st.id ? 'border-am-orange bg-am-orange' : 'border-border-subtle'
@@ -304,13 +304,13 @@ export default function TripPlanner() {
               </div>
 
               {/* Right Column: Interests & Prompt */}
-              <div className="flex flex-col justify-between space-y-6">
+              <div className="flex flex-col justify-between space-y-8">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-3 flex items-center gap-1.5">
+                  <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary mb-3">
                     <Sparkles size={14} className="text-am-teal" />
                     Focus Interests (Choose any)
                   </label>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2.5">
                     {interestOptions.map(interest => {
                       const active = selectedInterests.includes(interest)
                       return (
@@ -318,7 +318,7 @@ export default function TripPlanner() {
                           key={interest}
                           type="button"
                           onClick={() => toggleInterest(interest)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                          className={`px-3.5 py-2 rounded-lg text-xs font-medium border transition-all ${
                             active
                               ? 'bg-am-cyan/15 text-am-cyan border-am-cyan/40 shadow-sm shadow-am-cyan/10'
                               : 'bg-navy-900/60 text-text-secondary border-border-subtle hover:text-text-primary'
@@ -333,12 +333,12 @@ export default function TripPlanner() {
                 </div>
 
                 {/* Agentic intelligence banner */}
-                <div className="p-4 rounded-2xl bg-navy-900/80 border border-am-blue/20">
-                  <div className="flex items-center gap-2 text-am-cyan text-xs font-bold uppercase tracking-wider mb-1.5">
+                <div className="p-5 rounded-2xl bg-navy-900/80 border border-am-blue/20">
+                  <div className="flex items-center gap-2.5 text-am-cyan text-xs font-bold uppercase tracking-[0.12em] mb-3">
                     <ShieldCheck size={16} />
                     Built-in Agentic Guarantees
                   </div>
-                  <ul className="text-xs text-text-secondary space-y-1.5">
+                  <ul className="text-sm text-text-secondary space-y-2.5 leading-relaxed">
                     <li className="flex items-center gap-1.5">
                       <span className="text-am-green">✓</span> Dynamic route sequencing saves 40% in transit delays
                     </li>
@@ -356,7 +356,7 @@ export default function TripPlanner() {
                   type="button"
                   onClick={handleGeneratePlan}
                   disabled={isGenerating}
-                  className="w-full py-4 rounded-xl btn-primary font-bold text-base flex items-center justify-center gap-2 shadow-xl shadow-am-orange/20 hover:shadow-am-orange/30 transition-all cursor-pointer"
+                  className="w-full min-h-[54px] rounded-xl btn-primary font-bold text-base flex items-center justify-center gap-2 shadow-[0_16px_36px_rgba(255,107,53,0.18)] transition-all cursor-pointer"
                 >
                   {isGenerating ? (
                     <>
@@ -649,7 +649,7 @@ export default function TripPlanner() {
                                 </div>
 
                                 <div>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2.5">
                                     <h4 className={`text-sm sm:text-base font-bold ${
                                       isDisrupted ? 'text-am-orange line-through' : 'text-text-primary'
                                     }`}>
