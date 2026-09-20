@@ -1,4 +1,4 @@
-import { Compass, Linkedin, Mail } from 'lucide-react'
+import { Compass, UsersRound, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const groups = [
@@ -44,7 +44,7 @@ export default function Footer() {
             </p>
             <div className="mt-5 flex gap-2">
               <Link to="/team" className="button-ghost" aria-label="Meet Team CiPher">
-                <Linkedin size={14} />
+                <UsersRound size={14} />
                 Team
               </Link>
               <Link to="/contact" className="button-ghost" aria-label="Contact Team CiPher">
