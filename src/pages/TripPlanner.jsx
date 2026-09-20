@@ -71,26 +71,47 @@ export default function TripPlanner() {
       days,
       budget,
       interests,
+      travelers,
+      travelStyle: style,
     })
 
-    const daysData = Array.from({ length: days }, (_, index) => buildDay(destination, index + 1))
-    const activityCost = daysData.flatMap((day) => day.stops).reduce((sum, stop) => sum + stop.cost, 0)
-    const stayEstimate = days * 2200
-    const plannedCost = activityCost + stayEstimate
+    const fallbackDays = Array.from({ length: days }, (_, index) => buildDay(destination, index + 1))
+    const daysData = service.daysData?.length
+      ? service.daysData.map((day) => ({
+          dayNumber: day.dayNumber,
+          title: day.title,
+          stops: (day.activities || []).map((activity) => ({
+            time: activity.time,
+            title: activity.title,
+            cost: Number(activity.cost || 0),
+            desc: activity.desc,
+            tag: activity.tag,
+            isVulnerable: activity.isVulnerable,
+          })),
+        }))
+      : fallbackDays
+
+    const fallbackActivityCost = fallbackDays
+      .flatMap((day) => day.stops)
+      .reduce((sum, stop) => sum + stop.cost, 0)
+    const fallbackPlannedCost = fallbackActivityCost + days * 2200
+    const plannedCost = Number(service.plannedCost ?? fallbackPlannedCost)
+    const totalBudget = Number(service.totalBudget ?? budget)
 
     setPlan({
-      id: service.tripId,
-      destination: destination.name,
-      slug: destination.slug,
-      image: destination.image,
-      days,
-      totalBudget: budget,
+      id: service.tripId || service.id,
+      destination: service.destination || destination.name,
+      slug: service.slug || destination.slug,
+      image: service.image || destination.image,
+      days: Number(service.days ?? days),
+      totalBudget,
       plannedCost,
-      savings: Math.max(0, budget - plannedCost),
-      travelers,
-      style,
+      savings: Number(service.savings ?? Math.max(0, totalBudget - plannedCost)),
+      travelers: service.travelers || travelers,
+      style: service.travelStyle || style,
       interests,
       daysData,
+      source: service.source || 'local',
     })
     setActiveDay(1)
     setIsGenerating(false)
@@ -121,7 +142,7 @@ export default function TripPlanner() {
               <span className="block serif-accent">around the way you travel.</span>
             </h1>
             <p className="lede mt-5 max-w-2xl">
-              This frontend demo turns your constraints into a day-by-day sample plan and keeps the saved result in localStorage.
+              Your constraints are sent to the FastAPI planner when it is online, with a local fallback so the journey composer still works offline.
             </p>
           </div>
           <Link to="/features" className="button-ghost self-start">
@@ -321,8 +342,8 @@ export default function TripPlanner() {
               </div>
               <p className="mt-3 text-sm leading-6 text-text-secondary">
                 {plan
-                  ? 'The route is intentionally sequenced with flexible afternoon space so the demo can replan one block without collapsing the whole day.'
-                  : 'I will use destination, duration, budget, pace and interests to build the sample plan.'}
+                  ? (plan.source === 'backend' ? 'Live backend itinerary loaded. Sentinel and Manzilo can use this persisted trip ID.' : 'Local fallback itinerary loaded because the API is unavailable.')
+                  : 'I will use destination, duration, budget, pace and interests to build the journey.'}
               </p>
             </div>
 
