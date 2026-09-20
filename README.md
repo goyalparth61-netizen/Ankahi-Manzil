@@ -92,6 +92,10 @@ No production AI provider is connected on this branch.
 
 `/profile` is a demo preference workspace. It is not backed by authentication or a user database.
 
+### History, Team and Contact
+
+`/history` presents the product evolution without inventing release dates. `/team` introduces Team CiPher members Parth Goyal (B.Tech CSE — Cyber Security) and Archi Sharma (B.Tech CSE — AI & ML) with LinkedIn and project-Gmail actions. `/contact` uses a real frontend Gmail compose flow; no fake backend submission is shown.
+
 ## Technology Stack
 
 - React 19
@@ -159,6 +163,9 @@ See `docs/ARCHITECTURE.md` for implementation details.
 | `/manzilo` | Mock conversational workspace |
 | `/profile` | Demo travel preferences |
 | `/about` | Product story |
+| `/history` | Product evolution and project history |
+| `/team` | Team CiPher member profiles and professional links |
+| `/contact` | Functional Gmail-based contact experience |
 | `*` | Branded 404 |
 
 ## Backend and API Status
@@ -288,11 +295,14 @@ Further production work should add automated accessibility testing.
 - verified booking/partner integrations
 - production analytics and error reporting
 
-## Contributors
+## Team CiPher
+
+- **Parth Goyal** — B.Tech CSE, Cyber Security
+- **Archi Sharma** — B.Tech CSE, Artificial Intelligence & Machine Learning
 
 Repository: `goyalparth61-netizen/Ankahi-Manzil`
 
-Use GitHub repository history as the authoritative contributor record.
+Git history remains the authoritative technical contribution record.
 
 ## License
 
