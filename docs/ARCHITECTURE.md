@@ -1,182 +1,188 @@
-# Frontend Architecture
+# Ankahi Manzil Full-Stack Architecture
 
 ## Scope
 
-This document covers the `frontend` branch of Ankahi Manzil.
+The `frontend` branch now contains the redesigned React client and the FastAPI backend.
 
-The branch is a client-side React application. It does not contain a production backend, database or authentication provider.
-
-## Product Architecture
-
-The frontend is organized around three user modes.
-
-### 1. Discover
-
-Routes:
-
-- `/`
-- `/destinations`
-- `/destinations/:slug`
-- `/about`
-- `/history`
-- `/team`
-- `/contact`
-
-Purpose:
-
-- create desire to travel
-- expose curated local destination data
-- communicate the product story and history
-- introduce Team CiPher and provide a direct contact path
-- move from visual discovery into planning
-
-### 2. Intelligence
-
-Routes:
-
-- `/features`
-- `/manzilo`
-- `/how-it-works`
-
-Purpose:
-
-- demonstrate Manzilo as a product interface
-- expose recommendation/route/replan reasoning
-- use the existing mock chat service for conversational responses
-
-### 3. Journey Workspace
-
-Routes:
-
-- `/plan`
-- `/trips`
-- `/trips/:id`
-- `/profile`
-
-Purpose:
-
-- collect trip constraints
-- generate a sample itinerary
-- save browser-local trip state
-- demonstrate disruption/replanning
-- manage demo travel preferences
-
-## Runtime Flow
+## Runtime Architecture
 
 ```text
-Browser
-  |
-  v
-React 19
-  |
-  +-- React Router
-  |    +-- Layout
-  |         +-- Navbar
-  |         +-- Outlet
-  |         +-- Footer
-  |
-  +-- Local destination data
-  |    +-- src/data/destinations.js
-  |
-  +-- Mock asynchronous services
-  |    +-- destinationService.js
-  |    +-- tripService.js
-  |    +-- manziloService.js
-  |
-  +-- Browser state
-       +-- React component state
-       +-- localStorage: am_saved_trips
+React / Vite
+   |
+   | VITE_API_BASE_URL
+   v
+FastAPI /api
+   |
+   +-- destinations
+   +-- trips
+   +-- Sentinel monitoring
+   +-- replanning
+   +-- Manzilo
+   +-- profile
+   |
+   v
+SQLAlchemy
+   |
+   +-- SQLite local fallback
+   +-- PostgreSQL / Supabase compatible
 ```
 
-## Design System
+## Frontend Service Layer
 
-`src/index.css` owns the global visual system.
+All HTTP access is centralized in `src/services`.
 
-The reset intentionally avoids a generic card-heavy SaaS aesthetic. Its primary patterns are:
+### apiClient.js
 
-- cinematic image surfaces
-- editorial typography
-- asymmetric discovery grids
-- sticky narrative sections
-- compact product-workspace panels
-- consistent circular/pill actions
-- restrained motion and borders
-- dedicated desktop/tablet/mobile compositions
+- reads `VITE_API_BASE_URL`
+- optionally sends `X-User-ID`
+- normalizes backend error responses
+- exposes backend health checking
 
-Tailwind remains available for route-level composition.
+### destinationService.js
 
-## Services
+Primary source:
 
-### destinationService
+- `GET /api/destinations`
+- `GET /api/destinations/{slug}`
 
-Returns data from `src/data/destinations.js` after simulated latency.
+Fallback:
 
-### tripService
+- `src/data/destinations.js`
 
-Provides mock asynchronous trip operations including plan creation and disruption/replan responses.
+### tripService.js
 
-The Journey Composer calls `createTripPlan` to preserve this service boundary.
+Primary endpoints:
 
-### manziloService
+- `POST /api/trips/plan`
+- `GET /api/trips`
+- `GET /api/trips/{id}`
+- `PATCH /api/trips/{id}`
+- `DELETE /api/trips/{id}`
+- `POST /api/trips/{id}/monitor`
+- `GET /api/trips/{id}/disruptions`
+- `POST /api/trips/{id}/replan`
 
-Provides mock conversational responses.
-
-The `/manzilo` route calls `chatWithManzilo`.
-
-## Persistence
-
-Generated planner journeys may be stored under:
+It also maintains a browser localStorage cache under:
 
 ```text
 am_saved_trips
 ```
 
-`/trips` merges those browser-saved entries with built-in demo journeys.
+### manziloService.js
 
-`/trips/:id` reads matching saved journey data when the route ID exists in localStorage.
+Primary endpoints:
 
-## Motion
+- `POST /api/manzilo/chat`
+- `POST /api/manzilo/suggestion`
 
-Framer Motion is used for:
+The chat UI preserves backend `conversationId`, sends the latest local trip ID when available and renders rich response widgets.
 
-- page entry
-- state transitions
-- image/content reveal
-- AI mode transitions
-- generated itinerary state
-- conversational typing feedback
-- disruption/replan transitions
+### profileService.js
 
-Global CSS respects `prefers-reduced-motion`.
+Primary endpoints:
 
-## Integration Boundaries
+- `GET /api/profile`
+- `PATCH /api/profile`
 
-When production services are introduced:
+## Backend Architecture
 
-1. keep network calls inside `src/services`
-2. keep API secrets off the client
-3. validate planner inputs on the server
-4. replace localStorage-only persistence with authenticated storage
-5. expose real monitoring state separately from simulated/demo state
-6. preserve explainable replan output in the UI
+```text
+backend/app/
+├── agents/
+│   ├── orchestrator.py
+│   ├── planner_agent.py
+│   ├── monitor_agent.py
+│   ├── detector_agent.py
+│   ├── reasoning_agent.py
+│   └── replan_agent.py
+├── api/
+│   ├── router.py
+│   └── routes/
+├── core/
+├── integrations/
+├── models/
+├── schemas/
+├── services/
+└── main.py
+```
 
-## Current Limitations
+### Agent Flow
 
-- destination content is static/local
-- trip generation is a frontend sample workflow
-- disruptions are simulated
-- Manzilo uses a mock service
-- profile settings are not persisted to a backend
-- there is no authentication
-- there is no live map, weather, transport or booking integration
+```text
+Trip request
+   ↓
+Planner / deterministic budget engine
+   ↓
+Persist trip + days + activities
+   ↓
+Sentinel monitoring
+   ↓
+Disruption detection
+   ↓
+Reasoning
+   ↓
+Smallest-change replan
+```
 
+Manzilo orchestrates conversational context over persisted trip state and can return structured widgets.
 
-## Team and Contact Layer
+## Persistence
 
-The frontend includes dedicated non-authenticated routes for project context:
+Backend persistence uses SQLAlchemy.
 
-- `/history` — product evolution
-- `/team` — Team CiPher member cards and professional LinkedIn links
-- `/contact` — client-side contact form that opens Gmail compose with the entered message
+- local development: SQLite
+- hosted environment: PostgreSQL/Supabase via `DATABASE_URL`
 
-The contact form does not claim to submit data to a backend and does not store messages.
+Alembic manages migrations.
+
+## User Identity
+
+Authentication is not implemented yet.
+
+The backend reads optional:
+
+```text
+X-User-ID
+```
+
+If absent, it uses a development guest user. Frontend `VITE_API_USER_ID` can set this header for local/demo user separation.
+
+## CORS
+
+FastAPI allows local Vite origins and additionally reads:
+
+```text
+FRONTEND_URL
+```
+
+for deployed frontend access.
+
+## Fallback Design
+
+The frontend intentionally remains usable if the API is unavailable.
+
+This is important for hackathon resilience, but the UI surfaces whether data came from the backend or fallback where relevant.
+
+## CI
+
+The `frontend` branch workflow validates both stacks:
+
+### Frontend
+
+- `npm ci`
+- `npm run lint`
+- `npm run build`
+
+### Backend
+
+- Python 3.12
+- `pip install -r backend/requirements.txt`
+- `pytest -v`
+
+## Current Production Gaps
+
+- authentication/session management
+- deployed database URL is environment-specific
+- provider API keys must be configured for live external intelligence
+- no browser E2E suite yet
+- no production telemetry/observability provider yet
