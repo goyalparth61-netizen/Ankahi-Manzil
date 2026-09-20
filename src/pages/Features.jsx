@@ -78,8 +78,8 @@ export default function Features() {
         {/* 01 — AI Personalized Trip Planning */}
         <SectionBlock>
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div>
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={1} />
                 AI Personalized <span className="text-am-orange">Trip Planning</span>
               </h2>
@@ -162,8 +162,8 @@ export default function Features() {
                 ))}
               </div>
             </div>
-            <div className="order-1 lg:order-2">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="order-1 lg:order-2 text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={2} />
                 Smart Day-by-Day <span className="text-am-cyan">Itinerary</span>
               </h2>
@@ -179,8 +179,8 @@ export default function Features() {
         {/* 03 — Budget Intelligence */}
         <SectionBlock>
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div>
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={3} />
                 Budget <span className="text-am-gold">Intelligence</span>
               </h2>
@@ -268,8 +268,8 @@ export default function Features() {
                 <p className="text-xs text-am-teal">✓ Activities grouped by proximity — 40% less travel time</p>
               </div>
             </div>
-            <div className="order-1 lg:order-2">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="order-1 lg:order-2 text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={4} />
                 Route <span className="text-am-teal">Optimization</span>
               </h2>
@@ -285,8 +285,8 @@ export default function Features() {
         {/* 05 — Live Monitoring */}
         <SectionBlock>
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div>
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={5} />
                 Live <span className="text-am-green">Monitoring</span>
               </h2>
@@ -337,8 +337,8 @@ export default function Features() {
                 <span className="text-xs text-am-orange">Manzilo is evaluating alternatives...</span>
               </div>
             </div>
-            <div className="order-1 lg:order-2">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="order-1 lg:order-2 text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={6} />
                 Disruption <span className="text-am-blue">Detection</span>
               </h2>
@@ -354,8 +354,8 @@ export default function Features() {
         {/* 07 — Automatic Replanning */}
         <SectionBlock>
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div>
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={7} />
                 Automatic <span className="text-am-purple">Replanning</span>
               </h2>
@@ -437,8 +437,8 @@ export default function Features() {
                 ))}
               </div>
             </div>
-            <div className="order-1 lg:order-2">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="order-1 lg:order-2 text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={8} />
                 <span className="bg-gradient-to-r from-am-cyan to-am-purple bg-clip-text text-transparent">Manzilo</span> AI
               </h2>
@@ -457,8 +457,8 @@ export default function Features() {
         {/* 09 — Conflict Detection */}
         <SectionBlock>
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div>
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={9} />
                 Conflict <span className="text-am-blue">Detection</span>
               </h2>
@@ -528,8 +528,8 @@ export default function Features() {
                 </div>
               </div>
             </div>
-            <div className="order-1 lg:order-2">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
+            <div className="order-1 lg:order-2 text-center lg:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
                 <FeatureNumber n={10} />
                 Backup <span className="text-am-green">Options</span>
               </h2>
