@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  AlertTriangle, ArrowLeft, Bot, CalendarDays, Check, Clock3, Compass,
+  AlertTriangle, ArrowLeft, CalendarDays, Check, Clock3, Compass,
   IndianRupee, MapPin, RefreshCw, Share2
 } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { destinations } from '../data/destinations'
 import { getTripById, monitorTrip, replanTrip } from '../services/tripService'
 import PageTransition from '../components/layout/PageTransition'
+import ManziloLogo from '../components/ManziloLogo'
 
 function normalizeDays(daysData = []) {
   return daysData.map((day, index) => ({
@@ -187,7 +188,7 @@ export default function TripDetails() {
                   {copied ? 'Copied' : 'Share'}
                 </button>
                 <Link to="/manzilo" className="button-primary">
-                  <Bot size={14} />
+                  <ManziloLogo className="h-6 w-6 rounded-md bg-white object-contain p-[1px]" />
                   Ask Manzilo
                 </Link>
               </div>
@@ -275,7 +276,7 @@ export default function TripDetails() {
             <aside className="space-y-3">
               <div className="app-panel app-panel-pad">
                 <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
-                  <Bot size={14} />
+                  <ManziloLogo className="manzilo-logo manzilo-logo-sm" />
                   Manzilo explanation
                 </div>
                 <p className="mt-3 text-sm leading-6 text-text-secondary">
