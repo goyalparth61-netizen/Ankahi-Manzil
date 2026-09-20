@@ -1,13 +1,8 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Sparkles, Play } from 'lucide-react'
+import { Sparkles, ArrowRight } from 'lucide-react'
 
 export default function Hero() {
-  const scrollToDemo = () => {
-    const el = document.getElementById('trip-preview')
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
-  }
-
   return (
     <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background gradient orbs */}
@@ -81,13 +76,13 @@ export default function Hero() {
                 <span>Start Planning</span>
                 <span>→</span>
               </Link>
-              <button
-                onClick={scrollToDemo}
+              <Link
+                to="/how-it-works"
                 className="btn-secondary text-base flex items-center gap-2 px-7 py-3.5"
               >
-                <Play size={16} className="text-am-orange" />
-                <span>See Demo</span>
-              </button>
+                <ArrowRight size={16} className="text-am-orange" />
+                <span>See How It Works</span>
+              </Link>
             </motion.div>
           </motion.div>
 

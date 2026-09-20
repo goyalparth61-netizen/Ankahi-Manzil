@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Map, MessageCircle } from 'lucide-react'
 import { navLinks } from '../data/destinations'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [activeLink, setActiveLink] = useState('#hero')
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,37 +17,10 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Track active section via IntersectionObserver
+  // Close mobile menu on route change
   useEffect(() => {
-    const sectionIds = navLinks.map((l) => l.href.replace('#', ''))
-    const observers = []
-
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id)
-      if (!el) return
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveLink(`#${id}`)
-          }
-        },
-        { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' }
-      )
-      observer.observe(el)
-      observers.push(observer)
-    })
-
-    return () => observers.forEach((o) => o.disconnect())
-  }, [])
-
-  const handleNavClick = (e, href) => {
-    e.preventDefault()
     setMobileOpen(false)
-    const el = document.querySelector(href)
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
+  }, [location.pathname])
 
   return (
     <motion.nav
@@ -62,7 +35,7 @@ export default function Navbar() {
     >
       <div className="container-max mx-auto flex items-center justify-between px-4 lg:px-8 h-18 lg:h-20">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <Link to="/" className="flex items-center gap-2.5 group">
           {/* Mountain/Path Logo SVG */}
           <div className="relative w-9 h-9 flex items-center justify-center">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -90,25 +63,31 @@ export default function Navbar() {
         {/* Center Nav — Desktop */}
         <div className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={(e) => handleNavClick(e, link.href)}
-              className={`relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-lg ${
-                activeLink === link.href
-                  ? 'text-text-primary'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
+            <NavLink
+              key={link.path}
+              to={link.path}
+              end={link.path === '/'}
+              className={({ isActive }) =>
+                `relative px-4 py-2 text-sm font-medium transition-colors duration-300 rounded-lg ${
+                  isActive
+                    ? 'text-text-primary'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`
+              }
             >
-              {link.label}
-              {activeLink === link.href && (
-                <motion.div
-                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-am-orange rounded-full"
-                  layoutId="navIndicator"
-                  transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                />
+              {({ isActive }) => (
+                <>
+                  {link.label}
+                  {isActive && (
+                    <motion.div
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-am-orange rounded-full"
+                      layoutId="navIndicator"
+                      transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                </>
               )}
-            </a>
+            </NavLink>
           ))}
         </div>
 
@@ -143,24 +122,59 @@ export default function Navbar() {
             className="lg:hidden bg-navy-950/95 backdrop-blur-xl border-t border-border-subtle overflow-hidden"
           >
             <div className="px-4 py-6 flex flex-col gap-1">
+              {/* Primary Navigation */}
               {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    activeLink === link.href
-                      ? 'text-am-orange bg-navy-800'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-navy-800/50'
-                  }`}
+                <NavLink
+                  key={link.path}
+                  to={link.path}
+                  end={link.path === '/'}
+                  className={({ isActive }) =>
+                    `px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'text-am-orange bg-navy-800'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-navy-800/50'
+                    }`
+                  }
                 >
                   {link.label}
-                </a>
+                </NavLink>
               ))}
+
+              {/* Separator */}
+              <div className="h-px bg-border-subtle my-3" />
+
+              {/* Secondary Actions */}
+              <NavLink
+                to="/trips"
+                className={({ isActive }) =>
+                  `px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2.5 ${
+                    isActive
+                      ? 'text-am-orange bg-navy-800'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-navy-800/50'
+                  }`
+                }
+              >
+                <Map size={16} />
+                My Trips
+              </NavLink>
+              <NavLink
+                to="/manzilo"
+                className={({ isActive }) =>
+                  `px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2.5 ${
+                    isActive
+                      ? 'text-am-cyan bg-navy-800'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-navy-800/50'
+                  }`
+                }
+              >
+                <MessageCircle size={16} />
+                Chat with Manzilo
+              </NavLink>
+
+              {/* Primary CTA */}
               <Link
                 to="/plan"
                 className="btn-primary text-sm text-center mt-4"
-                onClick={() => setMobileOpen(false)}
               >
                 Start Planning →
               </Link>

@@ -1,11 +1,12 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { CalendarDays, Eye, AlertTriangle, Brain, RefreshCw, ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { CalendarDays, Eye, AlertTriangle, Brain, RefreshCw, ChevronRight, ArrowRight } from 'lucide-react'
 import { agentSteps } from '../data/destinations'
 
 const iconMap = { CalendarDays, Eye, AlertTriangle, Brain, RefreshCw }
 
-export default function AgentWorkflow() {
+export default function AgentWorkflow({ compact = false }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -16,7 +17,7 @@ export default function AgentWorkflow() {
 
       <div className="container-max mx-auto" ref={ref}>
         {/* Header */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start mb-16">
+        <div className={`grid ${compact ? '' : 'lg:grid-cols-2'} gap-8 lg:gap-16 items-start mb-16`}>
           <div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -46,7 +47,7 @@ export default function AgentWorkflow() {
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-text-secondary text-base lg:text-lg leading-relaxed lg:pt-14"
+            className={`text-text-secondary text-base lg:text-lg leading-relaxed ${compact ? '' : 'lg:pt-14'}`}
           >
             Our AI continuously watches your trip, detects changes,
             reasons through alternatives and replans — so your journey
@@ -165,6 +166,24 @@ export default function AgentWorkflow() {
             })}
           </div>
         </div>
+
+        {/* Compact CTA link */}
+        {compact && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.8, duration: 0.5 }}
+            className="mt-12 text-center"
+          >
+            <Link
+              to="/how-it-works"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-am-orange hover:text-am-warm transition-colors group"
+            >
+              Discover How It Works
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </motion.div>
+        )}
       </div>
     </section>
   )

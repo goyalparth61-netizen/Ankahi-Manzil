@@ -204,15 +204,12 @@ export default function ManziloPreview() {
                 Chat with Manzilo
                 <ArrowRight size={16} />
               </Link>
-              <button
-                onClick={() => {
-                  const el = document.getElementById('trip-preview')
-                  if (el) el.scrollIntoView({ behavior: 'smooth' })
-                }}
+              <Link
+                to="/features"
                 className="btn-secondary text-sm"
               >
-                See how Manzilo thinks
-              </button>
+                Explore Features
+              </Link>
             </motion.div>
           </div>
 

@@ -1,30 +1,33 @@
 import { Routes, Route } from 'react-router-dom'
+import Layout from './components/layout/Layout'
 import Home from './pages/Home'
+import Features from './pages/Features'
+import Destinations from './pages/Destinations'
+import DestinationDetails from './pages/DestinationDetails'
+import HowItWorks from './pages/HowItWorks'
+import About from './pages/About'
+import TripPlanner from './pages/TripPlanner'
+import MyTrips from './pages/MyTrips'
+import TripDetails from './pages/TripDetails'
+import ManziloChat from './pages/ManziloChat'
+import Profile from './pages/Profile'
 
-function App() {
+export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/plan" element={<PlaceholderPage title="Trip Planner" />} />
-      <Route path="/destinations" element={<PlaceholderPage title="Destinations" />} />
-      <Route path="/destinations/:slug" element={<PlaceholderPage title="Destination Details" />} />
-      <Route path="/manzilo" element={<PlaceholderPage title="Chat with Manzilo" />} />
-      <Route path="/trips" element={<PlaceholderPage title="My Trips" />} />
-      <Route path="/profile" element={<PlaceholderPage title="Profile" />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/destinations" element={<Destinations />} />
+        <Route path="/destinations/:slug" element={<DestinationDetails />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/plan" element={<TripPlanner />} />
+        <Route path="/trips" element={<MyTrips />} />
+        <Route path="/trips/:id" element={<TripDetails />} />
+        <Route path="/manzilo" element={<ManziloChat />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
     </Routes>
   )
 }
-
-function PlaceholderPage({ title }) {
-  return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold font-[family-name:var(--font-heading)] text-text-primary mb-4">{title}</h1>
-        <p className="text-text-secondary mb-8">This page is coming soon.</p>
-        <a href="/" className="btn-primary inline-block">← Back to Home</a>
-      </div>
-    </div>
-  )
-}
-
-export default App
