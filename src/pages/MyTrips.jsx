@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, CalendarDays, Compass, Plus, Route } from 'lucide-react'
+import { ArrowRight, CalendarDays, Compass, Plus, RefreshCw, Route } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { getTrips } from '../services/tripService'
 import PageTransition from '../components/layout/PageTransition'
 
 const defaults = [
@@ -15,7 +16,7 @@ const defaults = [
     statusType: 'active',
     totalBudget: 24000,
     spent: 18450,
-    note: 'Active demo journey',
+    note: 'Built-in demo journey',
   },
   {
     id: 'goa-2026',
@@ -27,7 +28,7 @@ const defaults = [
     statusType: 'upcoming',
     totalBudget: 35000,
     spent: 28000,
-    note: 'Upcoming demo journey',
+    note: 'Built-in demo journey',
   },
   {
     id: 'jaipur-2026',
@@ -39,43 +40,89 @@ const defaults = [
     statusType: 'completed',
     totalBudget: 15000,
     spent: 13200,
-    note: 'Completed demo journey',
+    note: 'Built-in demo journey',
   },
 ]
 
 const tabs = ['all', 'active', 'upcoming', 'completed']
 
+function normalizeTrip(trip, source) {
+  return {
+    id: trip.id || trip.tripId,
+    destination: trip.destination || 'Journey',
+    title: trip.title || `${trip.destination || 'Custom'} journey`,
+    image: trip.image || '/images/dest-manali.jpg',
+    dates: trip.dates || 'Custom schedule',
+    days: Number(trip.days || trip.daysData?.length || 4),
+    statusType: trip.statusType || trip.status || 'active',
+    totalBudget: Number(trip.totalBudget ?? trip.budget ?? 20000),
+    spent: Number(trip.spent ?? trip.plannedCost ?? 0),
+    note: source === 'backend'
+      ? (trip.disruptionState || 'Saved in FastAPI backend')
+      : 'Saved in local fallback cache',
+    source,
+  }
+}
+
 export default function MyTrips() {
-  const [trips] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('am_saved_trips') || '[]')
-      if (!Array.isArray(saved) || saved.length === 0) return defaults
-
-      const mapped = saved.map((item) => ({
-        id: item.id,
-        destination: item.destination,
-        title: item.destination + ' personal journey',
-        image: item.image || '/images/dest-manali.jpg',
-        dates: 'Custom schedule',
-        days: item.days || 4,
-        statusType: 'active',
-        totalBudget: item.totalBudget || 20000,
-        spent: item.plannedCost || 0,
-        note: 'Saved from Journey Composer',
-      }))
-
-      return [...mapped, ...defaults]
-    } catch (error) {
-      console.error('Unable to read saved trips', error)
-      return defaults
-    }
-  })
+  const [trips, setTrips] = useState(defaults)
   const [filter, setFilter] = useState('all')
+  const [source, setSource] = useState('demo')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+
+    const loadTrips = async () => {
+      setLoading(true)
+      const result = await getTrips()
+      if (!active) return
+
+      const normalized = (result.data || [])
+        .filter((trip) => trip.id || trip.tripId)
+        .map((trip) => normalizeTrip(trip, result.source))
+
+      if (normalized.length > 0) {
+        setTrips(normalized)
+        setSource(result.source)
+      } else {
+        setTrips(defaults)
+        setSource(result.source === 'backend' ? 'backend-empty' : 'demo')
+      }
+      setLoading(false)
+    }
+
+    loadTrips()
+    return () => {
+      active = false
+    }
+  }, [])
 
   const visible = useMemo(
     () => trips.filter((trip) => filter === 'all' || trip.statusType === filter),
     [trips, filter]
   )
+
+  const refresh = async () => {
+    setLoading(true)
+    const result = await getTrips()
+    const normalized = (result.data || [])
+      .filter((trip) => trip.id || trip.tripId)
+      .map((trip) => normalizeTrip(trip, result.source))
+
+    setTrips(normalized.length ? normalized : defaults)
+    setSource(normalized.length ? result.source : (result.source === 'backend' ? 'backend-empty' : 'demo'))
+    setLoading(false)
+  }
+
+  const sourceLabel =
+    source === 'backend'
+      ? 'FastAPI database'
+      : source === 'local'
+        ? 'Local fallback cache'
+        : source === 'backend-empty'
+          ? 'Backend connected • no saved trips yet'
+          : 'Built-in demo journeys'
 
   return (
     <PageTransition>
@@ -91,16 +138,30 @@ export default function MyTrips() {
               <span className="block serif-accent">Stories in progress.</span>
             </h1>
             <p className="lede mt-5 max-w-2xl">
-              Saved plans from this browser sit beside a few built-in demo journeys, so the workspace always has something useful to explore.
+              Journeys are loaded from the FastAPI backend when available, with local and built-in demo fallbacks for resilient presentation.
             </p>
           </div>
-          <Link to="/plan" className="button-primary self-start">
-            <Plus size={14} />
-            New journey
-          </Link>
+          <div className="flex flex-wrap gap-2 self-start">
+            <button type="button" className="button-ghost" onClick={refresh} disabled={loading}>
+              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+              Refresh
+            </button>
+            <Link to="/plan" className="button-primary">
+              <Plus size={14} />
+              New journey
+            </Link>
+          </div>
         </header>
 
         <div className="page-shell px-0">
+          <div className="mb-4 flex items-center justify-between gap-4 rounded-xl border border-white/8 bg-white/[.025] px-4 py-3">
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[.14em] text-text-muted">Data source</p>
+              <p className="mt-1 text-xs font-semibold text-text-secondary">{sourceLabel}</p>
+            </div>
+            <span className={`h-2.5 w-2.5 rounded-full ${source === 'backend' || source === 'backend-empty' ? 'bg-am-green' : 'bg-am-gold'}`} />
+          </div>
+
           <div className="mb-7 flex gap-2 overflow-x-auto border-y border-white/8 py-3">
             {tabs.map((tab) => (
               <button
@@ -122,14 +183,21 @@ export default function MyTrips() {
                   key={trip.id}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * .06 }}
+                  transition={{ delay: index * .05 }}
                   className="group grid overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/[.02] lg:grid-cols-[22rem_1fr]"
                 >
                   <div className="relative min-h-64 overflow-hidden">
                     <img src={trip.image} alt={trip.destination} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#07110f]/70 via-transparent to-transparent" />
-                    <div className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/25 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] backdrop-blur-md">
-                      {trip.statusType}
+                    <div className="absolute left-4 top-4 flex gap-2">
+                      <span className="rounded-full border border-white/15 bg-black/25 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] backdrop-blur-md">
+                        {trip.statusType}
+                      </span>
+                      {trip.source === 'backend' && (
+                        <span className="rounded-full border border-am-green/25 bg-am-green/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-am-green backdrop-blur-md">
+                          live
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -176,7 +244,7 @@ export default function MyTrips() {
             </div>
           ) : (
             <div className="surface rounded-art py-20 text-center">
-              <h2 className="text-2xl font-semibold">No journeys here yet.</h2>
+              <h2 className="text-2xl font-semibold">No journeys in this view.</h2>
               <Link to="/plan" className="button-primary mt-6">Plan one</Link>
             </div>
           )}
