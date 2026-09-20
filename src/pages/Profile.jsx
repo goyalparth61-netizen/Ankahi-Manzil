@@ -1,251 +1,144 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { Check, Compass, Heart, Route, Sparkles, User } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import {
-  User, Settings, ShieldCheck, Heart, MapPin, Calendar,
-  Bell, Award, CheckCircle2, ChevronRight, Sliders,
-  Compass, IndianRupee, Bot
-} from 'lucide-react'
-import PageTransition from '../components/layout/PageTransition'
 import { destinations } from '../data/destinations'
+import PageTransition from '../components/layout/PageTransition'
 
 export default function Profile() {
-  const [autoReplanMinor, setAutoReplanMinor] = useState(true)
+  const [autoReplan, setAutoReplan] = useState(true)
   const [weatherAlerts, setWeatherAlerts] = useState(true)
-  const [dietary, setDietary] = useState('Local Culinary Explorer')
-  const [transitPref, setTransitPref] = useState('Scenic Private Cab')
-  const [savedSuccess, setSavedSuccess] = useState(false)
+  const [food, setFood] = useState('Local Culinary Explorer')
+  const [transit, setTransit] = useState('Scenic Private Cab')
+  const [saved, setSaved] = useState(false)
 
-  const handleSave = () => {
-    setSavedSuccess(true)
-    setTimeout(() => setSavedSuccess(false), 3000)
+  const save = () => {
+    setSaved(true)
+    window.setTimeout(() => setSaved(false), 1800)
   }
-
-  const bucketList = destinations.slice(0, 4)
 
   return (
     <PageTransition>
-      <div className="profile-page app-page relative">
-        <div className="page-shell max-w-6xl">
-          
-          {/* Traveler Header Card */}
-          <div className="travel-panel rounded-[1.75rem] p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-            <div className="flex items-center gap-5">
-              <div className="relative">
-                <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-am-orange/25 bg-am-orange/10 text-am-orange sm:h-24 sm:w-24">
-                  <User size={34} />
-                </div>
-                <div className="absolute -bottom-2 -right-2 p-1.5 rounded-full bg-am-green border-2 border-navy-950 text-white" title="Sentinel demo active">
-                  <ShieldCheck size={14} />
-                </div>
-              </div>
-
-              <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-am-orange/15 text-am-orange border border-am-orange/30 text-xs font-bold uppercase tracking-wider mb-1.5">
-                  Demo traveler profile
-                </div>
-                <h1 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl font-bold text-text-primary">
-                  Your Travel DNA
-                </h1>
-                <p className="text-xs sm:text-sm text-text-secondary">
-                  Personalize how the current frontend demo plans and adapts journeys.
-                </p>
-              </div>
+      <section className="app-shell">
+        <header className="app-head">
+          <div>
+            <div className="eyebrow mb-4">
+              <User size={13} className="text-am-orange" />
+              Travel preferences
             </div>
-
-            <button
-              onClick={handleSave}
-              className="btn-primary text-xs py-2.5 px-5 flex items-center gap-2 self-start sm:self-auto"
-            >
-              {savedSuccess ? 'Preferences Saved!' : 'Save Changes'}
-            </button>
+            <h1>
+              Your travel DNA.
+              <span className="block serif-accent">A quieter way to personalize.</span>
+            </h1>
+            <p className="lede mt-5 max-w-2xl">
+              This is a demo preference workspace. It does not represent an authenticated account or persist to a backend.
+            </p>
           </div>
+          <button type="button" className="button-primary self-start" onClick={save}>
+            {saved ? <><Check size={14} /> Saved</> : 'Save preferences'}
+          </button>
+        </header>
 
-          {/* Traveler Performance Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Days on Road</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-cyan">
-                14 Days
-              </div>
-              <div className="text-[11px] text-text-muted mt-1">4 states explored</div>
-            </div>
-
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Disruptions Handled</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-orange">
-                5 Fixed
-              </div>
-              <div className="text-[11px] text-text-muted mt-1">0 missed activities</div>
-            </div>
-
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Budget Optimized</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-green">
-                ₹11,400
-              </div>
-              <div className="text-[11px] text-text-muted mt-1">Below target caps</div>
-            </div>
-
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Schedule Fidelity</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-purple">
-                98.6%
-              </div>
-              <div className="text-[11px] text-text-muted mt-1">Minimal drift</div>
-            </div>
-          </div>
-
-          <div className="grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-8">
-            
-            {/* Left: Preferences & Agent Settings */}
-            <div className="space-y-6">
-              
-              {/* Agent Automation Settings */}
-              <div className="glass-card rounded-2xl p-6 border border-border-subtle space-y-5">
-                <div className="flex items-center gap-2 text-am-cyan font-bold text-sm">
-                  <Bot size={18} />
-                  Manzilo Autonomous Sentinel Permissions
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-navy-900/60 border border-border-subtle/70">
-                    <div>
-                      <div className="text-sm font-semibold text-text-primary">
-                        Auto-Apply Minor Replans
-                      </div>
-                      <div className="text-xs text-text-secondary">
-                        Automatically adjust schedule if disruption delay is under 30 minutes
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={autoReplanMinor}
-                      aria-label="Auto-apply minor replans"
-                      onClick={() => setAutoReplanMinor(!autoReplanMinor)}
-                      className={`w-12 h-6 rounded-full transition-colors relative ${
-                        autoReplanMinor ? 'bg-am-orange' : 'bg-navy-800'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded-full bg-white transition-transform absolute top-1 ${
-                        autoReplanMinor ? 'right-1' : 'left-1'
-                      }`} />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-navy-900/60 border border-border-subtle/70">
-                    <div>
-                      <div className="text-sm font-semibold text-text-primary">
-                        Predictive Weather Radar Alerts
-                      </div>
-                      <div className="text-xs text-text-secondary">
-                        Receive proactive alternative routes when precipitation probability exceeds 60%
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={weatherAlerts}
-                      aria-label="Predictive weather radar alerts"
-                      onClick={() => setWeatherAlerts(!weatherAlerts)}
-                      className={`w-12 h-6 rounded-full transition-colors relative ${
-                        weatherAlerts ? 'bg-am-cyan' : 'bg-navy-800'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded-full bg-white transition-transform absolute top-1 ${
-                        weatherAlerts ? 'right-1' : 'left-1'
-                      }`} />
-                    </button>
-                  </div>
+        <div className="app-layout">
+          <main className="space-y-3">
+            <section className="app-panel app-panel-pad">
+              <div className="flex items-center gap-3">
+                <span className="grid h-12 w-12 place-items-center rounded-full border border-am-orange/20 bg-am-orange/10 text-am-orange">
+                  <Compass size={20} />
+                </span>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[.15em] text-text-muted">Demo profile</p>
+                  <h2 className="mt-1 text-2xl font-semibold">How should the journey feel?</h2>
                 </div>
               </div>
 
-              {/* Travel Preferences Form */}
-              <div className="glass-card rounded-2xl p-6 border border-border-subtle space-y-5">
-                <div className="flex items-center gap-2 text-am-orange font-bold text-sm">
-                  <Sliders size={18} />
-                  Travel DNA & Preferences
+              <div className="mt-7 grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className="field-label" htmlFor="food">Food style</label>
+                  <select id="food" className="select" value={food} onChange={(event) => setFood(event.target.value)}>
+                    <option>Local Culinary Explorer</option>
+                    <option>Pure Vegetarian</option>
+                    <option>Vegan & Organic</option>
+                    <option>Street Food Connoisseur</option>
+                  </select>
                 </div>
+                <div>
+                  <label className="field-label" htmlFor="transit">Preferred transit</label>
+                  <select id="transit" className="select" value={transit} onChange={(event) => setTransit(event.target.value)}>
+                    <option>Scenic Private Cab</option>
+                    <option>Self-Drive SUV</option>
+                    <option>Electric & Public Transit</option>
+                    <option>Walking & Bicycles</option>
+                  </select>
+                </div>
+              </div>
+            </section>
 
-                <div className="grid sm:grid-cols-2 gap-4">
+            <section className="app-panel app-panel-pad">
+              <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
+                <Sparkles size={14} />
+                Adaptation preferences
+              </div>
+
+              {[
+                {
+                  label: 'Auto-apply small replans',
+                  text: 'Allow minor schedule shifts in the demo without asking every time.',
+                  value: autoReplan,
+                  set: setAutoReplan,
+                },
+                {
+                  label: 'Show weather scenarios',
+                  text: 'Surface the demo disruption flow when an outdoor plan becomes vulnerable.',
+                  value: weatherAlerts,
+                  set: setWeatherAlerts,
+                },
+              ].map((item) => (
+                <div key={item.label} className="mt-4 flex items-center justify-between gap-5 border-t border-white/8 pt-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">
-                      Culinary Style
-                    </label>
-                    <select
-                      value={dietary}
-                      onChange={(e) => setDietary(e.target.value)}
-                      className="w-full bg-navy-900 border border-border-subtle rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-text-primary"
-                    >
-                      <option>Local Culinary Explorer</option>
-                      <option>Pure Vegetarian</option>
-                      <option>Vegan & Organic</option>
-                      <option>Street Food Connoisseur</option>
-                    </select>
+                    <p className="text-sm font-semibold">{item.label}</p>
+                    <p className="mt-1 max-w-xl text-xs leading-5 text-text-muted">{item.text}</p>
                   </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={item.value}
+                    onClick={() => item.set(!item.value)}
+                    className={'relative h-7 w-12 shrink-0 rounded-full border transition ' + (item.value ? 'border-am-cyan/30 bg-am-cyan/18' : 'border-white/10 bg-white/5')}
+                  >
+                    <span className={'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' + (item.value ? 'left-6' : 'left-1')} />
+                  </button>
+                </div>
+              ))}
+            </section>
+          </main>
 
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">
-                      Preferred Transit
-                    </label>
-                    <select
-                      value={transitPref}
-                      onChange={(e) => setTransitPref(e.target.value)}
-                      className="w-full bg-navy-900 border border-border-subtle rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-text-primary"
-                    >
-                      <option>Scenic Private Cab</option>
-                      <option>Self-Drive SUV</option>
-                      <option>Electric & Public Transit</option>
-                      <option>Walking & Bicycles</option>
-                    </select>
+          <aside className="app-panel app-panel-pad self-start">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-bold">
+                <Heart size={14} className="text-am-orange" />
+                Saved inspiration
+              </div>
+              <Link to="/destinations" className="text-[10px] font-bold text-am-cyan">Explore more</Link>
+            </div>
+            <div className="mt-4 space-y-2">
+              {destinations.slice(0, 4).map((destination) => (
+                <Link
+                  key={destination.slug}
+                  to={'/destinations/' + destination.slug}
+                  className="group flex items-center gap-3 rounded-xl border border-white/7 p-2 hover:bg-white/[.03]"
+                >
+                  <img src={destination.image} alt="" className="h-12 w-12 rounded-lg object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold group-hover:text-am-gold">{destination.name}</p>
+                    <p className="truncate text-[10px] text-text-muted">{destination.categories.slice(0, 2).join(' • ')}</p>
                   </div>
-                </div>
-              </div>
+                  <Route size={13} className="text-text-muted" />
+                </Link>
+              ))}
             </div>
-
-            {/* Right: Bucket List Destinations */}
-            <div className="space-y-6">
-              <div className="glass-card rounded-2xl p-6 border border-border-subtle">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-[family-name:var(--font-heading)] text-base font-bold text-text-primary flex items-center gap-2">
-                    <Heart size={16} className="text-am-orange" />
-                    Saved Destinations
-                  </h3>
-                  <Link to="/destinations" className="text-xs text-am-cyan hover:underline">
-                    Explore all →
-                  </Link>
-                </div>
-
-                <div className="space-y-3">
-                  {bucketList.map(item => (
-                    <Link
-                      key={item.slug}
-                      to={`/destinations/${item.slug}`}
-                      className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-navy-900/60 transition-colors group"
-                    >
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-12 h-12 rounded-xl object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold text-sm text-text-primary group-hover:text-am-orange transition-colors truncate">
-                          {item.name}
-                        </div>
-                        <div className="text-[11px] text-text-secondary truncate">
-                          {item.bestTime} • {item.budget}
-                        </div>
-                      </div>
-                      <ChevronRight size={16} className="text-text-muted group-hover:text-text-primary" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          </aside>
         </div>
-      </div>
+      </section>
     </PageTransition>
   )
 }
