@@ -48,13 +48,13 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1">
+        <div className="hidden lg:flex items-center justify-center gap-3 xl:gap-5">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
               end={link.path === '/'}
-              className={({ isActive }) => `relative rounded-lg px-3.5 xl:px-4 py-2 text-sm font-medium transition-colors duration-200 ${isActive ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+              className={({ isActive }) => `relative rounded-lg px-2.5 py-2 text-sm font-medium transition-colors duration-200 ${isActive ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}
             >
               {({ isActive }) => <>
                 {link.label}
