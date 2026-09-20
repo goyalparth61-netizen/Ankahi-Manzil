@@ -122,6 +122,9 @@ export default function Profile() {
                     </div>
                     <button
                       type="button"
+                      role="switch"
+                      aria-checked={autoReplanMinor}
+                      aria-label="Auto-apply minor replans"
                       onClick={() => setAutoReplanMinor(!autoReplanMinor)}
                       className={`w-12 h-6 rounded-full transition-colors relative ${
                         autoReplanMinor ? 'bg-am-orange' : 'bg-navy-800'
@@ -144,6 +147,9 @@ export default function Profile() {
                     </div>
                     <button
                       type="button"
+                      role="switch"
+                      aria-checked={weatherAlerts}
+                      aria-label="Predictive weather radar alerts"
                       onClick={() => setWeatherAlerts(!weatherAlerts)}
                       className={`w-12 h-6 rounded-full transition-colors relative ${
                         weatherAlerts ? 'bg-am-cyan' : 'bg-navy-800'
