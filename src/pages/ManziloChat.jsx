@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Bot, Compass, Send, Sparkles, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -6,23 +6,101 @@ import { chatWithManzilo } from '../services/manziloService'
 import PageTransition from '../components/layout/PageTransition'
 
 const quick = [
-  'Plan 4 days in Manali',
+  'Can I add paragliding tomorrow?',
   'Help me reduce the budget',
-  'What would you do in Goa?',
-  'Explain how replanning works',
+  'What if my flight is delayed?',
+  'Why did you change the itinerary?',
+  'Find cafes near my trip',
 ]
 
 const firstMessage = {
   id: 'hello',
   sender: 'manzilo',
-  text: 'Tell me what kind of trip you are trying to make. I can reason over the demo destination, budget and itinerary context available in this frontend.',
+  text: 'Tell me what kind of trip you are trying to make. When the FastAPI backend is online, I can use persisted trip context, conversation memory and rich travel widgets.',
+  widget: null,
+  source: 'local',
+}
+
+function Widget({ widget }) {
+  if (!widget) return null
+
+  return (
+    <div className="mt-3 rounded-2xl border border-am-cyan/15 bg-am-cyan/[.045] p-4">
+      <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
+        <Sparkles size={13} />
+        {widget.title || 'Manzilo insight'}
+      </div>
+
+      {widget.items && (
+        <div className="mt-3 space-y-2">
+          {widget.items.map((item) => (
+            <div key={item.time + item.desc} className="grid gap-1 rounded-xl border border-white/7 bg-black/10 p-3 sm:grid-cols-[5rem_1fr_auto]">
+              <span className="font-mono text-[10px] text-am-gold">{item.time}</span>
+              <span className="text-xs font-semibold">{item.desc}</span>
+              <span className="text-[10px] text-am-green">{item.status}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.steps && (
+        <div className="mt-3 space-y-2">
+          {widget.steps.map((step) => (
+            <div key={step} className="rounded-xl border border-white/7 bg-black/10 px-3 py-2 text-xs leading-5 text-text-secondary">
+              {step}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.places && (
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          {widget.places.map((place) => (
+            <div key={place.name} className="rounded-xl border border-white/7 bg-black/10 p-3">
+              <p className="text-xs font-bold">{place.name}</p>
+              <p className="mt-1 text-[11px] leading-5 text-text-secondary">{place.highlight}</p>
+              <p className="mt-2 text-[10px] font-bold text-am-gold">{place.avg}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.changes && (
+        <div className="mt-3 space-y-2">
+          {widget.changes.map((change) => (
+            <div key={change.from} className="rounded-xl border border-white/7 bg-black/10 p-3 text-xs">
+              <p className="text-am-orange/70 line-through">{change.from}</p>
+              <p className="mt-1 font-semibold text-am-green">{change.to}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.rationale && <p className="mt-3 text-xs leading-6 text-text-secondary">{widget.rationale}</p>}
+      {widget.impact && <p className="mt-3 text-xs font-semibold text-am-gold">{widget.impact}</p>}
+      {widget.guarantee && <p className="mt-3 text-[11px] leading-5 text-text-muted">{widget.guarantee}</p>}
+      {widget.savings && <p className="mt-3 text-sm font-bold text-am-green">{widget.savings}</p>}
+    </div>
+  )
+}
+
+function getLatestTripId() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('am_saved_trips') || '[]')
+    return saved?.[0]?.id || saved?.[0]?.tripId || null
+  } catch {
+    return null
+  }
 }
 
 export default function ManziloChat() {
   const [messages, setMessages] = useState([firstMessage])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
+  const [conversationId, setConversationId] = useState(null)
+  const [source, setSource] = useState('local')
   const endRef = useRef(null)
+  const tripId = useMemo(() => getLatestTripId(), [])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -37,19 +115,28 @@ export default function ManziloChat() {
     setTyping(true)
 
     try {
-      const result = await chatWithManzilo(message)
+      const result = await chatWithManzilo(message, conversationId, tripId)
+      setConversationId(result.conversationId || conversationId)
+      setSource(result.source || 'local')
       setMessages((current) => [
         ...current,
-        { id: Date.now() + 1, sender: 'manzilo', text: result.response },
-      ])
-    } catch {
-      setMessages((current) => [
-        ...current,
-        { id: Date.now() + 1, sender: 'manzilo', text: 'The demo response layer is unavailable right now.' },
+        {
+          id: Date.now() + 1,
+          sender: 'manzilo',
+          text: result.response,
+          widget: result.widget || null,
+          source: result.source || 'local',
+        },
       ])
     } finally {
       setTyping(false)
     }
+  }
+
+  const clearConversation = () => {
+    setMessages([firstMessage])
+    setConversationId(null)
+    setSource('local')
   }
 
   return (
@@ -84,18 +171,25 @@ export default function ManziloChat() {
                 <span className="ai-orb" />
                 <div>
                   <p className="text-sm font-semibold">Manzilo</p>
-                  <p className="text-[10px] text-am-green">mock service connected</p>
+                  <p className={`text-[10px] ${source === 'backend' ? 'text-am-green' : 'text-am-gold'}`}>
+                    {source === 'backend' ? 'FastAPI agent connected' : 'local fallback active'}
+                  </p>
                 </div>
               </div>
 
               <div className="mt-5 surface-soft rounded-xl p-3">
                 <div className="flex items-center gap-2 text-xs font-bold">
                   <Compass size={13} className="text-am-orange" />
-                  Demo travel context
+                  Trip grounding
                 </div>
                 <p className="mt-2 text-[11px] leading-5 text-text-muted">
-                  The current service responds to general planning, Manali, Goa and budget prompts. No live external AI API is connected on this branch.
+                  {tripId
+                    ? `Latest saved trip ID: ${tripId}. It is sent with each backend chat request.`
+                    : 'No local trip selected. The backend can still ground the chat to its latest persisted trip.'}
                 </p>
+                {conversationId && (
+                  <p className="mt-2 truncate font-mono text-[10px] text-am-cyan">Conversation: {conversationId}</p>
+                )}
               </div>
 
               <p className="mb-2 mt-5 text-[10px] font-bold uppercase tracking-[.15em] text-text-muted">Try a prompt</p>
@@ -116,12 +210,12 @@ export default function ManziloChat() {
                 <span className="ai-orb" />
                 <div>
                   <p className="text-sm font-semibold">Manzilo conversation</p>
-                  <p className="text-[10px] text-text-muted">Context-aware demo responses</p>
+                  <p className="text-[10px] text-text-muted">Persistent backend memory when connected</p>
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => setMessages([firstMessage])}
+                onClick={clearConversation}
                 aria-label="Clear conversation"
                 className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-text-muted hover:bg-white/5 hover:text-white"
               >
@@ -137,8 +231,11 @@ export default function ManziloChat() {
                   animate={{ opacity: 1, y: 0 }}
                   className={message.sender === 'user' ? 'flex justify-end' : 'flex justify-start'}
                 >
-                  <div className={message.sender === 'user' ? 'ai-message user max-w-[80%]' : 'ai-message bot max-w-[80%]'}>
-                    {message.text}
+                  <div className="max-w-[88%] sm:max-w-[82%]">
+                    <div className={message.sender === 'user' ? 'ai-message user' : 'ai-message bot'}>
+                      {message.text}
+                    </div>
+                    <Widget widget={message.widget} />
                   </div>
                 </motion.div>
               ))}
@@ -167,7 +264,7 @@ export default function ManziloChat() {
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   onKeyDown={(event) => event.key === 'Enter' && send()}
-                  placeholder="Ask about a place, budget or plan…"
+                  placeholder="Ask about a place, budget, delay, replan or nearby options…"
                   aria-label="Message Manzilo"
                   className="min-w-0 flex-1 border-0 bg-transparent text-sm text-white outline-none"
                 />
