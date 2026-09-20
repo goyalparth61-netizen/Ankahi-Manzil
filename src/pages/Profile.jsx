@@ -1,17 +1,86 @@
-import { useState } from 'react'
-import { Check, Compass, Heart, Route, Sparkles, User } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Check, Compass, Heart, RefreshCw, Route, Sparkles, User } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { destinations } from '../data/destinations'
+import { getProfile, updateProfile } from '../services/profileService'
 import PageTransition from '../components/layout/PageTransition'
 
+const interestOptions = [
+  'Nature',
+  'Adventure',
+  'Culture',
+  'Food',
+  'Wellness',
+  'Photography',
+  'Cafes & Nightlife',
+  'Trekking & Hiking',
+]
+
 export default function Profile() {
-  const [autoReplan, setAutoReplan] = useState(true)
-  const [weatherAlerts, setWeatherAlerts] = useState(true)
-  const [food, setFood] = useState('Local Culinary Explorer')
-  const [transit, setTransit] = useState('Scenic Private Cab')
+  const [travelStyle, setTravelStyle] = useState('balanced')
+  const [budgetPreference, setBudgetPreference] = useState('Comfort')
+  const [preferredInterests, setPreferredInterests] = useState(['Nature', 'Culture'])
+  const [savedDestinations, setSavedDestinations] = useState(['manali', 'goa', 'jaipur'])
+  const [sentinelEnabled, setSentinelEnabled] = useState(true)
+  const [source, setSource] = useState('local')
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
-  const save = () => {
+  useEffect(() => {
+    let active = true
+
+    const load = async () => {
+      const profile = await getProfile()
+      if (!active) return
+
+      setTravelStyle(profile.travelStyle || 'balanced')
+      setBudgetPreference(profile.budgetPreference || 'Comfort')
+      setPreferredInterests(profile.preferredInterests || [])
+      setSavedDestinations(profile.savedDestinations || [])
+      setSentinelEnabled(profile.sentinelEnabled !== false)
+      setSource(profile.source || 'local')
+      setLoading(false)
+    }
+
+    load()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const savedPlaces = useMemo(() => {
+    const selected = destinations.filter((destination) => savedDestinations.includes(destination.slug))
+    return selected.length ? selected : destinations.slice(0, 4)
+  }, [savedDestinations])
+
+  const toggleInterest = (interest) => {
+    setPreferredInterests((current) =>
+      current.includes(interest)
+        ? current.filter((item) => item !== interest)
+        : [...current, interest]
+    )
+  }
+
+  const toggleSavedDestination = (slug) => {
+    setSavedDestinations((current) =>
+      current.includes(slug)
+        ? current.filter((item) => item !== slug)
+        : [...current, slug]
+    )
+  }
+
+  const save = async () => {
+    setSaving(true)
+    const profile = await updateProfile({
+      travelStyle,
+      preferredInterests,
+      budgetPreference,
+      savedDestinations,
+      sentinelEnabled,
+    })
+    setSource(profile.source || 'local')
+    setSaving(false)
     setSaved(true)
     window.setTimeout(() => setSaved(false), 1800)
   }
@@ -27,48 +96,80 @@ export default function Profile() {
             </div>
             <h1>
               Your travel DNA.
-              <span className="block serif-accent">A quieter way to personalize.</span>
+              <span className="block serif-accent">Now connected to the journey engine.</span>
             </h1>
             <p className="lede mt-5 max-w-2xl">
-              This is a demo preference workspace. It does not represent an authenticated account or persist to a backend.
+              Preferences are loaded from and saved to the FastAPI profile endpoint when available, with a safe local fallback.
             </p>
           </div>
-          <button type="button" className="button-primary self-start" onClick={save}>
-            {saved ? <><Check size={14} /> Saved</> : 'Save preferences'}
+          <button type="button" className="button-primary self-start" onClick={save} disabled={saving || loading}>
+            {saving ? (
+              <>
+                <RefreshCw size={14} className="animate-spin" />
+                Saving…
+              </>
+            ) : saved ? (
+              <>
+                <Check size={14} />
+                Saved
+              </>
+            ) : (
+              'Save preferences'
+            )}
           </button>
         </header>
 
         <div className="app-layout">
           <main className="space-y-3">
             <section className="app-panel app-panel-pad">
-              <div className="flex items-center gap-3">
-                <span className="grid h-12 w-12 place-items-center rounded-full border border-am-orange/20 bg-am-orange/10 text-am-orange">
-                  <Compass size={20} />
-                </span>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[.15em] text-text-muted">Demo profile</p>
-                  <h2 className="mt-1 text-2xl font-semibold">How should the journey feel?</h2>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-12 w-12 place-items-center rounded-full border border-am-orange/20 bg-am-orange/10 text-am-orange">
+                    <Compass size={20} />
+                  </span>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[.15em] text-text-muted">Preference profile</p>
+                    <h2 className="mt-1 text-2xl font-semibold">How should Manzilo shape the trip?</h2>
+                  </div>
                 </div>
+                <span className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[.13em] ${source === 'backend' ? 'border-am-green/25 bg-am-green/10 text-am-green' : 'border-am-gold/20 bg-am-gold/10 text-am-gold'}`}>
+                  {loading ? 'syncing' : source === 'backend' ? 'FastAPI' : 'fallback'}
+                </span>
               </div>
 
               <div className="mt-7 grid gap-5 sm:grid-cols-2">
                 <div>
-                  <label className="field-label" htmlFor="food">Food style</label>
-                  <select id="food" className="select" value={food} onChange={(event) => setFood(event.target.value)}>
-                    <option>Local Culinary Explorer</option>
-                    <option>Pure Vegetarian</option>
-                    <option>Vegan & Organic</option>
-                    <option>Street Food Connoisseur</option>
+                  <label className="field-label" htmlFor="travelStyle">Travel pace</label>
+                  <select id="travelStyle" className="select" value={travelStyle} onChange={(event) => setTravelStyle(event.target.value)}>
+                    <option value="slow">Slow & immersive</option>
+                    <option value="balanced">Balanced</option>
+                    <option value="packed">See more, move more</option>
                   </select>
                 </div>
                 <div>
-                  <label className="field-label" htmlFor="transit">Preferred transit</label>
-                  <select id="transit" className="select" value={transit} onChange={(event) => setTransit(event.target.value)}>
-                    <option>Scenic Private Cab</option>
-                    <option>Self-Drive SUV</option>
-                    <option>Electric & Public Transit</option>
-                    <option>Walking & Bicycles</option>
+                  <label className="field-label" htmlFor="budgetPreference">Budget preference</label>
+                  <select id="budgetPreference" className="select" value={budgetPreference || ''} onChange={(event) => setBudgetPreference(event.target.value)}>
+                    <option value="Value">Value focused</option>
+                    <option value="Comfort">Comfort</option>
+                    <option value="Premium">Premium</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <span className="field-label">Preferred interests</span>
+                <div className="flex flex-wrap gap-2">
+                  {interestOptions.map((interest) => (
+                    <button
+                      key={interest}
+                      type="button"
+                      className="ai-chip"
+                      data-active={preferredInterests.includes(interest)}
+                      onClick={() => toggleInterest(interest)}
+                    >
+                      {interest}
+                    </button>
+                  ))}
                 </div>
               </div>
             </section>
@@ -76,39 +177,56 @@ export default function Profile() {
             <section className="app-panel app-panel-pad">
               <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
                 <Sparkles size={14} />
-                Adaptation preferences
+                Sentinel preference
               </div>
 
-              {[
-                {
-                  label: 'Auto-apply small replans',
-                  text: 'Allow minor schedule shifts in the demo without asking every time.',
-                  value: autoReplan,
-                  set: setAutoReplan,
-                },
-                {
-                  label: 'Show weather scenarios',
-                  text: 'Surface the demo disruption flow when an outdoor plan becomes vulnerable.',
-                  value: weatherAlerts,
-                  set: setWeatherAlerts,
-                },
-              ].map((item) => (
-                <div key={item.label} className="mt-4 flex items-center justify-between gap-5 border-t border-white/8 pt-4">
-                  <div>
-                    <p className="text-sm font-semibold">{item.label}</p>
-                    <p className="mt-1 max-w-xl text-xs leading-5 text-text-muted">{item.text}</p>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={item.value}
-                    onClick={() => item.set(!item.value)}
-                    className={'relative h-7 w-12 shrink-0 rounded-full border transition ' + (item.value ? 'border-am-cyan/30 bg-am-cyan/18' : 'border-white/10 bg-white/5')}
-                  >
-                    <span className={'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' + (item.value ? 'left-6' : 'left-1')} />
-                  </button>
+              <div className="mt-4 flex items-center justify-between gap-5 border-t border-white/8 pt-4">
+                <div>
+                  <p className="text-sm font-semibold">Enable Sentinel monitoring</p>
+                  <p className="mt-1 max-w-xl text-xs leading-5 text-text-muted">
+                    Keep disruption monitoring enabled for trips that are persisted in the FastAPI backend.
+                  </p>
                 </div>
-              ))}
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={sentinelEnabled}
+                  onClick={() => setSentinelEnabled((value) => !value)}
+                  className={'relative h-7 w-12 shrink-0 rounded-full border transition ' + (sentinelEnabled ? 'border-am-cyan/30 bg-am-cyan/18' : 'border-white/10 bg-white/5')}
+                >
+                  <span className={'absolute top-1 h-5 w-5 rounded-full bg-white transition-all ' + (sentinelEnabled ? 'left-6' : 'left-1')} />
+                </button>
+              </div>
+            </section>
+
+            <section className="app-panel app-panel-pad">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold text-am-gold">Saved inspiration</p>
+                  <p className="mt-1 text-xs text-text-muted">Click destinations to include or remove them from the backend profile.</p>
+                </div>
+                <Heart size={15} className="text-am-orange" />
+              </div>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {destinations.slice(0, 8).map((destination) => {
+                  const selected = savedDestinations.includes(destination.slug)
+                  return (
+                    <button
+                      key={destination.slug}
+                      type="button"
+                      onClick={() => toggleSavedDestination(destination.slug)}
+                      className={`flex items-center gap-3 rounded-xl border p-2 text-left transition ${selected ? 'border-am-gold/20 bg-am-gold/[.06]' : 'border-white/7 hover:bg-white/[.03]'}`}
+                    >
+                      <img src={destination.image} alt="" className="h-12 w-12 rounded-lg object-cover" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold">{destination.name}</p>
+                        <p className="truncate text-[10px] text-text-muted">{destination.categories.slice(0, 2).join(' • ')}</p>
+                      </div>
+                      {selected && <Check size={13} className="text-am-gold" />}
+                    </button>
+                  )
+                })}
+              </div>
             </section>
           </main>
 
@@ -116,12 +234,12 @@ export default function Profile() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold">
                 <Heart size={14} className="text-am-orange" />
-                Saved inspiration
+                Current saved places
               </div>
               <Link to="/destinations" className="text-[10px] font-bold text-am-cyan">Explore more</Link>
             </div>
             <div className="mt-4 space-y-2">
-              {destinations.slice(0, 4).map((destination) => (
+              {savedPlaces.slice(0, 5).map((destination) => (
                 <Link
                   key={destination.slug}
                   to={'/destinations/' + destination.slug}
