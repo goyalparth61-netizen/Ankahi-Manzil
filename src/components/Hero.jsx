@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Sparkles, ArrowRight } from 'lucide-react'
+import { Sparkles, ArrowRight, MapPin, Route, ShieldCheck } from 'lucide-react'
 
 export default function Hero() {
   return (
-    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
+    <section id="hero" className="hero-shell relative min-h-screen flex items-center overflow-hidden">
       {/* Background gradient orbs */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/6 w-[500px] h-[500px] bg-am-orange/5 rounded-full blur-[120px]" />
@@ -12,7 +12,7 @@ export default function Hero() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-am-blue/3 rounded-full blur-[150px]" />
       </div>
 
-      <div className="container-max mx-auto px-4 lg:px-8 pt-24 lg:pt-32 pb-12 lg:pb-20">
+      <div className="page-shell pt-28 lg:pt-36 pb-16 lg:pb-24">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* LEFT — Text Content */}
           <motion.div
@@ -28,7 +28,7 @@ export default function Hero() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-navy-700/60 border border-border-subtle text-xs font-medium text-text-secondary mb-8"
             >
               <Sparkles size={14} className="text-am-gold" />
-              <span>AI Travel Operating System</span>
+              <span>Adaptive journeys • hidden stories • smarter detours</span>
             </motion.div>
 
             {/* Headline */}
@@ -38,9 +38,9 @@ export default function Hero() {
               transition={{ delay: 0.3, duration: 0.7 }}
               className="font-[family-name:var(--font-heading)] text-5xl sm:text-6xl lg:text-7xl xl:text-[5.2rem] font-bold leading-[1.05] tracking-tight mb-6"
             >
-              <span className="text-text-primary">Ankahi</span>
+              <span className="text-text-primary">Find the journey</span>
               <br />
-              <span className="gradient-text-warm">Manzil</span>
+              <span className="gradient-text-warm">no guidebook can script.</span>
             </motion.h1>
 
             {/* Tagline */}
@@ -50,7 +50,7 @@ export default function Hero() {
               transition={{ delay: 0.5, duration: 0.6 }}
               className="text-lg lg:text-xl text-text-secondary/80 font-light italic mb-4 tracking-wide"
             >
-              Your journey. Always in motion.
+              Ankahi Manzil — where the obvious route ends, your story begins.
             </motion.p>
 
             {/* Description */}
@@ -60,9 +60,9 @@ export default function Hero() {
               transition={{ delay: 0.6, duration: 0.6 }}
               className="text-base lg:text-lg text-text-secondary leading-relaxed max-w-xl mb-10"
             >
-              More than just an itinerary, Ankahi Manzil is your AI travel
-              companion that plans, monitors and adapts your journey in
-              real-time — so you can focus on experiencing the unknown.
+              Discover meaningful Indian escapes, shape a trip around your pace and budget,
+              and let Manzilo adapt the plan when weather, timing or travel conditions change.
+              Less itinerary stress. More room for the unexpected.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -81,7 +81,7 @@ export default function Hero() {
                 className="btn-secondary text-base flex items-center gap-2 px-7 py-3.5"
               >
                 <ArrowRight size={16} className="text-am-orange" />
-                <span>See How It Works</span>
+                <span>Explore How It Works</span>
               </Link>
             </motion.div>
           </motion.div>
@@ -91,10 +91,10 @@ export default function Hero() {
             initial={{ opacity: 0, x: 40, scale: 0.95 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ delay: 0.4, duration: 0.9, ease: 'easeOut' }}
-            className="relative"
+            className="relative hero-visual"
           >
             {/* Main image container */}
-            <div className="relative rounded-3xl overflow-hidden group">
+            <div className="hero-image-frame relative rounded-[2rem] overflow-hidden group">
               {/* Glow effects */}
               <div className="absolute -inset-1 bg-gradient-to-r from-am-orange/20 via-am-blue/10 to-am-cyan/20 rounded-3xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-700" />
 
@@ -102,7 +102,7 @@ export default function Hero() {
                 <img
                   src="/images/hero-traveler.jpg"
                   alt="Solo traveler overlooking mountains at sunrise"
-                  className="w-full h-[400px] sm:h-[480px] lg:h-[540px] object-cover transition-transform duration-[2s] group-hover:scale-105"
+                  className="w-full h-[430px] sm:h-[520px] lg:h-[620px] object-cover transition-transform duration-[2s] group-hover:scale-105"
                   loading="eager"
                 />
                 {/* Cinematic overlay */}
@@ -135,6 +135,57 @@ export default function Hero() {
                 <text x="130" y="26" fill="rgba(255,255,255,0.5)" fontSize="16" transform="rotate(-15, 130, 26)">✈</text>
               </motion.g>
             </svg>
+
+            <motion.div
+              initial={{ opacity: 0, x: -14, y: 8 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ delay: 1.05, duration: 0.55 }}
+              className="hero-float-card absolute left-3 top-8 sm:-left-7 sm:top-16 rounded-2xl px-4 py-3"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-am-orange/15 text-am-orange">
+                  <MapPin size={17} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Discovery mode</p>
+                  <p className="text-sm font-semibold text-text-primary">Beyond the obvious</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 14, y: 8 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.55 }}
+              className="hero-float-card absolute -right-2 top-[38%] hidden rounded-2xl px-4 py-3 sm:block lg:-right-8"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-am-cyan/15 text-am-cyan">
+                  <Route size={17} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Adaptive route</p>
+                  <p className="text-sm font-semibold text-text-primary">Plans that can move</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.35, duration: 0.55 }}
+              className="hero-float-card absolute bottom-5 left-4 rounded-2xl px-4 py-3 sm:bottom-8 sm:left-7"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-am-green/15 text-am-green">
+                  <ShieldCheck size={17} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Manzilo</p>
+                  <p className="text-sm font-semibold text-text-primary">Ready for detours</p>
+                </div>
+              </div>
+            </motion.div>
 
             {/* Floating handwritten text */}
             <motion.div
