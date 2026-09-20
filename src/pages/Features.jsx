@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   AlertTriangle, ArrowRight, Brain, Check, Clock3, Compass,
-  IndianRupee, MapPin, Route, Send, Sparkles, WandSparkles
+  IndianRupee, MapPin, Route, Send, Sparkles
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { destinations } from '../data/destinations'
