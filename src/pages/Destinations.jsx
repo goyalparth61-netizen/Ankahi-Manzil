@@ -1,26 +1,99 @@
-import { useState, useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Search, MapPin, Star, ArrowRight } from 'lucide-react'
+import {
+  ArrowRight, Compass, MapPin, Search, SlidersHorizontal, Star
+} from 'lucide-react'
 import { destinations, allCategories } from '../data/destinations'
 import PageTransition from '../components/layout/PageTransition'
+
+function DestinationEditorialCard({ destination, index, inView }) {
+  const featured = index % 6 === 0 || index % 6 === 3
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: Math.min(index * .06, .45), duration: .55 }}
+      className={featured ? 'lg:col-span-2' : ''}
+    >
+      <Link
+        to={`/destinations/${destination.slug}`}
+        className={`destination-editorial-card group block ${featured ? 'featured' : ''}`}
+        aria-label={`Explore ${destination.name}`}
+      >
+        <img
+          src={destination.image}
+          alt={`${destination.name} travel destination`}
+          className="destination-image"
+          loading="lazy"
+          onError={(event) => {
+            event.currentTarget.onerror = null
+            event.currentTarget.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80'
+          }}
+        />
+
+        <div className="absolute left-5 top-5 z-10 flex items-center gap-2">
+          <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white/80 backdrop-blur-md">
+            {destination.categories[0]}
+          </span>
+          <span className="flex items-center gap-1 rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
+            <Star size={12} className="fill-am-gold text-am-gold" />
+            {destination.rating}
+          </span>
+        </div>
+
+        <div className="destination-copy">
+          <div className="mb-3 flex items-end justify-between gap-4">
+            <div>
+              <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-white/55">
+                <MapPin size={12} className="text-am-orange" />
+                India
+              </p>
+              <h2 className={`font-[family-name:var(--font-heading)] font-bold tracking-tight text-white ${featured ? 'text-3xl sm:text-4xl' : 'text-2xl'}`}>
+                {destination.name}
+              </h2>
+            </div>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition-transform duration-300 group-hover:translate-x-1">
+              <ArrowRight size={16} />
+            </span>
+          </div>
+
+          <p className={`text-sm leading-6 text-white/68 ${featured ? 'max-w-2xl' : 'line-clamp-2'}`}>
+            {destination.description}
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-semibold text-white/55">
+            <span>{destination.suggestedDays}</span>
+            <span className="h-1 w-1 rounded-full bg-white/25" />
+            <span>{destination.bestTime}</span>
+            <span className="h-1 w-1 rounded-full bg-white/25" />
+            <span className="text-am-gold">{destination.budget}</span>
+          </div>
+        </div>
+      </Link>
+    </motion.article>
+  )
+}
 
 export default function Destinations() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState('All')
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
+  const resultsRef = useRef(null)
+  const inView = useInView(resultsRef, { once: true, margin: '-50px' })
 
   const filteredDestinations = useMemo(() => {
-    return destinations.filter((dest) => {
+    const query = searchQuery.trim().toLowerCase()
+
+    return destinations.filter((destination) => {
       const matchesSearch =
-        dest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        dest.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        dest.categories.some((c) => c.toLowerCase().includes(searchQuery.toLowerCase()))
+        !query ||
+        destination.name.toLowerCase().includes(query) ||
+        destination.description.toLowerCase().includes(query) ||
+        destination.categories.some((category) => category.toLowerCase().includes(query))
 
       const matchesFilter =
-        activeFilter === 'All' ||
-        dest.categories.includes(activeFilter)
+        activeFilter === 'All' || destination.categories.includes(activeFilter)
 
       return matchesSearch && matchesFilter
     })
@@ -28,146 +101,133 @@ export default function Destinations() {
 
   return (
     <PageTransition>
-      {/* Hero */}
-      <section className="relative pt-32 lg:pt-40 pb-16 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-am-orange/5 rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-am-cyan/5 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="container-max mx-auto px-4 lg:px-8 text-center relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 text-xs font-medium text-text-secondary mb-6"
-          >
-            <MapPin size={14} className="text-am-orange" />
-            EXPLORE DESTINATIONS
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.7 }}
-            className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 max-w-3xl mx-auto"
-          >
-            Where will your next{' '}
-            <span className="gradient-text-brand">story begin?</span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-base lg:text-lg text-text-secondary max-w-xl mx-auto mb-10"
-          >
-            Explore destinations and let Manzilo turn inspiration
-            into an intelligent journey.
-          </motion.p>
-
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            className="max-w-lg mx-auto mb-8"
-          >
-            <div className="relative">
-              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Where do you want to go?"
-                className="w-full bg-navy-700/50 border border-border-subtle rounded-xl pl-11 pr-4 py-3.5 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-am-orange/40 focus:ring-1 focus:ring-am-orange/20 transition-all"
-              />
-            </div>
-          </motion.div>
-
-          {/* Filter Chips */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="flex flex-wrap justify-center gap-2"
-          >
-            {allCategories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveFilter(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeFilter === cat
-                    ? 'bg-am-orange/20 text-am-orange border border-am-orange/30'
-                    : 'bg-navy-700/40 text-text-secondary border border-border-subtle hover:text-text-primary hover:border-border-light'
-                }`}
+      <section className="editorial-hero">
+        <div className="page-shell relative z-10">
+          <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_.85fr]">
+            <div className="hero-copy">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: .5 }}
+                className="kicker mb-5"
               >
-                {cat}
-              </button>
-            ))}
-          </motion.div>
+                <Compass size={14} className="text-am-orange" />
+                Destination atlas
+              </motion.div>
+
+              <motion.h1
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: .06, duration: .65 }}
+                className="display-title"
+              >
+                Travel by feeling,
+                <span className="block gradient-text-warm">not by checklist.</span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: .16, duration: .55 }}
+                className="copy-lg mt-7 max-w-2xl"
+              >
+                Search by place, mood, or experience. Ankahi Manzil helps you move from
+                inspiration to a destination that actually fits the journey you want.
+              </motion.p>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: .22, duration: .55 }}
+              className="travel-panel rounded-[1.5rem] p-5 sm:p-6"
+            >
+              <div className="mb-4 flex items-center gap-2 text-xs font-semibold text-text-secondary">
+                <SlidersHorizontal size={14} className="text-am-cyan" />
+                Discover your way
+              </div>
+
+              <div className="discovery-search relative rounded-2xl">
+                <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Try “mountains”, “culture”, “Goa”…"
+                  aria-label="Search destinations"
+                  className="w-full rounded-2xl border-0 bg-transparent py-4 pl-11 pr-4 text-sm outline-none"
+                />
+              </div>
+
+              <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {allCategories.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => setActiveFilter(category)}
+                    className="discovery-chip"
+                    data-active={activeFilter === category}
+                    aria-pressed={activeFilter === category}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-4 flex items-center justify-between text-xs text-text-muted">
+                <span>{filteredDestinations.length} places match your mood</span>
+                {(searchQuery || activeFilter !== 'All') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery('')
+                      setActiveFilter('All')
+                    }}
+                    className="font-semibold text-am-orange hover:text-am-warm"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Destination Grid */}
-      <section className="section-padding pt-8" ref={ref}>
-        <div className="container-max mx-auto">
+      <section ref={resultsRef} className="pb-24 lg:pb-32">
+        <div className="page-shell">
+          <div className="mb-8 flex items-end justify-between gap-5 border-b border-white/7 pb-5">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.15em] text-text-muted">Curated collection</p>
+              <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
+                {activeFilter === 'All' ? 'All destinations' : activeFilter}
+              </h2>
+            </div>
+            <Link to="/plan" className="hidden items-center gap-2 text-sm font-semibold text-am-cyan hover:text-am-teal sm:inline-flex">
+              Turn a place into a plan
+              <ArrowRight size={15} />
+            </Link>
+          </div>
+
           {filteredDestinations.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-text-secondary text-lg mb-2">No destinations found.</p>
-              <p className="text-text-muted text-sm">Try a different search or filter.</p>
+            <div className="travel-panel rounded-[1.5rem] px-6 py-20 text-center">
+              <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-am-orange/10 text-am-orange">
+                <MapPin size={20} />
+              </div>
+              <h2 className="text-2xl font-bold">No route found yet.</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
+                Try a broader mood or clear the current filters. The best detours are usually one search away.
+              </p>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-6">
-              {filteredDestinations.map((dest, i) => (
-                <motion.div
-                  key={dest.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: Math.min(i * 0.08, 0.6), duration: 0.5 }}
-                >
-                  <Link
-                    to={`/destinations/${dest.slug}`}
-                    className="group block relative rounded-2xl overflow-hidden border border-border-subtle hover:border-border-light transition-all duration-500"
-                  >
-                    <div className="relative h-72 sm:h-80 overflow-hidden">
-                      <img
-                        src={dest.image}
-                        alt={dest.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
-                      <div className="absolute inset-0 bg-am-orange/0 group-hover:bg-am-orange/5 transition-colors duration-500" />
-                    </div>
-
-                    <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <MapPin size={14} className="text-am-orange" />
-                            <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-text-primary group-hover:translate-x-1 transition-transform duration-300">
-                              {dest.name}
-                            </h3>
-                          </div>
-                          <p className="text-xs text-text-secondary">
-                            {dest.categories.join(' • ')}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1 bg-navy-700/60 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-border-subtle">
-                          <Star size={13} className="text-am-gold fill-am-gold" />
-                          <span className="text-sm font-semibold text-text-primary">{dest.rating}</span>
-                        </div>
-                      </div>
-                      {dest.bestTime && (
-                        <p className="text-xs text-text-muted">Best time: {dest.bestTime}</p>
-                      )}
-                    </div>
-                  </Link>
-                </motion.div>
+            <div className="grid gap-5 lg:grid-cols-3">
+              {filteredDestinations.map((destination, index) => (
+                <DestinationEditorialCard
+                  key={destination.id}
+                  destination={destination}
+                  index={index}
+                  inView={inView}
+                />
               ))}
             </div>
           )}
