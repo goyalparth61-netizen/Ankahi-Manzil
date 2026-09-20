@@ -20,8 +20,8 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border-subtle bg-navy-950">
-      <div className="container-max mx-auto px-4 lg:px-8 py-16">
+    <footer className="footer-shell border-t border-border-subtle">
+      <div className="page-shell py-14 lg:py-16">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
@@ -46,7 +46,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-text-secondary leading-relaxed max-w-xs italic">
-              "Every journey has an untold destination."
+              Every journey has an untold destination — and a story worth finding.
             </p>
           </div>
 
@@ -75,7 +75,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-border-subtle">
-        <div className="container-max mx-auto px-4 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="page-shell py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-text-muted">
             © 2026 Ankahi Manzil. All rights reserved.
           </p>
