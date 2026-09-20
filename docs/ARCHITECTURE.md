@@ -1,100 +1,166 @@
-# Ankahi Manzil Frontend Architecture
+# Frontend Architecture
 
 ## Scope
 
-This document describes the implementation on the `frontend` branch.
+This document covers the `frontend` branch of Ankahi Manzil.
 
-Ankahi Manzil is currently a client-side React application. The branch does not contain a production backend, database, authentication provider, or live travel API integration.
+The branch is a client-side React application. It does not contain a production backend, database or authentication provider.
 
-## Runtime Architecture
+## Product Architecture
+
+The frontend is organized around three user modes.
+
+### 1. Discover
+
+Routes:
+
+- `/`
+- `/destinations`
+- `/destinations/:slug`
+- `/about`
+
+Purpose:
+
+- create desire to travel
+- expose curated local destination data
+- move from visual discovery into planning
+
+### 2. Intelligence
+
+Routes:
+
+- `/features`
+- `/manzilo`
+- `/how-it-works`
+
+Purpose:
+
+- demonstrate Manzilo as a product interface
+- expose recommendation/route/replan reasoning
+- use the existing mock chat service for conversational responses
+
+### 3. Journey Workspace
+
+Routes:
+
+- `/plan`
+- `/trips`
+- `/trips/:id`
+- `/profile`
+
+Purpose:
+
+- collect trip constraints
+- generate a sample itinerary
+- save browser-local trip state
+- demonstrate disruption/replanning
+- manage demo travel preferences
+
+## Runtime Flow
 
 ```text
 Browser
   |
   v
-React 19 + React Router
+React 19
   |
-  +-- Shared Layout
-  |     +-- Navbar
-  |     +-- ScrollToTop
-  |     +-- Footer
+  +-- React Router
+  |    +-- Layout
+  |         +-- Navbar
+  |         +-- Outlet
+  |         +-- Footer
   |
-  +-- Pages
-  |     +-- Home
-  |     +-- Features
-  |     +-- Destinations
-  |     +-- DestinationDetails
-  |     +-- HowItWorks
-  |     +-- About
-  |     +-- TripPlanner
-  |     +-- MyTrips
-  |     +-- TripDetails
-  |     +-- ManziloChat
-  |     +-- Profile
-  |     +-- NotFound
+  +-- Local destination data
+  |    +-- src/data/destinations.js
   |
-  +-- Local data
-  |     +-- src/data/destinations.js
+  +-- Mock asynchronous services
+  |    +-- destinationService.js
+  |    +-- tripService.js
+  |    +-- manziloService.js
   |
-  +-- Mock service boundary
-  |     +-- destinationService.js
-  |     +-- tripService.js
-  |     +-- manziloService.js
-  |
-  +-- Browser persistence
-        +-- localStorage: am_saved_trips
+  +-- Browser state
+       +-- React component state
+       +-- localStorage: am_saved_trips
 ```
 
-## Routing
+## Design System
 
-`src/App.jsx` defines all routes under the shared `Layout` component. `BrowserRouter` is initialized in `src/main.jsx`, so production hosts need an SPA rewrite to `index.html`.
+`src/index.css` owns the global visual system.
 
-## Presentation Layer
+The reset intentionally avoids a generic card-heavy SaaS aesthetic. Its primary patterns are:
 
-The design system lives primarily in `src/index.css` and includes brand colors, typography tokens, responsive spacing, shared buttons, glass surfaces, focus-visible treatment, premium background/card styles, and reduced-motion behavior.
+- cinematic image surfaces
+- editorial typography
+- asymmetric discovery grids
+- sticky narrative sections
+- compact product-workspace panels
+- consistent circular/pill actions
+- restrained motion and borders
+- dedicated desktop/tablet/mobile compositions
 
-## Data Model
+Tailwind remains available for route-level composition.
 
-`src/data/destinations.js` stores static destination metadata, categories, ratings, descriptive content, attraction/activity lists, workflow steps, demo itinerary data, benefits, and navigation links.
+## Services
 
-## Mock Services
+### destinationService
 
-`src/services` provides asynchronous mock functions so the UI has a clear future integration boundary. They intentionally simulate latency and return local/demo data.
+Returns data from `src/data/destinations.js` after simulated latency.
 
-When a backend is introduced, prefer replacing implementations inside the service layer rather than coupling pages directly to network calls.
+### tripService
 
-## Trip Planning State
+Provides mock asynchronous trip operations including plan creation and disruption/replan responses.
 
-`TripPlanner` uses React state for planner inputs, generation progress, generated itineraries, disruption simulation, replanning, and save feedback.
+The Journey Composer calls `createTripPlan` to preserve this service boundary.
 
-Generated trips are sample objects built on the client.
+### manziloService
+
+Provides mock conversational responses.
+
+The `/manzilo` route calls `chatWithManzilo`.
 
 ## Persistence
 
-Saved generated trips are written to `am_saved_trips` in localStorage. `MyTrips` reads this key and merges saved items with built-in demonstration trips.
+Generated planner journeys may be stored under:
 
-## Manzilo
+```text
+am_saved_trips
+```
 
-`ManziloChat` is a scripted contextual demonstration. It detects travel-related keywords and returns structured demo responses.
+`/trips` merges those browser-saved entries with built-in demo journeys.
 
-`manziloService.js` is a separate mock abstraction that can become the network boundary for a future AI backend.
+`/trips/:id` reads matching saved journey data when the route ID exists in localStorage.
 
-## Animation
+## Motion
 
-Framer Motion powers page entry, scroll reveals, workflow animation, floating elements, typing feedback, and disruption transitions. Global CSS respects `prefers-reduced-motion`.
+Framer Motion is used for:
 
-## Accessibility Baseline
+- page entry
+- state transitions
+- image/content reveal
+- AI mode transitions
+- generated itinerary state
+- conversational typing feedback
+- disruption/replan transitions
 
-The shared shell contains a skip link and visible focus styles. Profile toggles expose switch semantics. Manzilo chat controls include accessible labels.
+Global CSS respects `prefers-reduced-motion`.
 
-Further production work should add automated accessibility testing and complete keyboard verification.
+## Integration Boundaries
 
-## Known Demo Boundaries
+When production services are introduced:
 
-- destination content is local
-- weather/transit/venue monitoring is simulated
-- trip generation is sample client logic
-- Manzilo responses are scripted
-- profile data is demo content
-- no login/signup flow exists on this branch
-- no production database, booking system, analytics, or third-party travel API exists
+1. keep network calls inside `src/services`
+2. keep API secrets off the client
+3. validate planner inputs on the server
+4. replace localStorage-only persistence with authenticated storage
+5. expose real monitoring state separately from simulated/demo state
+6. preserve explainable replan output in the UI
+
+## Current Limitations
+
+- destination content is static/local
+- trip generation is a frontend sample workflow
+- disruptions are simulated
+- Manzilo uses a mock service
+- profile settings are not persisted to a backend
+- there is no authentication
+- there is no live map, weather, transport or booking integration
