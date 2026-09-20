@@ -6,6 +6,9 @@ import Destinations from './pages/Destinations'
 import DestinationDetails from './pages/DestinationDetails'
 import HowItWorks from './pages/HowItWorks'
 import About from './pages/About'
+import History from './pages/History'
+import Team from './pages/Team'
+import Contact from './pages/Contact'
 import TripPlanner from './pages/TripPlanner'
 import MyTrips from './pages/MyTrips'
 import TripDetails from './pages/TripDetails'
@@ -23,6 +26,9 @@ export default function App() {
         <Route path="/destinations/:slug" element={<DestinationDetails />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/about" element={<About />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/team" element={<Team />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/plan" element={<TripPlanner />} />
         <Route path="/trips" element={<MyTrips />} />
         <Route path="/trips/:id" element={<TripDetails />} />
