@@ -83,8 +83,8 @@ export default function TripDetails() {
 
   return (
     <PageTransition>
-      <div className="pt-24 lg:pt-28 pb-24 relative">
-        <div className="container-max mx-auto px-4 lg:px-8">
+      <div className="trip-details-page app-page relative">
+        <div className="page-shell">
           
           {/* Back Navigation */}
           <Link
@@ -96,8 +96,8 @@ export default function TripDetails() {
           </Link>
 
           {/* Hero Banner Card */}
-          <div className="relative rounded-3xl overflow-hidden glass-card border border-border-subtle mb-10">
-            <div className="relative h-64 sm:h-80 w-full overflow-hidden">
+          <div className="travel-panel relative overflow-hidden rounded-[1.75rem] mb-8">
+            <div className="relative h-[24rem] sm:h-[30rem] w-full overflow-hidden">
               <img
                 src={trip.image}
                 alt={trip.destination}
