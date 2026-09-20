@@ -36,11 +36,11 @@ export default function DestinationDetails() {
   return (
     <PageTransition>
       {/* Hero Image */}
-      <section className="relative h-[50vh] lg:h-[60vh] min-h-[400px] overflow-hidden">
+      <section className="relative h-[68vh] min-h-[520px] overflow-hidden">
         <img
           src={destination.image}
           alt={destination.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-[1800ms] hover:scale-[1.025]"
           onError={(e) => {
             e.currentTarget.onerror = null
             e.currentTarget.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80'
@@ -51,7 +51,7 @@ export default function DestinationDetails() {
 
         {/* Back link */}
         <div className="absolute top-24 lg:top-28 left-0 right-0">
-          <div className="container-max mx-auto px-4 lg:px-8">
+          <div className="page-shell">
             <Link
               to="/destinations"
               className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors"
@@ -74,7 +74,7 @@ export default function DestinationDetails() {
                 <MapPin size={18} className="text-am-orange" />
                 <span className="text-sm text-text-secondary">{destination.categories.join(' • ')}</span>
               </div>
-              <h1 className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary mb-3">
+              <h1 className="font-[family-name:var(--font-heading)] text-5xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.05em] text-text-primary mb-4">
                 {destination.name}
               </h1>
               <div className="flex items-center gap-4">
@@ -91,8 +91,8 @@ export default function DestinationDetails() {
         </div>
       </section>
 
-      <div className="container-max mx-auto px-4 lg:px-8 py-12 lg:py-16">
-        <div className="grid lg:grid-cols-[1fr_380px] gap-12 lg:gap-16">
+      <div className="page-shell py-14 lg:py-20">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_390px] gap-10 lg:gap-16">
           {/* Main Content */}
           <div className="space-y-12">
             {/* About */}
@@ -172,7 +172,7 @@ export default function DestinationDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="glass-card rounded-2xl p-6 border border-border-subtle sticky top-24"
+              className="travel-panel rounded-[1.5rem] p-6 sticky top-24"
             >
               <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold mb-5">Quick Info</h3>
 
@@ -216,7 +216,7 @@ export default function DestinationDetails() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="glass-card rounded-2xl p-6 border border-am-purple/15"
+              className="travel-panel rounded-[1.5rem] p-6 border-am-purple/15"
             >
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-am-cyan to-am-purple flex items-center justify-center">
