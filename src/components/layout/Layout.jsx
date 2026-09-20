@@ -5,10 +5,11 @@ import ScrollToTop from './ScrollToTop'
 
 export default function Layout() {
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className="site-shell">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <ScrollToTop />
       <Navbar />
-      <main>
+      <main id="main-content">
         <Outlet />
       </main>
       <Footer />
