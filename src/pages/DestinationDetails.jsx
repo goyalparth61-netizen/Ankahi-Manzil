@@ -42,7 +42,8 @@ export default function DestinationDetails() {
           alt={destination.name}
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.target.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80'
+            e.currentTarget.onerror = null
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80'
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/50 to-navy-950/20" />
