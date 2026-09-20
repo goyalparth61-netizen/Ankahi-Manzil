@@ -68,7 +68,7 @@ export default function Features() {
         </div>
       </section>
 
-      <div className="container-max mx-auto px-4 lg:px-8 space-y-28 lg:space-y-32 pb-28">
+      <div className="container-max mx-auto px-4 lg:px-8 space-y-28 lg:space-y-32 pb-28 text-center">
 
         {/* 01 — AI Personalized Trip Planning */}
         <SectionBlock>
@@ -81,17 +81,17 @@ export default function Features() {
                 Tell Manzilo your destination, dates, budget, interests and travel preferences.
                 It generates a personalized, optimized itinerary that respects your constraints and style.
               </p>
-              <div className="space-y-3 max-w-xl mx-auto text-left">
+              <div className="space-y-3 max-w-xl mx-auto text-center">
                 {['Destination & dates', 'Budget range', 'Interests & activities', 'Travel preferences', 'Travel style (relaxed, packed, balanced)'].map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm text-text-secondary">
+                  <div key={item} className="flex items-center justify-center gap-3 text-sm text-text-secondary">
                     <div className="w-1.5 h-1.5 rounded-full bg-am-orange shrink-0" />
                     {item}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto">
-              <div className="flex items-center gap-3 mb-5">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto text-center">
+              <div className="flex items-center justify-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-am-orange/12 flex items-center justify-center border border-am-orange/20">
                   <CalendarDays size={20} className="text-am-orange" />
                 </div>
@@ -100,7 +100,7 @@ export default function Features() {
                   <p className="text-xs text-text-secondary">Analyzing your preferences...</p>
                 </div>
               </div>
-              <div className="space-y-3 max-w-xl mx-auto text-left">
+              <div className="space-y-3 max-w-xl mx-auto text-center">
                 {[
                   { label: 'Destination', value: 'Manali, Himachal Pradesh' },
                   { label: 'Duration', value: '4 Days, 3 Nights' },
@@ -108,13 +108,13 @@ export default function Features() {
                   { label: 'Interests', value: 'Nature, Adventure, Culture' },
                   { label: 'Style', value: 'Balanced' },
                 ].map((row) => (
-                  <div key={row.label} className="flex items-center justify-between py-2 border-b border-border-subtle last:border-0">
+                  <div key={row.label} className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 py-3 border-b border-border-subtle last:border-0 text-center">
                     <span className="text-xs text-text-secondary">{row.label}</span>
                     <span className="text-sm font-medium text-text-primary">{row.value}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-5 p-3 rounded-xl bg-am-orange/8 border border-am-orange/15">
+              <div className="mt-5 p-4 rounded-xl bg-am-orange/8 border border-am-orange/15 text-center">
                 <p className="text-xs text-am-orange font-medium mb-1">✨ Manzilo</p>
                 <p className="text-sm text-text-secondary">
                   I've created a 4-day itinerary optimized for your budget and interests.
@@ -128,8 +128,8 @@ export default function Features() {
         {/* 02 — Smart Day-by-Day Itinerary */}
         <SectionBlock>
           <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto">
-              <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-3">
+            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
+              <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-am-cyan" />
                 <span className="text-sm font-semibold text-text-primary">DAY 01</span>
                 <span className="text-sm text-text-secondary">Delhi → Manali</span>
@@ -142,13 +142,13 @@ export default function Features() {
                   { time: '15:30', title: 'Solang Valley', Icon: Mountain },
                   { time: '18:30', title: 'Mall Road', Icon: ShoppingBag },
                 ].map((act, i) => (
-                  <div key={i} className="flex items-center gap-4 p-3 rounded-xl hover:bg-navy-700/30 transition-colors">
+                  <div key={i} className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 p-3 rounded-xl hover:bg-navy-700/30 transition-colors text-center">
                     <span className="text-sm font-mono text-text-secondary w-14 shrink-0">{act.time}</span>
                     <div className="relative flex flex-col items-center">
                       <div className="w-2.5 h-2.5 rounded-full bg-am-cyan" />
                       {i < 4 && <div className="w-px h-8 mt-1 bg-border-subtle" />}
                     </div>
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-center gap-2.5">
                       <act.Icon size={16} className="text-text-secondary" />
                       <span className="text-sm font-medium text-text-primary">{act.title}</span>
                     </div>
@@ -182,7 +182,7 @@ export default function Features() {
                 affects your spending plan.
               </p>
             </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto text-center">
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {[
                   { label: 'Total Budget', value: '₹20,000', color: '#F6A623' },
@@ -195,7 +195,7 @@ export default function Features() {
                   </div>
                 ))}
               </div>
-              <div className="space-y-3 max-w-xl mx-auto text-left">
+              <div className="space-y-3 max-w-xl mx-auto text-center">
                 {[
                   { label: 'Stay', amount: '₹6,400', pct: 38 },
                   { label: 'Transport', amount: '₹4,200', pct: 25 },
@@ -226,8 +226,8 @@ export default function Features() {
         {/* 04 — Route Optimization */}
         <SectionBlock>
           <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2">
-              <div className="flex items-center gap-2 mb-5">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
+              <div className="flex items-center justify-center gap-2 mb-5">
                 <Route size={18} className="text-am-teal" />
                 <span className="text-sm font-semibold text-text-primary">Optimized Route</span>
               </div>
@@ -240,9 +240,9 @@ export default function Features() {
                   { place: 'Mall Road', time: '6:30 PM', distance: '14 km' },
                 ].map((stop, i) => (
                   <div key={i}>
-                    <div className="flex items-center gap-4 py-3">
+                    <div className="flex items-center justify-center gap-4 py-3 text-center">
                       <div className={`w-3 h-3 rounded-full border-2 ${i === 0 ? 'bg-am-teal border-am-teal' : 'border-am-teal/50 bg-transparent'}`} />
-                      <div className="flex-1">
+                      <div className="flex-1 text-center">
                         <p className="text-sm font-medium text-text-primary">{stop.place}</p>
                         <p className="text-xs text-text-secondary">{stop.time}</p>
                       </div>
@@ -256,7 +256,7 @@ export default function Features() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 p-3 rounded-xl bg-am-teal/8 border border-am-teal/15">
+              <div className="mt-5 p-4 rounded-xl bg-am-teal/8 border border-am-teal/15 text-center">
                 <p className="text-xs text-am-teal">✓ Activities grouped by proximity — 40% less travel time</p>
               </div>
             </div>
@@ -285,7 +285,7 @@ export default function Features() {
                 so it can alert you before problems become disruptions.
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-4xl mx-auto text-center">
               {[
                 { icon: CloudRain, label: 'Weather', status: 'Clear skies', ok: true, color: '#2697FF' },
                 { icon: Route, label: 'Transport', status: 'On schedule', ok: true, color: '#18D5B5' },
@@ -294,8 +294,8 @@ export default function Features() {
                 { icon: Layers, label: 'Availability', status: 'Confirmed', ok: true, color: '#8B5CF6' },
                 { icon: ShieldAlert, label: 'Conflicts', status: 'None found', ok: true, color: '#16C7D9' },
               ].map((item) => (
-                <div key={item.label} className="glass-card rounded-xl p-5 border border-border-subtle">
-                  <item.icon size={18} style={{ color: item.color }} className="mb-2" />
+                <div key={item.label} className="glass-card rounded-xl p-5 border border-border-subtle text-center">
+                  <item.icon size={18} style={{ color: item.color }} className="mb-2 mx-auto" />
                   <p className="text-sm font-medium text-text-primary mb-0.5">{item.label}</p>
                   <p className="text-xs text-am-green">{item.status}</p>
                 </div>
@@ -307,22 +307,22 @@ export default function Features() {
         {/* 06 — Disruption Detection */}
         <SectionBlock>
           <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-orange/20 order-2 w-full max-w-4xl mx-auto">
-              <div className="flex items-center gap-2 mb-4">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-orange/20 order-2 w-full max-w-4xl mx-auto text-center">
+              <div className="flex items-center justify-center gap-2 mb-4">
                 <AlertTriangle size={18} className="text-am-orange" />
                 <span className="text-sm font-bold text-am-orange tracking-wider">⚠ WEATHER ALERT</span>
               </div>
               <p className="text-sm text-text-secondary mb-4">
                 Heavy rainfall expected near Solang Valley.
               </p>
-              <div className="bg-navy-800/50 rounded-xl p-4 border border-border-subtle">
+              <div className="bg-navy-800/50 rounded-xl p-4 border border-border-subtle text-center">
                 <p className="text-xs text-text-muted mb-2">Potentially affected:</p>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center gap-3">
                   <Clock size={14} className="text-am-orange" />
                   <span className="text-sm text-text-primary">3:30 PM — Solang Valley</span>
                 </div>
               </div>
-              <div className="mt-4 flex items-center gap-2">
+              <div className="mt-4 flex items-center justify-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-am-orange animate-pulse" />
                 <span className="text-xs text-am-orange">Manzilo is evaluating alternatives...</span>
               </div>
@@ -353,29 +353,29 @@ export default function Features() {
                 One tap and your journey continues.
               </p>
             </div>
-            <div className="space-y-4 w-full max-w-4xl mx-auto">
-              <div className="glass-card rounded-xl p-4 border border-border-subtle opacity-60">
+            <div className="space-y-4 w-full max-w-4xl mx-auto text-center">
+              <div className="glass-card rounded-xl p-5 border border-border-subtle opacity-60 text-center">
                 <p className="text-xs text-text-muted mb-1">ORIGINAL PLAN</p>
                 <p className="text-sm text-text-primary line-through">Solang Valley — 3:30 PM</p>
               </div>
               <div className="flex justify-center">
                 <ArrowDown size={20} className="text-am-purple" />
               </div>
-              <div className="glass-card rounded-xl p-4 border border-am-purple/20">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="glass-card rounded-xl p-5 border border-am-purple/20 text-center">
+                <div className="flex items-center justify-center gap-2 mb-3">
                   <Bot size={14} className="text-am-purple" />
                   <p className="text-xs font-semibold text-am-purple">MANZILO REPLAN</p>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-3 text-sm">
+                  <div className="flex items-center justify-center gap-3 text-sm">
                     <span className="text-am-cyan font-mono text-xs w-16">3:30 PM</span>
                     <span className="text-text-primary">Himalayan Museum</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm">
+                  <div className="flex items-center justify-center gap-3 text-sm">
                     <span className="text-am-cyan font-mono text-xs w-16">5:00 PM</span>
                     <span className="text-text-primary">Café</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm">
+                  <div className="flex items-center justify-center gap-3 text-sm">
                     <span className="text-am-cyan font-mono text-xs w-16">6:30 PM</span>
                     <span className="text-text-primary">Mall Road</span>
                   </div>
@@ -399,8 +399,8 @@ export default function Features() {
         {/* 08 — Manzilo AI */}
         <SectionBlock>
           <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto">
-              <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-3">
+            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
+              <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-am-cyan to-am-purple flex items-center justify-center">
                   <Bot size={16} className="text-white" />
                 </div>
@@ -409,7 +409,7 @@ export default function Features() {
                   <p className="text-xs text-am-green">Online</p>
                 </div>
               </div>
-              <div className="p-6 sm:p-7 space-y-5">
+              <div className="p-6 sm:p-7 space-y-5 text-center">
                 {[
                   'Can I add paragliding tomorrow?',
                   'What happens if my flight gets delayed?',
@@ -417,8 +417,8 @@ export default function Features() {
                   'Can I reduce tomorrow\'s budget?',
                   'Why did you change my itinerary?',
                 ].map((q, i) => (
-                  <div key={i} className="flex justify-end">
-                    <div className="bg-am-orange/10 border border-am-orange/15 rounded-2xl rounded-br-md px-4 py-2.5 max-w-[80%]">
+                  <div key={i} className="flex justify-center">
+                    <div className="bg-am-orange/10 border border-am-orange/15 rounded-2xl px-4 py-2.5 max-w-[80%] text-center">
                       <p className="text-sm text-text-primary">{q}</p>
                     </div>
                   </div>
@@ -454,27 +454,27 @@ export default function Features() {
                 venues closing before your arrival.
               </p>
             </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-blue/20 w-full max-w-4xl mx-auto">
-              <div className="flex items-center gap-2 mb-4">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-blue/20 w-full max-w-4xl mx-auto text-center">
+              <div className="flex items-center justify-center gap-2 mb-4">
                 <ShieldAlert size={18} className="text-am-blue" />
                 <span className="text-sm font-bold text-am-blue">⚠ Schedule Conflict</span>
               </div>
               <div className="space-y-3 mb-4">
-                <div className="flex justify-between text-sm">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
                   <span className="text-text-secondary">Activity A ends:</span>
                   <span className="text-text-primary font-medium">4:30 PM</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
                   <span className="text-text-secondary">Activity B starts:</span>
                   <span className="text-text-primary font-medium">4:15 PM</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
                   <span className="text-text-secondary">Travel required:</span>
                   <span className="text-am-orange font-medium">35 minutes</span>
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-am-cyan/8 border border-am-cyan/15">
-                <div className="flex items-center gap-2 mb-1">
+              <div className="p-4 rounded-xl bg-am-cyan/8 border border-am-cyan/15 text-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
                   <Bot size={12} className="text-am-cyan" />
                   <span className="text-xs font-semibold text-am-cyan">Manzilo recommendation</span>
                 </div>
@@ -487,17 +487,17 @@ export default function Features() {
         {/* 10 — Backup Options */}
         <SectionBlock>
           <div className="grid grid-cols-1 gap-10 lg:gap-12 items-stretch pt-8 lg:pt-12 pb-20 lg:pb-24 max-w-5xl mx-auto border-b border-border-subtle/60">
-            <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle order-2 w-full max-w-4xl mx-auto text-center">
               <p className="text-xs font-medium text-text-muted mb-4">DISRUPTION MANAGEMENT</p>
-              <div className="space-y-3 max-w-xl mx-auto text-left">
-                <div className="p-4 rounded-xl bg-am-green/8 border border-am-green/20">
-                  <div className="flex items-center gap-2 mb-1">
+              <div className="space-y-3 max-w-xl mx-auto text-center">
+                <div className="p-4 rounded-xl bg-am-green/8 border border-am-green/20 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-1">
                     <Check size={14} className="text-am-green" />
                     <span className="text-xs font-semibold text-am-green">PRIMARY PLAN</span>
                   </div>
                   <p className="text-sm text-text-primary">Solang Valley — Outdoor adventure</p>
                 </div>
-                <div className="p-4 rounded-xl bg-navy-800/50 border border-border-subtle">
+                <div className="p-4 rounded-xl bg-navy-800/50 border border-border-subtle text-center">
                   <p className="text-xs text-text-muted mb-2">ALTERNATIVES READY</p>
                   <div className="space-y-2">
                     {[
@@ -505,7 +505,7 @@ export default function Features() {
                       { name: 'Indoor Rock Climbing', match: '87%' },
                       { name: 'Café & Shopping', match: '78%' },
                     ].map((alt) => (
-                      <div key={alt.name} className="flex items-center justify-between text-sm">
+                      <div key={alt.name} className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-5 text-sm text-center">
                         <span className="text-text-secondary">{alt.name}</span>
                         <span className="text-xs text-am-cyan font-medium">{alt.match} match</span>
                       </div>
