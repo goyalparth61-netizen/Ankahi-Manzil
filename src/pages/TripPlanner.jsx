@@ -156,28 +156,28 @@ export default function TripPlanner() {
 
   return (
     <PageTransition>
-      <div className="relative overflow-hidden pt-32 sm:pt-36 lg:pt-40 pb-32 lg:pb-36">
+      <div className="trip-planner-page app-page relative overflow-hidden">
         {/* Ambient background glows */}
         <div className="absolute top-10 left-1/4 w-[600px] h-[500px] bg-am-orange/5 rounded-full blur-[150px] pointer-events-none" />
         <div className="absolute top-1/2 right-1/4 w-[500px] h-[500px] bg-am-cyan/5 rounded-full blur-[150px] pointer-events-none" />
 
-        <div className="container-max mx-auto px-5 md:px-8 lg:px-12">
+        <div className="page-shell">
           {/* Header */}
-          <div className="text-center max-w-4xl mx-auto mb-14 lg:mb-16">
+          <div className="max-w-4xl mb-12 lg:mb-14">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-am-orange/10 border border-am-orange/20 text-xs font-semibold tracking-[0.16em] text-am-orange uppercase mb-6">
               <Bot size={14} />
               Agentic Itinerary Architect
             </div>
-            <h1 className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight mb-6">
+            <h1 className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[.98] tracking-[-0.045em] mb-6">
               Design Your <span className="gradient-text-warm">Adaptive Journey</span>
             </h1>
-            <p className="text-text-secondary text-base sm:text-lg lg:text-xl leading-relaxed max-w-3xl mx-auto">
+            <p className="copy-lg max-w-3xl">
               Set your parameters and let Manzilo configure a precision day-by-day itinerary with automated disruption safeguards.
             </p>
           </div>
 
           {/* PLANNER CONFIGURATION CARD */}
-          <div className="glass-card rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 border border-border-subtle max-w-6xl mx-auto mb-24 lg:mb-28 shadow-[0_24px_80px_rgba(0,0,0,0.22)]">
+          <div className="travel-panel rounded-[1.75rem] p-6 sm:p-8 lg:p-10 max-w-6xl mb-24 lg:mb-28">
             <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-8 lg:gap-12 xl:gap-14 items-start">
               
               {/* Left Column: Core Parameters */}
