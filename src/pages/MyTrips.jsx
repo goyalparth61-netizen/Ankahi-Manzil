@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  Calendar, MapPin, IndianRupee, ShieldCheck, ArrowRight,
-  Plus, Bot, Clock, AlertTriangle, CheckCircle2, ChevronRight
+  ArrowRight, Bot, Calendar, CheckCircle2, ChevronRight,
+  Clock, Compass, Plus, ShieldCheck, Sparkles
 } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
 
@@ -45,7 +45,7 @@ const defaultTrips = [
     destination: 'Jaipur',
     slug: 'jaipur',
     title: 'Pink City Royal Bastions Tour',
-    image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1000&q=85',
     dates: 'Aug 10 – Aug 13, 2026',
     days: 3,
     travelers: 'Solo',
@@ -58,6 +58,19 @@ const defaultTrips = [
   },
 ]
 
+const tabs = [
+  { id: 'all', label: 'All journeys' },
+  { id: 'active', label: 'Live' },
+  { id: 'upcoming', label: 'Upcoming' },
+  { id: 'completed', label: 'Completed' },
+]
+
+function statusClass(type) {
+  if (type === 'active') return 'border-am-green/30 bg-am-green/12 text-am-green'
+  if (type === 'upcoming') return 'border-am-cyan/30 bg-am-cyan/12 text-am-cyan'
+  return 'border-white/10 bg-white/7 text-text-secondary'
+}
+
 export default function MyTrips() {
   const [trips, setTrips] = useState(defaultTrips)
   const [filter, setFilter] = useState('all')
@@ -65,120 +78,106 @@ export default function MyTrips() {
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('am_saved_trips') || '[]')
-      if (saved && saved.length > 0) {
-        // Merge saved trips with defaultTrips
-        const formattedSaved = saved.map(s => ({
-          id: s.id,
-          destination: s.destination,
-          slug: s.slug || 'manali',
-          title: `${s.destination} Adaptive Expedition`,
-          image: s.image || '/images/dest-manali.jpg',
+      if (Array.isArray(saved) && saved.length > 0) {
+        const formattedSaved = saved.map((trip) => ({
+          id: trip.id,
+          destination: trip.destination,
+          slug: trip.slug || 'manali',
+          title: `${trip.destination} Adaptive Expedition`,
+          image: trip.image || '/images/dest-manali.jpg',
           dates: 'Custom Scheduled',
-          days: s.days || 4,
+          days: trip.days || 4,
           travelers: 'Self & Co.',
           status: 'Active Monitoring',
           statusType: 'active',
-          totalBudget: s.totalBudget || 20000,
-          spent: s.plannedCost || 16000,
+          totalBudget: trip.totalBudget || 20000,
+          spent: trip.plannedCost || 16000,
           disruptionState: 'Sentinel Guard Active',
           nextActivity: 'Day 1 Check-in',
         }))
         setTrips([...formattedSaved, ...defaultTrips])
       }
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error('Unable to read saved trips', error)
     }
   }, [])
 
-  const filteredTrips = trips.filter(t => {
-    if (filter === 'all') return true
-    if (filter === 'active') return t.statusType === 'active'
-    if (filter === 'upcoming') return t.statusType === 'upcoming'
-    if (filter === 'completed') return t.statusType === 'completed'
-    return true
-  })
+  const filteredTrips = useMemo(
+    () => trips.filter((trip) => filter === 'all' || trip.statusType === filter),
+    [trips, filter]
+  )
+
+  const featuredTrip = filteredTrips[0]
+  const remainingTrips = filteredTrips.slice(1)
+  const activeTrips = trips.filter((trip) => trip.statusType === 'active').length
+  const totalDays = trips.reduce((total, trip) => total + trip.days, 0)
+  const totalBudget = trips.reduce((total, trip) => total + trip.totalBudget, 0)
+  const totalSpent = trips.reduce((total, trip) => total + trip.spent, 0)
 
   return (
     <PageTransition>
-      <div className="pt-24 lg:pt-28 pb-24 relative">
-        <div className="container-max mx-auto px-4 lg:px-8">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+      <div className="app-page">
+        <div className="page-shell">
+          <header className="app-header">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-am-cyan/10 border border-am-cyan/20 text-xs font-semibold tracking-wider text-am-cyan uppercase mb-3">
-                <ShieldCheck size={14} />
-                Live Trip Portfolio
+              <div className="kicker mb-4">
+                <Compass size={14} className="text-am-cyan" />
+                Journey workspace
               </div>
-              <h1 className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl font-bold text-text-primary">
-                My <span className="gradient-text-warm">Trips</span>
+              <h1>
+                Trips that stay
+                <span className="block gradient-text-warm">one step ahead.</span>
               </h1>
-              <p className="text-sm sm:text-base text-text-secondary mt-1">
-                Manage your itineraries and monitor live disruption-safe routes configured by Manzilo.
+              <p className="copy-lg mt-4 max-w-2xl">
+                Your active, upcoming, and completed journeys in one calm workspace — with budget,
+                itinerary, and disruption context always close at hand.
               </p>
             </div>
 
-            <Link
-              to="/plan"
-              className="btn-primary inline-flex items-center gap-2 text-sm self-start md:self-auto"
-            >
+            <Link to="/plan" className="btn-primary self-start">
               <Plus size={16} />
-              Plan New Trip
+              Plan a new journey
             </Link>
-          </div>
+          </header>
 
-          {/* Metric Stats Banner */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Active Trips</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-cyan">
-                {trips.filter(t => t.statusType === 'active').length}
-              </div>
-              <div className="text-[11px] text-text-muted mt-1 flex items-center gap-1">
-                <ShieldCheck size={12} className="text-am-green" /> Monitored 24/7
-              </div>
+          <section className="metric-strip mb-8" aria-label="Trip summary">
+            <div className="metric-tile">
+              <p className="text-[10px] font-bold uppercase tracking-[.14em] text-text-muted">Live journeys</p>
+              <p className="mt-2 text-2xl font-bold text-am-cyan">{activeTrips}</p>
+              <p className="mt-1 flex items-center gap-1 text-[11px] text-text-muted">
+                <ShieldCheck size={11} className="text-am-green" />
+                Sentinel enabled
+              </p>
             </div>
-
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Total Days Planned</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-orange">
-                {trips.reduce((acc, t) => acc + t.days, 0)} Days
-              </div>
-              <div className="text-[11px] text-text-muted mt-1">Across 3 regions</div>
+            <div className="metric-tile">
+              <p className="text-[10px] font-bold uppercase tracking-[.14em] text-text-muted">Days designed</p>
+              <p className="mt-2 text-2xl font-bold text-am-orange">{totalDays}</p>
+              <p className="mt-1 text-[11px] text-text-muted">Across all saved plans</p>
             </div>
-
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Replans Automated</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-purple">
-                4 Saved
-              </div>
-              <div className="text-[11px] text-text-muted mt-1">0 missed activities</div>
+            <div className="metric-tile">
+              <p className="text-[10px] font-bold uppercase tracking-[.14em] text-text-muted">Budget planned</p>
+              <p className="mt-2 text-2xl font-bold text-am-gold">₹{totalBudget.toLocaleString('en-IN')}</p>
+              <p className="mt-1 text-[11px] text-text-muted">Total journey allocation</p>
             </div>
-
-            <div className="glass-card rounded-2xl p-5 border border-border-subtle">
-              <div className="text-xs text-text-secondary mb-1">Budget Protected</div>
-              <div className="font-[family-name:var(--font-heading)] text-2xl font-bold text-am-green">
-                ₹8,250
-              </div>
-              <div className="text-[11px] text-text-muted mt-1">Under allocated cap</div>
+            <div className="metric-tile">
+              <p className="text-[10px] font-bold uppercase tracking-[.14em] text-text-muted">Budget remaining</p>
+              <p className="mt-2 text-2xl font-bold text-am-green">₹{Math.max(0, totalBudget - totalSpent).toLocaleString('en-IN')}</p>
+              <p className="mt-1 text-[11px] text-text-muted">Across current plans</p>
             </div>
-          </div>
+          </section>
 
-          {/* Filter tabs */}
-          <div className="flex items-center gap-2 border-b border-border-subtle pb-4 mb-8 overflow-x-auto">
-            {[
-              { id: 'all', label: 'All Trips' },
-              { id: 'active', label: 'Active & Monitored' },
-              { id: 'upcoming', label: 'Upcoming' },
-              { id: 'completed', label: 'Completed' },
-            ].map(tab => (
+          <div className="app-nav-tabs mb-8" role="tablist" aria-label="Filter trips">
+            {tabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
+                role="tab"
+                aria-selected={filter === tab.id}
                 onClick={() => setFilter(tab.id)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shrink-0 ${
+                className={`shrink-0 px-4 py-2 text-xs font-bold sm:text-sm ${
                   filter === tab.id
-                    ? 'bg-am-orange text-white'
-                    : 'bg-navy-900/60 text-text-secondary hover:text-text-primary'
+                    ? 'bg-am-orange text-white shadow-[0_8px_22px_rgba(255,107,53,.2)]'
+                    : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
                 }`}
               >
                 {tab.label}
@@ -186,109 +185,143 @@ export default function MyTrips() {
             ))}
           </div>
 
-          {/* Trip Cards Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTrips.map(trip => (
-              <div
-                key={trip.id}
-                className="glass-card rounded-2xl border border-border-subtle overflow-hidden flex flex-col justify-between group hover:border-am-orange/40 transition-all hover:-translate-y-1"
+          {featuredTrip ? (
+            <div className="space-y-6">
+              <motion.section
+                key={featuredTrip.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="travel-panel overflow-hidden rounded-[1.75rem]"
               >
-                <div>
-                  {/* Image banner */}
-                  <div className="relative h-48 overflow-hidden">
+                <div className="grid lg:grid-cols-[1.1fr_.9fr]">
+                  <div className="relative min-h-[22rem] overflow-hidden lg:min-h-[32rem]">
                     <img
-                      src={trip.image}
-                      alt={trip.destination}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      src={featuredTrip.image}
+                      alt={featuredTrip.destination}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-transparent" />
-                    
-                    <div className="absolute top-3 right-3">
-                      <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                        trip.statusType === 'active'
-                          ? 'bg-am-green/20 text-am-green border border-am-green/40 backdrop-blur-md'
-                          : trip.statusType === 'upcoming'
-                          ? 'bg-am-cyan/20 text-am-cyan border border-am-cyan/40 backdrop-blur-md'
-                          : 'bg-navy-800/80 text-text-muted border border-border-subtle backdrop-blur-md'
-                      }`}>
-                        {trip.status}
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy-950/92 via-navy-950/12 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-navy-950/45" />
+                    <div className="absolute left-5 top-5">
+                      <span className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] backdrop-blur-md ${statusClass(featuredTrip.statusType)}`}>
+                        {featuredTrip.status}
                       </span>
                     </div>
-
-                    <div className="absolute bottom-3 left-4">
-                      <span className="text-xs text-am-orange font-bold uppercase tracking-wider">
-                        {trip.destination}
-                      </span>
-                      <h3 className="font-[family-name:var(--font-heading)] text-lg font-bold text-white">
-                        {trip.title}
-                      </h3>
+                    <div className="absolute inset-x-0 bottom-0 p-6 lg:hidden">
+                      <p className="text-xs font-bold uppercase tracking-[.15em] text-am-orange">{featuredTrip.destination}</p>
+                      <h2 className="mt-2 text-3xl font-bold">{featuredTrip.title}</h2>
                     </div>
                   </div>
 
-                  {/* Trip details */}
-                  <div className="p-5 space-y-4">
-                    <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div>
-                        <div className="text-text-muted flex items-center gap-1 mb-0.5">
-                          <Calendar size={12} /> Dates
-                        </div>
-                        <div className="font-semibold text-text-primary">{trip.dates}</div>
-                      </div>
-
-                      <div>
-                        <div className="text-text-muted flex items-center gap-1 mb-0.5">
-                          <Clock size={12} /> Duration
-                        </div>
-                        <div className="font-semibold text-text-primary">{trip.days} Days</div>
-                      </div>
-                    </div>
-
-                    {/* Sentinel status banner */}
-                    <div className="p-3 rounded-xl bg-navy-900/80 border border-border-subtle/80 flex items-center justify-between text-xs">
-                      <span className="text-text-secondary flex items-center gap-1.5">
-                        <ShieldCheck size={14} className="text-am-cyan" />
-                        {trip.disruptionState}
-                      </span>
-                    </div>
-
-                    {/* Budget bar */}
+                  <div className="flex flex-col justify-between p-6 sm:p-8 lg:p-10">
                     <div>
-                      <div className="flex items-center justify-between text-xs mb-1.5">
-                        <span className="text-text-secondary">Budget Utilization</span>
-                        <span className="font-mono font-bold text-text-primary">
-                          ₹{trip.spent.toLocaleString('en-IN')} / ₹{trip.totalBudget.toLocaleString('en-IN')}
-                        </span>
+                      <div className="hidden lg:block">
+                        <p className="text-xs font-bold uppercase tracking-[.15em] text-am-orange">{featuredTrip.destination}</p>
+                        <h2 className="mt-3 text-4xl font-bold leading-tight">{featuredTrip.title}</h2>
                       </div>
-                      <div className="w-full h-2 bg-navy-900 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-am-cyan to-am-orange rounded-full"
-                          style={{ width: `${Math.min(100, (trip.spent / trip.totalBudget) * 100)}%` }}
-                        />
+
+                      <div className="mt-6 grid grid-cols-2 gap-3">
+                        <div className="rounded-2xl border border-white/7 bg-white/[.025] p-4">
+                          <p className="flex items-center gap-1.5 text-[11px] text-text-muted"><Calendar size={12} />Dates</p>
+                          <p className="mt-1 text-sm font-semibold">{featuredTrip.dates}</p>
+                        </div>
+                        <div className="rounded-2xl border border-white/7 bg-white/[.025] p-4">
+                          <p className="flex items-center gap-1.5 text-[11px] text-text-muted"><Clock size={12} />Duration</p>
+                          <p className="mt-1 text-sm font-semibold">{featuredTrip.days} days</p>
+                        </div>
                       </div>
+
+                      <div className="mt-4 rounded-2xl border border-am-cyan/15 bg-am-cyan/[.045] p-4">
+                        <p className="flex items-center gap-2 text-xs font-semibold text-am-cyan">
+                          <ShieldCheck size={14} />
+                          {featuredTrip.disruptionState}
+                        </p>
+                        <p className="mt-2 text-sm text-text-secondary">Next: {featuredTrip.nextActivity}</p>
+                      </div>
+
+                      <div className="mt-6">
+                        <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                          <span className="text-text-secondary">Budget usage</span>
+                          <span className="font-mono font-bold">
+                            ₹{featuredTrip.spent.toLocaleString('en-IN')} / ₹{featuredTrip.totalBudget.toLocaleString('en-IN')}
+                          </span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-navy-950">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-am-cyan via-am-teal to-am-orange"
+                            style={{ width: `${Math.min(100, (featuredTrip.spent / featuredTrip.totalBudget) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 flex flex-wrap gap-3">
+                      <Link to={`/trips/${featuredTrip.id}`} className="btn-primary">
+                        Open journey
+                        <ArrowRight size={15} />
+                      </Link>
+                      <Link to="/manzilo" className="btn-secondary">
+                        <Bot size={15} />
+                        Ask Manzilo
+                      </Link>
                     </div>
                   </div>
                 </div>
+              </motion.section>
 
-                {/* Card footer CTA */}
-                <div className="p-5 pt-0 flex items-center gap-3">
-                  <Link
-                    to={`/trips/${trip.id}`}
-                    className="flex-1 py-2.5 rounded-xl bg-navy-800 hover:bg-navy-700 text-text-primary text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors border border-border-subtle"
-                  >
-                    View Details
-                    <ChevronRight size={14} />
-                  </Link>
-                  <Link
-                    to="/manzilo"
-                    className="p-2.5 rounded-xl bg-am-cyan/15 hover:bg-am-cyan/25 text-am-cyan transition-colors"
-                    title="Ask Manzilo about this trip"
-                  >
-                    <Bot size={16} />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+              {remainingTrips.length > 0 && (
+                <section>
+                  <div className="mb-5 flex items-end justify-between border-b border-white/7 pb-4">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[.15em] text-text-muted">More journeys</p>
+                      <h2 className="mt-1 text-2xl font-bold">Your travel archive</h2>
+                    </div>
+                    <Sparkles size={18} className="text-am-gold" />
+                  </div>
+
+                  <div className="grid gap-5 lg:grid-cols-2">
+                    {remainingTrips.map((trip, index) => (
+                      <motion.article
+                        key={trip.id}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * .08 }}
+                        className="travel-panel group grid overflow-hidden rounded-[1.4rem] sm:grid-cols-[12rem_1fr]"
+                      >
+                        <div className="relative min-h-44 overflow-hidden">
+                          <img src={trip.image} alt={trip.destination} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-navy-950/55 to-transparent" />
+                        </div>
+                        <div className="p-5">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-[.14em] text-am-orange">{trip.destination}</p>
+                              <h3 className="mt-1 text-lg font-bold">{trip.title}</h3>
+                            </div>
+                            <CheckCircle2 size={16} className={trip.statusType === 'completed' ? 'text-am-green' : 'text-text-muted'} />
+                          </div>
+                          <p className="mt-3 text-xs text-text-secondary">{trip.dates} • {trip.days} days • {trip.travelers}</p>
+                          <p className="mt-3 text-xs text-text-muted">{trip.disruptionState}</p>
+                          <Link
+                            to={`/trips/${trip.id}`}
+                            className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-am-cyan hover:text-am-teal"
+                          >
+                            View journey
+                            <ChevronRight size={13} />
+                          </Link>
+                        </div>
+                      </motion.article>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+          ) : (
+            <div className="travel-panel rounded-[1.5rem] py-20 text-center">
+              <h2 className="text-2xl font-bold">No journeys in this view.</h2>
+              <p className="mt-2 text-sm text-text-secondary">Try another filter or start planning a new trip.</p>
+              <Link to="/plan" className="btn-primary mt-6">Plan a journey</Link>
+            </div>
+          )}
         </div>
       </div>
     </PageTransition>
