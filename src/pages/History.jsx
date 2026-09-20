@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Compass, Route, Sparkles } from 'lucide-react'
+import { ArrowRight, Route, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PageTransition from '../components/layout/PageTransition'
 
