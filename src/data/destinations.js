@@ -139,7 +139,7 @@ export const destinations = [
     id: 9,
     slug: 'darjeeling',
     name: 'Darjeeling',
-    image: 'https://images.unsplash.com/photo-1622308644420-0a816e tried8b?w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80',
     categories: ['Mountains', 'Nature', 'Culture'],
     rating: 4.5,
     description: 'Queen of the Hills — misty tea gardens, the toy train, and spectacular Kanchenjunga views.',
