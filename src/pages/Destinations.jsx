@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Compass, MapPin, Search, SlidersHorizontal, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { allCategories, destinations } from '../data/destinations'
+import { allCategories, destinations as localDestinations } from '../data/destinations'
+import { getAllDestinations } from '../services/destinationService'
 import PageTransition from '../components/layout/PageTransition'
 
 const spans = ['span-7', 'span-5', 'span-4', 'span-8', 'span-4', 'span-5', 'span-7', 'span-4', 'span-4', 'span-4', 'span-7', 'span-5']
@@ -10,10 +11,24 @@ const spans = ['span-7', 'span-5', 'span-4', 'span-8', 'span-4', 'span-5', 'span
 export default function Destinations() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('All')
+  const [catalog, setCatalog] = useState(localDestinations)
+  const [source, setSource] = useState('local')
+
+  useEffect(() => {
+    let active = true
+    getAllDestinations().then((result) => {
+      if (!active || !result?.data?.length) return
+      setCatalog(result.data)
+      setSource(result.source || 'local')
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   const filtered = useMemo(() => {
     const search = query.trim().toLowerCase()
-    return destinations.filter((destination) => {
+    return catalog.filter((destination) => {
       const textMatch =
         !search ||
         destination.name.toLowerCase().includes(search) ||
@@ -22,7 +37,7 @@ export default function Destinations() {
       const categoryMatch = category === 'All' || destination.categories.includes(category)
       return textMatch && categoryMatch
     })
-  }, [query, category])
+  }, [query, category, catalog])
 
   return (
     <PageTransition>
@@ -78,9 +93,14 @@ export default function Destinations() {
           </div>
 
           <div className="my-10 flex flex-wrap items-center justify-between gap-4 border-y border-white/8 py-4">
-            <p className="text-sm text-text-secondary">
-              <span className="font-semibold text-white">{filtered.length}</span> places in view
-            </p>
+            <div>
+              <p className="text-sm text-text-secondary">
+                <span className="font-semibold text-white">{filtered.length}</span> places in view
+              </p>
+              <p className={`mt-1 text-[10px] font-bold uppercase tracking-[.13em] ${source === 'backend' ? 'text-am-green' : 'text-am-gold'}`}>
+                {source === 'backend' ? 'FastAPI destination catalog' : 'Local catalog fallback'}
+              </p>
+            </div>
             {(query || category !== 'All') && (
               <button
                 type="button"
