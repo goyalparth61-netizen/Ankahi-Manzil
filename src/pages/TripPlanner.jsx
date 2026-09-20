@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   AlertTriangle, ArrowRight, Bookmark, Bot, Check, Compass, IndianRupee,
-  MapPin, RefreshCw, Sparkles, Users
+  RefreshCw, Sparkles, Users
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { destinations } from '../data/destinations'
