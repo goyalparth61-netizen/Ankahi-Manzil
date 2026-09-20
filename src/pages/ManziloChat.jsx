@@ -1,10 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
-  Bot, Send, Sparkles, ArrowRight, RefreshCw, AlertTriangle,
-  Clock, IndianRupee, MapPin, CheckCircle2, ShieldCheck,
-  Compass, MessageCircle, Mic, Trash2
+  ArrowRight, Bot, Compass, Send, Sparkles, Trash2
 } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
 
@@ -26,355 +24,364 @@ const initialMessages = [
   },
 ]
 
+function generateManziloResponse(query) {
+  const q = query.toLowerCase()
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+  if (q.includes('paragliding') || q.includes('solang')) {
+    return {
+      id: Date.now() + 1,
+      sender: 'manzilo',
+      time,
+      text: 'I checked the wind conditions and operating slots for Solang Valley tomorrow. Early morning (08:30 – 11:00) has low wind shear and clear visibility. Here is how I can insert it without causing schedule collision:',
+      widget: {
+        type: 'itinerary-update',
+        title: 'Proposed Schedule Adjustment',
+        items: [
+          { time: '08:30 AM', desc: 'Solang Valley Paragliding', status: 'Optimal window' },
+          { time: '11:45 AM', desc: 'Jogini Waterfall Trail', status: 'Shifted +45m' },
+          { time: '01:30 PM', desc: 'Lunch at Cafe 1947', status: 'No change' },
+        ],
+        impact: 'Total added cost: ₹2,200 (within remaining buffer).',
+      },
+    }
+  }
+
+  if (q.includes('flight') || q.includes('delay')) {
+    return {
+      id: Date.now() + 1,
+      sender: 'manzilo',
+      time,
+      text: 'If your flight is delayed, my Sentinel monitor detects the status change and protects the rest of your first day:',
+      widget: {
+        type: 'sentinel-protocol',
+        title: 'Automated Flight Delay Protocol',
+        steps: [
+          'Adjust the airport pickup window.',
+          'Protect the hotel reservation from late-arrival issues.',
+          'Re-sequence Day 1 activities around the revised arrival time.',
+        ],
+        guarantee: 'Demo protocol — partner API actions are not connected on this frontend branch.',
+      },
+    }
+  }
+
+  if (q.includes('cafe') || q.includes('food') || q.includes('lunch')) {
+    return {
+      id: Date.now() + 1,
+      sender: 'manzilo',
+      time,
+      text: 'Here are three cafe options in Old Manali that fit the budget context used in this demo:',
+      widget: {
+        type: 'recommendations',
+        title: 'Curated Old Manali Cafes',
+        places: [
+          { name: 'Cafe 1947', highlight: 'Riverside Italian and acoustic music', avg: '₹600 for two' },
+          { name: 'Drifters’ Inn & Cafe', highlight: 'Coffee, waffles and a relaxed library vibe', avg: '₹550 for two' },
+          { name: 'The Lazy Dog', highlight: 'Terrace seating overlooking the river', avg: '₹750 for two' },
+        ],
+      },
+    }
+  }
+
+  if (q.includes('change') || q.includes('why did you change') || q.includes('replan')) {
+    return {
+      id: Date.now() + 1,
+      sender: 'manzilo',
+      time,
+      text: 'I adjusted the afternoon itinerary because the demo scenario detected a localized rain alert around the mountain pass. The alternative reduces schedule drift while keeping the experience close to your interests.',
+      widget: {
+        type: 'reasoning-log',
+        title: 'Why the plan changed',
+        rationale: 'Demo signal: 85% rain probability → outdoor trail replaced with an indoor cultural stop. Distance delta: 1.2 km closer. Cost delta: -₹150.',
+      },
+    }
+  }
+
+  if (q.includes('budget') || q.includes('reduce') || q.includes('cost')) {
+    return {
+      id: Date.now() + 1,
+      sender: 'manzilo',
+      time,
+      text: 'I reviewed the demo expense plan. Switching transport and dinner choices can reduce the day cost without removing a core experience.',
+      widget: {
+        type: 'budget-optimization',
+        title: 'Budget Rebalancing Plan',
+        savings: '₹2,150 Saved',
+        changes: [
+          { from: 'Full-day private cab (₹3,200)', to: 'Electric tourist shuttle (₹650)' },
+          { from: 'Hotel multicuisine dinner (₹2,200)', to: 'Himachali thali (₹1,600)' },
+        ],
+      },
+    }
+  }
+
+  return {
+    id: Date.now() + 1,
+    sender: 'manzilo',
+    time,
+    text: `I’ve considered “${query}” in the context of this demo journey. I can help re-sequence stops, compare alternatives, and explain the trade-offs behind a plan change. What would you like to optimize first?`,
+    widget: null,
+  }
+}
+
+function ResponseWidget({ widget }) {
+  if (!widget) return null
+
+  return (
+    <div className="mt-3 rounded-2xl border border-am-cyan/15 bg-navy-950/65 p-4">
+      <div className="mb-3 flex items-center gap-2 text-xs font-bold text-am-cyan">
+        <Sparkles size={13} />
+        {widget.title}
+      </div>
+
+      {widget.items && (
+        <div className="space-y-2">
+          {widget.items.map((item) => (
+            <div key={item.time} className="grid gap-1 rounded-xl border border-white/6 bg-white/[.025] p-3 sm:grid-cols-[5rem_1fr_auto] sm:items-center">
+              <span className="font-mono text-xs text-am-gold">{item.time}</span>
+              <span className="text-xs font-semibold text-text-primary">{item.desc}</span>
+              <span className="text-[10px] text-am-green">{item.status}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.steps && (
+        <div className="space-y-2">
+          {widget.steps.map((step) => (
+            <div key={step} className="rounded-xl border border-white/6 bg-white/[.025] px-3 py-2.5 text-xs leading-5 text-text-secondary">
+              {step}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.places && (
+        <div className="grid gap-2 md:grid-cols-3">
+          {widget.places.map((place) => (
+            <div key={place.name} className="rounded-xl border border-white/6 bg-white/[.025] p-3">
+              <p className="text-xs font-bold text-text-primary">{place.name}</p>
+              <p className="mt-1 text-[11px] leading-5 text-text-secondary">{place.highlight}</p>
+              <p className="mt-2 font-mono text-[10px] text-am-gold">{place.avg}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.changes && (
+        <div className="space-y-2">
+          {widget.changes.map((change) => (
+            <div key={change.from} className="grid gap-1 rounded-xl border border-white/6 bg-white/[.025] p-3 text-xs sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+              <span className="text-am-orange/70 line-through">{change.from}</span>
+              <span className="text-text-muted">→</span>
+              <span className="font-semibold text-am-green">{change.to}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {widget.rationale && <p className="text-xs leading-6 text-text-secondary">{widget.rationale}</p>}
+      {widget.impact && <p className="mt-3 text-xs font-semibold text-am-gold">{widget.impact}</p>}
+      {widget.guarantee && <p className="mt-3 text-[11px] leading-5 text-text-muted">{widget.guarantee}</p>}
+      {widget.savings && <p className="mt-3 text-sm font-bold text-am-green">{widget.savings}</p>}
+    </div>
+  )
+}
+
 export default function ManziloChat() {
   const [messages, setMessages] = useState(initialMessages)
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
 
   const handleSend = (textToSend) => {
     const query = textToSend || input
-    if (!query.trim()) return
+    if (!query.trim() || isTyping) return
 
-    const userMsg = {
-      id: Date.now(),
-      sender: 'user',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      text: query,
-    }
-
-    setMessages(prev => [...prev, userMsg])
-    if (!textToSend) setInput('')
+    setMessages((current) => [
+      ...current,
+      {
+        id: Date.now(),
+        sender: 'user',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: query,
+      },
+    ])
+    setInput('')
     setIsTyping(true)
 
-    // Generate context-aware response
-    setTimeout(() => {
-      const response = generateManziloResponse(query)
-      setMessages(prev => [...prev, response])
+    window.setTimeout(() => {
+      setMessages((current) => [...current, generateManziloResponse(query)])
       setIsTyping(false)
-    }, 1000)
-  }
-
-  const generateManziloResponse = (query) => {
-    const q = query.toLowerCase()
-    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-
-    if (q.includes('paragliding') || q.includes('solang')) {
-      return {
-        id: Date.now() + 1,
-        sender: 'manzilo',
-        time,
-        text: "I checked the wind conditions and operating slots for Solang Valley tomorrow. Early morning (08:30 – 11:00) has low wind shear and clear visibility. Here is how I can insert it without causing schedule collision:",
-        widget: {
-          type: 'itinerary-update',
-          title: 'Proposed Schedule Adjustment (Solang Valley)',
-          items: [
-            { time: '08:30 AM', desc: 'Solang Valley Paragliding (Added)', status: 'Optimal Wind Window' },
-            { time: '11:45 AM', desc: 'Jogini Waterfall Trail', status: 'Shifted +45m' },
-            { time: '01:30 PM', desc: 'Lunch at Cafe 1947', status: 'No change' },
-          ],
-          impact: 'Total added cost: ₹2,200 (within remaining buffer).',
-        },
-      }
-    }
-
-    if (q.includes('flight') || q.includes('delay')) {
-      return {
-        id: Date.now() + 1,
-        sender: 'manzilo',
-        time,
-        text: "If your flight is delayed, my Sentinel monitor detects the airline status change immediately. Here is the automated protocol I trigger:",
-        widget: {
-          type: 'sentinel-protocol',
-          title: 'Automated Flight Delay Protocol',
-          steps: [
-            '1. Auto-alert pre-booked cab driver to adjust airport pickup time.',
-            '2. Notify hotel about late arrival so room reservation is held.',
-            '3. Compress or reschedule Day 1 evening activity without losing reservations.',
-          ],
-          guarantee: 'Zero cancellation penalties where automated partner API is active.',
-        },
-      }
-    }
-
-    if (q.includes('cafe') || q.includes('food') || q.includes('lunch')) {
-      return {
-        id: Date.now() + 1,
-        sender: 'manzilo',
-        time,
-        text: "Here are 3 handpicked cafes in Old Manali matching your budget (under ₹800) and travel preferences:",
-        widget: {
-          type: 'recommendations',
-          title: 'Curated Old Manali Cafes',
-          places: [
-            { name: 'Cafe 1947', highlight: 'Riverside Italian, live acoustic music', avg: '₹600 for two' },
-            { name: 'Drifters’ Inn & Cafe', highlight: 'Artisan coffee, mountain waffles & library', avg: '₹550 for two' },
-            { name: 'The Lazy Dog', highlight: 'Terrace overlooking Beas River, herbal teas', avg: '₹750 for two' },
-          ],
-        },
-      }
-    }
-
-    if (q.includes('change') || q.includes('why did you change') || q.includes('replan')) {
-      return {
-        id: Date.now() + 1,
-        sender: 'manzilo',
-        time,
-        text: "I adjusted your afternoon itinerary due to a localized rain alert at 15:30 around the mountain pass. Continuing with the outdoor hike would have caused a 2-hour wet transit delay. Instead, I substituted the Himalayan Cultural Museum and an indoor artisan tea tasting.",
-        widget: {
-          type: 'reasoning-log',
-          title: 'Agentic Decision Reasoning',
-          rationale: 'Disruption Risk: 85% Rain Probability → Substituted Outdoor Trail with Indoor Sanctuary. Distance delta: 1.2km closer to hotel. Cost delta: -₹150.',
-        },
-      }
-    }
-
-    if (q.includes('budget') || q.includes('reduce') || q.includes('cost')) {
-      return {
-        id: Date.now() + 1,
-        sender: 'manzilo',
-        time,
-        text: "I analyzed tomorrow's scheduled expenses. By swapping private taxi hire with the scenic local electric shuttle and selecting a traditional homestyle thali for dinner, we can safely shave off ₹2,150 without sacrificing experience quality.",
-        widget: {
-          type: 'budget-optimization',
-          title: 'Budget Rebalancing Plan',
-          savings: '₹2,150 Saved',
-          changes: [
-            { from: 'Full-day private cab (₹3,200)', to: 'Electric tourist shuttle (₹650)' },
-            { from: 'Hotel multicuisine dinner (₹2,200)', to: 'Authentic Himachali Thali (₹1,600)' },
-          ],
-        },
-      }
-    }
-
-    return {
-      id: Date.now() + 1,
-      sender: 'manzilo',
-      time,
-      text: `I've analyzed your query regarding "${query}". As your journey unfolds, I can re-sequence stops, adjust for traffic or weather shifts, and help you find the most scenic spots. Would you like me to apply an update to your active trip?`,
-      widget: null,
-    }
+    }, 900)
   }
 
   return (
     <PageTransition>
-      <div className="pt-24 lg:pt-28 pb-20 relative">
-        <div className="container-max mx-auto px-4 lg:px-8 max-w-5xl">
-          
-          {/* Header Card */}
-          <div className="glass-card rounded-2xl p-5 sm:p-6 border border-border-subtle mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-am-cyan/20 to-am-blue/20 border border-am-cyan/30 flex items-center justify-center text-am-cyan shadow-lg shadow-am-cyan/10">
-                <Bot size={26} />
+      <div className="app-page">
+        <div className="page-shell">
+          <header className="app-header">
+            <div>
+              <div className="kicker mb-4">
+                <Bot size={14} className="text-am-cyan" />
+                Manzilo intelligence
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="font-[family-name:var(--font-heading)] text-xl sm:text-2xl font-bold text-text-primary">
-                    Manzilo <span className="gradient-text-cyan">Intelligence</span>
-                  </h1>
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-am-green/20 text-am-green border border-am-green/40">
-                    <span className="w-1.5 h-1.5 rounded-full bg-am-green animate-pulse" />
-                    Live Sentinel Connected
-                  </span>
+              <h1>
+                Ask the journey,
+                <span className="block gradient-text-cyan">not just the chatbot.</span>
+              </h1>
+              <p className="copy-lg mt-4 max-w-2xl">
+                Explore alternatives, understand replans, and pressure-test your itinerary through a conversational travel workspace.
+              </p>
+            </div>
+            <Link to="/plan" className="btn-primary self-start">
+              Open trip planner
+              <ArrowRight size={15} />
+            </Link>
+          </header>
+
+          <div className="grid gap-5 lg:grid-cols-[20rem_minmax(0,1fr)]">
+            <aside className="space-y-4">
+              <div className="travel-panel rounded-[1.35rem] p-5">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-am-cyan/20 to-am-purple/20 text-am-cyan">
+                    <Compass size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Journey context</p>
+                    <p className="text-[11px] text-am-green">● Demo sentinel active</p>
+                  </div>
                 </div>
-                <p className="text-xs text-text-secondary">
-                  Continuously reasoning over routes, weather radars, and trip logistics.
-                </p>
+                <div className="space-y-2 text-xs text-text-secondary">
+                  <div className="rounded-xl border border-white/6 bg-white/[.025] p-3">
+                    <p className="text-[10px] uppercase tracking-[.13em] text-text-muted">Current route</p>
+                    <p className="mt-1 font-semibold text-text-primary">Manali • 4 days • ₹20,000</p>
+                  </div>
+                  <div className="rounded-xl border border-white/6 bg-white/[.025] p-3">
+                    <p className="text-[10px] uppercase tracking-[.13em] text-text-muted">What Manzilo can explain</p>
+                    <p className="mt-1 leading-5">Budget trade-offs, itinerary changes, delays, activities, and alternative stops.</p>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setMessages(initialMessages)}
-                aria-label="Clear Manzilo conversation"
-                className="p-2 rounded-xl bg-navy-900 border border-border-subtle text-text-secondary hover:text-text-primary text-xs flex items-center gap-1.5"
-                title="Clear conversation"
-              >
-                <Trash2 size={14} />
-                <span className="hidden sm:inline">Clear</span>
-              </button>
-              <Link
-                to="/plan"
-                className="btn-primary text-xs py-2 px-3.5 flex items-center gap-1"
-              >
-                Open Trip Planner →
-              </Link>
-            </div>
-          </div>
-
-          {/* CHAT CONTAINER */}
-          <div className="glass-card rounded-3xl border border-border-subtle flex flex-col h-[600px] overflow-hidden shadow-2xl">
-            
-            {/* Message History */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
-              {messages.map((msg) => (
-                <motion.div
-                  key={msg.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  {msg.sender === 'manzilo' && (
-                    <div className="w-8 h-8 rounded-xl bg-am-cyan/20 border border-am-cyan/30 flex items-center justify-center text-am-cyan shrink-0">
-                      <Bot size={16} />
-                    </div>
-                  )}
-
-                  <div className={`max-w-[85%] sm:max-w-[75%] space-y-2`}>
-                    <div
-                      className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                        msg.sender === 'user'
-                          ? 'bg-am-orange text-white rounded-tr-none shadow-md shadow-am-orange/20'
-                          : 'bg-navy-900/90 text-text-primary rounded-tl-none border border-border-subtle'
-                      }`}
+              <div className="travel-panel rounded-[1.35rem] p-5">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="text-xs font-bold uppercase tracking-[.13em] text-text-muted">Try asking</p>
+                  <Sparkles size={14} className="text-am-gold" />
+                </div>
+                <div className="space-y-2">
+                  {quickPrompts.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => handleSend(prompt)}
+                      className="w-full rounded-xl border border-white/6 bg-white/[.025] p-3 text-left text-xs leading-5 text-text-secondary hover:border-am-cyan/20 hover:bg-am-cyan/[.04] hover:text-text-primary"
                     >
-                      {msg.text}
-                    </div>
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </aside>
 
-                    {/* Rich Interactive Widget */}
-                    {msg.widget && (
-                      <div className="p-4 rounded-2xl bg-navy-950/80 border border-am-cyan/25 space-y-3 text-xs">
-                        <div className="font-bold text-am-cyan flex items-center gap-1.5">
-                          <Sparkles size={14} />
-                          {msg.widget.title}
-                        </div>
+            <section className="chat-shell flex min-h-[42rem] flex-col overflow-hidden">
+              <div className="flex items-center justify-between border-b border-white/7 px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-am-cyan/12 text-am-cyan">
+                    <Bot size={20} />
+                    <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-navy-950 bg-am-green" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Manzilo</p>
+                    <p className="text-[10px] text-text-muted">Adaptive travel reasoning demo</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMessages(initialMessages)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/7 text-text-muted hover:bg-white/5 hover:text-text-primary"
+                  aria-label="Clear Manzilo conversation"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
 
-                        {msg.widget.items && (
-                          <div className="space-y-1.5">
-                            {msg.widget.items.map((it, i) => (
-                              <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-navy-900/60">
-                                <span className="font-mono text-am-gold">{it.time}</span>
-                                <span className="text-text-primary font-medium">{it.desc}</span>
-                                <span className="text-[10px] text-am-green">{it.status}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {msg.widget.steps && (
-                          <ul className="space-y-1 text-text-secondary">
-                            {msg.widget.steps.map((st, i) => (
-                              <li key={i}>{st}</li>
-                            ))}
-                          </ul>
-                        )}
-
-                        {msg.widget.places && (
-                          <div className="grid sm:grid-cols-3 gap-2">
-                            {msg.widget.places.map((p, i) => (
-                              <div key={i} className="p-2.5 rounded-xl bg-navy-900 border border-border-subtle/60">
-                                <div className="font-bold text-text-primary">{p.name}</div>
-                                <div className="text-[11px] text-text-secondary mt-0.5">{p.highlight}</div>
-                                <div className="text-[10px] text-am-gold font-mono mt-1">{p.avg}</div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {msg.widget.changes && (
-                          <div className="space-y-1.5">
-                            {msg.widget.changes.map((c, i) => (
-                              <div key={i} className="flex items-center justify-between text-text-secondary">
-                                <span className="line-through text-am-orange/70">{c.from}</span>
-                                <span>→</span>
-                                <span className="text-am-green font-medium">{c.to}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {msg.widget.rationale && (
-                          <p className="text-text-secondary italic bg-navy-900/40 p-2 rounded-lg">
-                            {msg.widget.rationale}
-                          </p>
-                        )}
-
-                        {msg.widget.impact && (
-                          <div className="text-am-gold font-semibold pt-1">
-                            {msg.widget.impact}
-                          </div>
-                        )}
+              <div className="flex-1 space-y-6 overflow-y-auto p-4 sm:p-6">
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    {message.sender === 'manzilo' && (
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-am-cyan/12 text-am-cyan">
+                        <Bot size={15} />
                       </div>
                     )}
 
-                    <div className={`text-[10px] text-text-muted ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
-                      {msg.time}
+                    <div className="max-w-[88%] sm:max-w-[78%]">
+                      <div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${
+                        message.sender === 'user'
+                          ? 'rounded-tr-md bg-am-orange text-white'
+                          : 'rounded-tl-md border border-white/7 bg-white/[.035] text-text-primary'
+                      }`}>
+                        {message.text}
+                      </div>
+                      <ResponseWidget widget={message.widget} />
+                      <p className={`mt-1 text-[10px] text-text-muted ${message.sender === 'user' ? 'text-right' : ''}`}>{message.time}</p>
+                    </div>
+                  </motion.div>
+                ))}
+
+                {isTyping && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-am-cyan/12 text-am-cyan">
+                      <Bot size={15} />
+                    </div>
+                    <div className="flex items-center gap-1 rounded-2xl rounded-tl-md border border-white/7 bg-white/[.035] px-4 py-3">
+                      {[0, 1, 2].map((dot) => (
+                        <motion.span
+                          key={dot}
+                          className="h-1.5 w-1.5 rounded-full bg-am-cyan"
+                          animate={{ opacity: [.25, 1, .25], y: [0, -2, 0] }}
+                          transition={{ repeat: Infinity, duration: .8, delay: dot * .12 }}
+                        />
+                      ))}
                     </div>
                   </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
 
-                  {msg.sender === 'user' && (
-                    <div className="w-8 h-8 rounded-xl bg-navy-800 border border-border-subtle flex items-center justify-center text-text-secondary shrink-0">
-                      You
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-
-              {isTyping && (
-                <div className="flex items-center gap-3 text-xs text-text-secondary">
-                  <div className="w-8 h-8 rounded-xl bg-am-cyan/20 border border-am-cyan/30 flex items-center justify-center text-am-cyan">
-                    <Bot size={16} />
-                  </div>
-                  <div className="p-3 rounded-2xl bg-navy-900/90 border border-border-subtle flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-am-cyan animate-bounce" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-am-cyan animate-bounce [animation-delay:0.2s]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-am-cyan animate-bounce [animation-delay:0.4s]" />
-                    <span className="ml-1 text-[11px] text-text-muted">Manzilo is reasoning...</span>
-                  </div>
+              <div className="border-t border-white/7 bg-navy-950/55 p-3 sm:p-4">
+                <div className="flex items-center gap-2 rounded-2xl border border-white/9 bg-navy-900/90 p-2">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(event) => setInput(event.target.value)}
+                    onKeyDown={(event) => event.key === 'Enter' && handleSend()}
+                    aria-label="Message Manzilo"
+                    placeholder="Ask about your route, budget, weather scenario, or a replan…"
+                    className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm outline-none focus:shadow-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleSend()}
+                    disabled={!input.trim() || isTyping}
+                    aria-label="Send message to Manzilo"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-am-orange text-white shadow-[0_10px_24px_rgba(255,107,53,.22)] disabled:opacity-40"
+                  >
+                    <Send size={17} />
+                  </button>
                 </div>
-              )}
-
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Quick Prompts Bar */}
-            <div className="px-4 py-2.5 bg-navy-900/70 border-t border-border-subtle/60 flex items-center gap-2 overflow-x-auto">
-              <span className="text-[11px] text-text-muted whitespace-nowrap flex items-center gap-1">
-                <Sparkles size={12} className="text-am-cyan" /> Suggested:
-              </span>
-              {quickPrompts.map((p, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleSend(p)}
-                  className="px-3 py-1 rounded-lg text-xs bg-navy-800/80 hover:bg-navy-800 text-text-secondary hover:text-text-primary whitespace-nowrap border border-border-subtle/60 transition-colors"
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-
-            {/* Input Bar */}
-            <div className="p-4 bg-navy-950 border-t border-border-subtle flex items-center gap-3">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                aria-label="Message Manzilo"
-                placeholder="Ask Manzilo about itineraries, rain disruptions, budgeting, or venue hours..."
-                className="flex-1 bg-navy-900/90 border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-am-cyan transition-colors"
-              />
-
-              <button
-                type="button"
-                onClick={() => handleSend()}
-                disabled={!input.trim()}
-                aria-label="Send message to Manzilo"
-                className="p-3 rounded-xl bg-am-orange hover:bg-am-orange-hover disabled:opacity-40 disabled:cursor-not-allowed text-white transition-all shadow-lg shadow-am-orange/20"
-              >
-                <Send size={18} />
-              </button>
-            </div>
+              </div>
+            </section>
           </div>
         </div>
       </div>
