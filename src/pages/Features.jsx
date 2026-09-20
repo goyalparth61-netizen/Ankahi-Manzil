@@ -73,21 +73,21 @@ export default function Features() {
         </div>
       </section>
 
-      <div className="container-max mx-auto px-4 lg:px-8 space-y-28 lg:space-y-36 pb-24">
+      <div className="container-max mx-auto px-4 lg:px-8 space-y-20 lg:space-y-24 pb-24">
 
         {/* 01 — AI Personalized Trip Planning */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={1} />
                 AI Personalized <span className="text-am-orange">Trip Planning</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed mb-6">
+              <p className="text-text-secondary leading-relaxed mb-7 max-w-2xl mx-auto">
                 Tell Manzilo your destination, dates, budget, interests and travel preferences.
                 It generates a personalized, optimized itinerary that respects your constraints and style.
               </p>
-              <div className="space-y-3">
+              <div className="space-y-3 max-w-xl mx-auto text-left">
                 {['Destination & dates', 'Budget range', 'Interests & activities', 'Travel preferences', 'Travel style (relaxed, packed, balanced)'].map((item) => (
                   <div key={item} className="flex items-center gap-3 text-sm text-text-secondary">
                     <div className="w-1.5 h-1.5 rounded-full bg-am-orange shrink-0" />
@@ -96,7 +96,7 @@ export default function Features() {
                 ))}
               </div>
             </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-am-orange/12 flex items-center justify-center border border-am-orange/20">
                   <CalendarDays size={20} className="text-am-orange" />
@@ -106,7 +106,7 @@ export default function Features() {
                   <p className="text-xs text-text-secondary">Analyzing your preferences...</p>
                 </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 max-w-xl mx-auto text-left">
                 {[
                   { label: 'Destination', value: 'Manali, Himachal Pradesh' },
                   { label: 'Duration', value: '4 Days, 3 Nights' },
@@ -133,8 +133,8 @@ export default function Features() {
 
         {/* 02 — Smart Day-by-Day Itinerary */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 lg:order-1">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto">
               <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-am-cyan" />
                 <span className="text-sm font-semibold text-text-primary">DAY 01</span>
@@ -162,12 +162,12 @@ export default function Features() {
                 ))}
               </div>
             </div>
-            <div className="order-1 lg:order-2 text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={2} />
                 Smart Day-by-Day <span className="text-am-cyan">Itinerary</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 Manzilo builds structured, timeline-based itineraries with activities
                 coordinated by location, opening hours, and travel time between stops.
                 Every day is organized so you spend less time commuting and more time experiencing.
@@ -178,19 +178,19 @@ export default function Features() {
 
         {/* 03 — Budget Intelligence */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={3} />
                 Budget <span className="text-am-gold">Intelligence</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 Manzilo tracks your spending estimates across accommodation, transport, food,
                 and activities. It keeps your trip within budget and alerts you when a change
                 affects your spending plan.
               </p>
             </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle w-full max-w-4xl mx-auto">
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {[
                   { label: 'Total Budget', value: '₹20,000', color: '#F6A623' },
@@ -203,7 +203,7 @@ export default function Features() {
                   </div>
                 ))}
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 max-w-xl mx-auto text-left">
                 {[
                   { label: 'Stay', amount: '₹6,400', pct: 38 },
                   { label: 'Transport', amount: '₹4,200', pct: 25 },
@@ -233,8 +233,8 @@ export default function Features() {
 
         {/* 04 — Route Optimization */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2 lg:order-1">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2">
               <div className="flex items-center gap-2 mb-5">
                 <Route size={18} className="text-am-teal" />
                 <span className="text-sm font-semibold text-text-primary">Optimized Route</span>
@@ -268,12 +268,12 @@ export default function Features() {
                 <p className="text-xs text-am-teal">✓ Activities grouped by proximity — 40% less travel time</p>
               </div>
             </div>
-            <div className="order-1 lg:order-2 text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={4} />
                 Route <span className="text-am-teal">Optimization</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 Manzilo groups nearby activities together and sequences your day to
                 minimize unnecessary travel. You spend less time in transit and more
                 time at places that matter.
@@ -284,18 +284,18 @@ export default function Features() {
 
         {/* 05 — Live Monitoring */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={5} />
                 Live <span className="text-am-green">Monitoring</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed mb-6">
+              <p className="text-text-secondary leading-relaxed mb-7 max-w-2xl mx-auto">
                 Once your journey begins, Manzilo continuously watches relevant conditions
                 so it can alert you before problems become disruptions.
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-4xl mx-auto">
               {[
                 { icon: CloudRain, label: 'Weather', status: 'Clear skies', ok: true, color: '#2697FF' },
                 { icon: Route, label: 'Transport', status: 'On schedule', ok: true, color: '#18D5B5' },
@@ -316,8 +316,8 @@ export default function Features() {
 
         {/* 06 — Disruption Detection */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-orange/20 order-2 lg:order-1">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-orange/20 order-2 w-full max-w-4xl mx-auto">
               <div className="flex items-center gap-2 mb-4">
                 <AlertTriangle size={18} className="text-am-orange" />
                 <span className="text-sm font-bold text-am-orange tracking-wider">⚠ WEATHER ALERT</span>
@@ -337,12 +337,12 @@ export default function Features() {
                 <span className="text-xs text-am-orange">Manzilo is evaluating alternatives...</span>
               </div>
             </div>
-            <div className="order-1 lg:order-2 text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={6} />
                 Disruption <span className="text-am-blue">Detection</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 When conditions change — flight delays, weather shifts, venue closures, or transport
                 cancellations — Manzilo detects the disruption and immediately identifies which parts
                 of your itinerary are affected.
@@ -353,19 +353,19 @@ export default function Features() {
 
         {/* 07 — Automatic Replanning */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={7} />
                 Automatic <span className="text-am-purple">Replanning</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 Manzilo doesn't just alert you — it reasons through alternatives,
                 evaluates them against your constraints, and presents an updated plan.
                 One tap and your journey continues.
               </p>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 w-full max-w-4xl mx-auto">
               <div className="glass-card rounded-xl p-4 border border-border-subtle opacity-60">
                 <p className="text-xs text-text-muted mb-1">ORIGINAL PLAN</p>
                 <p className="text-sm text-text-primary line-through">Solang Valley — 3:30 PM</p>
@@ -410,8 +410,8 @@ export default function Features() {
 
         {/* 08 — Manzilo AI */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 lg:order-1">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 w-full max-w-4xl mx-auto">
               <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-am-cyan to-am-purple flex items-center justify-center">
                   <Bot size={16} className="text-white" />
@@ -437,12 +437,12 @@ export default function Features() {
                 ))}
               </div>
             </div>
-            <div className="order-1 lg:order-2 text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={8} />
                 <span className="bg-gradient-to-r from-am-cyan to-am-purple bg-clip-text text-transparent">Manzilo</span> AI
               </h2>
-              <p className="text-text-secondary leading-relaxed mb-6">
+              <p className="text-text-secondary leading-relaxed mb-7 max-w-2xl mx-auto">
                 Manzilo isn't just a chatbot — it understands your journey context.
                 Ask it to modify plans, explain decisions, find alternatives, or
                 answer any question about your trip.
@@ -456,19 +456,19 @@ export default function Features() {
 
         {/* 09 — Conflict Detection */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={9} />
                 Conflict <span className="text-am-blue">Detection</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 Manzilo identifies scheduling conflicts before they become problems —
                 overlapping activities, insufficient travel time between stops, or
                 venues closing before your arrival.
               </p>
             </div>
-            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-blue/20">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-blue/20 w-full max-w-4xl mx-auto">
               <div className="flex items-center gap-2 mb-4">
                 <ShieldAlert size={18} className="text-am-blue" />
                 <span className="text-sm font-bold text-am-blue">⚠ Schedule Conflict</span>
@@ -500,10 +500,10 @@ export default function Features() {
 
         {/* 10 — Backup Options */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
-            <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2 lg:order-1">
+          <div className="grid grid-cols-1 gap-8 lg:gap-10 items-stretch py-4 lg:py-6 max-w-5xl mx-auto pb-16 lg:pb-20 border-b border-border-subtle/60">
+            <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2">
               <p className="text-xs font-medium text-text-muted mb-4">DISRUPTION MANAGEMENT</p>
-              <div className="space-y-3">
+              <div className="space-y-3 max-w-xl mx-auto text-left">
                 <div className="p-4 rounded-xl bg-am-green/8 border border-am-green/20">
                   <div className="flex items-center gap-2 mb-1">
                     <Check size={14} className="text-am-green" />
@@ -528,12 +528,12 @@ export default function Features() {
                 </div>
               </div>
             </div>
-            <div className="order-1 lg:order-2 text-center lg:px-4">
-              <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-6">
+            <div className="order-1 text-center max-w-3xl mx-auto px-2 sm:px-4">
+              <h2 className="font-[family-name:var(--font-heading)] text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
                 <FeatureNumber n={10} />
                 Backup <span className="text-am-green">Options</span>
               </h2>
-              <p className="text-text-secondary leading-relaxed">
+              <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
                 For every activity in your itinerary, Manzilo pre-evaluates alternatives
                 ranked by compatibility with your preferences. When disruption strikes,
                 the best backup is already waiting.
@@ -544,7 +544,7 @@ export default function Features() {
       </div>
 
       {/* Bottom CTA */}
-      <section className="section-padding bg-navy-900/30">
+      <section className="section-padding bg-navy-900/30 mt-4">
         <div className="container-max mx-auto text-center">
           <SectionBlock className="max-w-2xl mx-auto flex flex-col items-center text-center">
             <h2 className="font-[family-name:var(--font-heading)] text-3xl lg:text-4xl font-bold mb-6">
