@@ -1,100 +1,64 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { MapPin, Users, Star, Leaf } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Bot, Compass, RefreshCw, Route } from 'lucide-react'
+import { agentSteps, destinations } from '../data/destinations'
 
-const iconMap = { MapPin, Users, Star, Leaf }
-
-const statsData = [
-  { icon: 'MapPin', value: 50, suffix: '+', label: 'Destinations', color: '#FF6B35' },
-  { icon: 'Users', value: 10, suffix: 'K+', label: 'Happy Travelers', color: '#16C7D9' },
-  { icon: 'Star', value: 4.9, suffix: '/5', label: 'Avg. Journey Rating', color: '#F6A623', decimal: true },
-  { icon: 'Leaf', value: 2.5, suffix: 'K+', label: 'CO₂ Saved (Est.)', color: '#7DDC48', decimal: true },
+const facts = [
+  {
+    icon: Compass,
+    value: destinations.length,
+    label: 'Curated destinations',
+    detail: 'Across coast, mountains, culture, nature and more',
+    accent: 'text-am-orange bg-am-orange/10',
+  },
+  {
+    icon: RefreshCw,
+    value: agentSteps.length,
+    label: 'Adaptive stages',
+    detail: 'Plan → monitor → detect → reason → replan',
+    accent: 'text-am-cyan bg-am-cyan/10',
+  },
+  {
+    icon: Bot,
+    value: 'Manzilo',
+    label: 'Travel companion',
+    detail: 'Explains options, trade-offs and demo replans',
+    accent: 'text-am-purple bg-am-purple/10',
+  },
+  {
+    icon: Route,
+    value: 'Local',
+    label: 'Trip persistence',
+    detail: 'Saved plans stay in your browser for the demo',
+    accent: 'text-am-green bg-am-green/10',
+  },
 ]
 
-function AnimatedNumber({ value, suffix, decimal, inView }) {
-  const [display, setDisplay] = useState(0)
-
-  useEffect(() => {
-    if (!inView) return
-    let start = 0
-    const end = value
-    const duration = 2000
-    const startTime = performance.now()
-
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      const current = start + (end - start) * eased
-      setDisplay(decimal ? parseFloat(current.toFixed(1)) : Math.floor(current))
-      if (progress < 1) requestAnimationFrame(animate)
-    }
-
-    requestAnimationFrame(animate)
-  }, [inView, value, decimal])
-
-  return (
-    <span>
-      {display}
-      {suffix}
-    </span>
-  )
-}
-
 export default function Stats() {
-  const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-100px' })
-
   return (
-    <section className="relative py-12 lg:py-16">
-      <div className="container-max mx-auto px-4 lg:px-8">
+    <section className="relative pb-8 pt-4 lg:pb-12">
+      <div className="page-shell">
         <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="glass-card rounded-2xl px-6 py-8 lg:px-12 lg:py-10"
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: .55 }}
+          className="travel-panel grid overflow-hidden rounded-[1.5rem] sm:grid-cols-2 lg:grid-cols-4"
         >
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0">
-            {statsData.map((stat, i) => {
-              const Icon = iconMap[stat.icon]
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: i * 0.15, duration: 0.5 }}
-                  className={`flex flex-col items-center text-center ${
-                    i < statsData.length - 1
-                      ? 'lg:border-r lg:border-border-subtle'
-                      : ''
-                  }`}
-                >
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-3"
-                    style={{
-                      background: `${stat.color}15`,
-                      boxShadow: `0 0 20px ${stat.color}20`,
-                    }}
-                  >
-                    <Icon size={20} style={{ color: stat.color }} />
-                  </div>
-                  <div
-                    className="text-3xl lg:text-4xl font-bold font-[family-name:var(--font-heading)] mb-1"
-                    style={{ color: stat.color }}
-                  >
-                    <AnimatedNumber
-                      value={stat.value}
-                      suffix={stat.suffix}
-                      decimal={stat.decimal}
-                      inView={inView}
-                    />
-                  </div>
-                  <p className="text-sm text-text-secondary">{stat.label}</p>
-                </motion.div>
-              )
-            })}
-          </div>
+          {facts.map(({ icon: Icon, value, label, detail, accent }, index) => (
+            <div
+              key={label}
+              className={`p-5 sm:p-6 lg:p-7 ${index < facts.length - 1 ? 'border-white/7 lg:border-r' : ''} ${index < 2 ? 'sm:border-b lg:border-b-0' : ''}`}
+            >
+              <div className={`mb-5 flex h-10 w-10 items-center justify-center rounded-2xl ${accent}`}>
+                <Icon size={18} />
+              </div>
+              <p className="font-[family-name:var(--font-heading)] text-2xl font-bold tracking-tight text-text-primary">
+                {value}
+              </p>
+              <p className="mt-1 text-xs font-bold uppercase tracking-[.12em] text-text-secondary">{label}</p>
+              <p className="mt-3 text-xs leading-5 text-text-muted">{detail}</p>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>
