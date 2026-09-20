@@ -1,54 +1,96 @@
 # Ankahi Manzil
 
-Ankahi Manzil is a modern adaptive travel-planning web experience built around one idea: a trip should not become useless the moment real-world conditions change.
+Ankahi Manzil is a travel discovery and adaptive journey-planning frontend concept focused on a simple idea:
 
-The current frontend demonstrates destination discovery, personalized itinerary generation, saved trips, disruption-aware replanning, budget views, and a conversational travel companion called Manzilo.
+> Discover places that are not on everyone’s list, then build a journey that can still be useful when the plan changes.
 
-## Problem Statement
+The current `frontend` branch is a React demo. It contains curated local destination data, an interactive planner, locally saved trips, simulated disruption/replanning, and a mock Manzilo conversational service.
 
-Most itinerary tools generate a static plan. Real travel is not static: weather changes, transport gets delayed, venues close, budgets shift, and travelers change their minds.
+## Product Problem
 
-Ankahi Manzil presents a product concept where planning and adaptation live in the same interface.
+Most travel interfaces separate inspiration from planning. Discovery becomes a card catalog, itinerary builders become forms, and AI is often presented as marketing copy instead of an actual interface.
 
-## Solution
+Ankahi Manzil combines three product modes:
 
-The application combines:
+1. **Discover** — browse destinations as an editorial travel atlas.
+2. **Plan** — turn destination, pace, budget, travelers and interests into a sample day-by-day journey.
+3. **Adapt** — demonstrate how a vulnerable itinerary block can be replaced without rebuilding the entire trip.
 
-- curated destination discovery
-- preference and budget based itinerary generation
-- day-by-day trip timelines
-- simulated disruption monitoring and replanning
-- saved trip persistence in localStorage
-- a conversational Manzilo travel assistant
-- responsive presentation across desktop, tablet, and mobile
+## Current Experience
 
-This branch is a frontend demo. It does not currently contain a production backend, authentication service, database, or live third-party travel APIs.
+### Home
 
-## Key Features
+The homepage is an image-led editorial travel experience built around the message:
 
-- Premium landing experience focused on hidden and meaningful journeys
-- Searchable and filterable destination catalog
-- Destination detail pages with attractions, activities, budget, timing, and weather guidance
-- Adaptive trip planner with destination, duration, travelers, budget, pace, and interest controls
-- Generated sample itineraries with cost breakdowns
-- Saved trips stored locally under `am_saved_trips`
-- My Trips portfolio with active, upcoming, and completed views
-- Trip detail experience with simulated disruption and one-click replan states
-- Manzilo conversational demo with contextual travel responses and rich response cards
-- Profile preference controls
-- Smooth page transitions, scroll reveals, hover states, responsive navigation, and reduced-motion support
-- Dedicated 404 route
+**Discover the places that aren’t on everyone’s list.**
 
-## How the Platform Works
+It includes immersive destination storytelling, asymmetric destination emphasis, and a direct path into the AI experience and planner.
 
-1. Discover a destination or start from the planner.
-2. Choose destination, duration, traveler type, budget, travel style, and interests.
-3. Generate a sample adaptive itinerary.
-4. Review daily activities and budget allocation.
-5. Save the plan to localStorage.
-6. Open My Trips to revisit saved plans.
-7. Use disruption simulation to see how the interface communicates replanning.
-8. Ask Manzilo questions about activities, delays, food, budget, or itinerary changes.
+### Explore
+
+`/destinations` provides search and category filtering over the local destination dataset. Destinations are deliberately presented with mixed visual hierarchy rather than as a uniform card grid.
+
+### Manzilo Studio
+
+`/features` is an interactive AI product demonstration rather than a marketing feature page.
+
+Users can:
+
+- switch between Discover, Build and Adapt modes
+- select a travel mood
+- change budget context
+- inspect recommendation reasoning
+- view a generated route
+- trigger a visual replan scenario
+- continue into the full Manzilo conversation or Journey Composer
+
+### Journey Composer
+
+`/plan` keeps the existing planning functionality while presenting it as a product workspace.
+
+Inputs include:
+
+- destination
+- duration
+- travelers
+- budget
+- pace
+- interests
+
+The page uses the mock `tripService` boundary and local destination data to produce a sample journey. A generated journey can be saved to browser localStorage.
+
+### My Trips
+
+`/trips` combines built-in demo journeys with trips saved from the Journey Composer.
+
+Saved trips use:
+
+```text
+localStorage key: am_saved_trips
+```
+
+### Trip Detail
+
+`/trips/:id` displays the itinerary and provides a local disruption/replan demonstration.
+
+For locally saved planner trips, the detail route reads the matching browser-stored plan when available.
+
+### Manzilo Chat
+
+`/manzilo` connects to the existing `manziloService.js` mock abstraction.
+
+The service currently supports demo responses for:
+
+- general planning
+- Manali
+- Goa
+- budget-related prompts
+
+No production AI provider is connected on this branch.
+
+### Travel Preferences
+
+`/profile` is a demo preference workspace. It is not backed by authentication or a user database.
 
 ## Technology Stack
 
@@ -60,75 +102,96 @@ This branch is a frontend demo. It does not currently contain a production backe
 - Lucide React
 - Oxlint
 
-## Project Structure
+No additional UI framework was introduced for the frontend reset.
+
+## Architecture
 
 ```text
-.
-├── public/
-├── src/
-│   ├── components/
-│   │   └── layout/
-│   ├── data/
-│   ├── pages/
-│   ├── services/
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
-├── .oxlintrc.json
-├── package.json
-└── vite.config.js
+Browser
+  |
+  v
+React + React Router
+  |
+  +-- Shared shell
+  |   +-- Navbar
+  |   +-- Footer
+  |   +-- PageTransition
+  |
+  +-- Discovery
+  |   +-- Home
+  |   +-- Destinations
+  |   +-- DestinationDetails
+  |
+  +-- Intelligence
+  |   +-- Features / Manzilo Studio
+  |   +-- ManziloChat
+  |   +-- HowItWorks
+  |
+  +-- Journey workspace
+  |   +-- TripPlanner
+  |   +-- MyTrips
+  |   +-- TripDetails
+  |   +-- Profile
+  |
+  +-- Local data
+  |   +-- src/data/destinations.js
+  |
+  +-- Mock service boundaries
+      +-- destinationService.js
+      +-- tripService.js
+      +-- manziloService.js
 ```
 
-For a deeper implementation overview, see `docs/ARCHITECTURE.md`.
+See `docs/ARCHITECTURE.md` for implementation details.
 
 ## Routes
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Landing experience |
-| `/features` | Product capabilities |
-| `/destinations` | Search and filter destinations |
-| `/destinations/:slug` | Destination details |
-| `/how-it-works` | Adaptive planning workflow |
-| `/about` | Product story and vision |
-| `/plan` | Trip planner |
-| `/trips` | Saved and demo trips |
-| `/trips/:id` | Trip details and replan demo |
-| `/manzilo` | Manzilo chat demo |
-| `/profile` | Traveler preferences |
-| `*` | Branded 404 page |
+| `/` | Editorial discovery homepage |
+| `/destinations` | Search/filter travel atlas |
+| `/destinations/:slug` | Immersive destination story |
+| `/features` | Interactive Manzilo Studio |
+| `/how-it-works` | Adaptive planning loop |
+| `/plan` | Journey Composer |
+| `/trips` | Local/demo trip library |
+| `/trips/:id` | Trip detail + replan demo |
+| `/manzilo` | Mock conversational workspace |
+| `/profile` | Demo travel preferences |
+| `/about` | Product story |
+| `*` | Branded 404 |
 
-## Data and Service Layer
+## Backend and API Status
 
-The files in `src/services` are mock API abstractions:
+There is **no production backend in this branch**.
 
-- `destinationService.js` returns local destination data after a simulated delay.
-- `tripService.js` simulates trip creation, updates, disruptions, and replanning.
-- `manziloService.js` simulates conversational responses.
+The current service files are mock asynchronous abstractions:
 
-Several pages currently implement demo behavior directly in component state. No live backend endpoint is required to run this branch.
+- `destinationService.js`
+- `tripService.js`
+- `manziloService.js`
 
-## Local Persistence
+They are intentionally kept as integration boundaries so a future backend can replace the implementation without forcing route components to know backend details.
 
-Generated trips can be saved in the browser under:
+## Authentication
 
-```text
-am_saved_trips
-```
+There is currently **no authentication implementation** on this branch.
 
-Clearing browser storage removes those saved demo trips.
+The profile route is a frontend preference demo only.
 
 ## Environment Variables
 
 No environment variables are currently required.
 
-Do not add API keys directly to source files. When a real backend or external provider is introduced, document it with a `.env.example` file and expose only browser-safe configuration through Vite.
+There is no `.env.example` because this branch does not use external API credentials.
+
+If a real backend or AI provider is added, keep secrets server-side and document only browser-safe Vite variables.
 
 ## Installation
 
 Requirements:
 
-- Node.js 20 or newer recommended
+- Node.js 20+ recommended
 - npm
 
 ```bash
@@ -162,67 +225,75 @@ npm run build
 npm run preview
 ```
 
-## CI
-
-The frontend branch includes a GitHub Actions workflow that runs `npm ci`, `npm run lint`, and `npm run build` for pushes and pull requests targeting `frontend`.
-
-## Backend Setup
-
-There is no backend implementation in this branch, so there is no backend setup command to run.
-
-The intended integration boundary is the existing `src/services` directory. A future backend can replace mock functions while keeping most page and route structure intact.
-
 ## Deployment
 
-This is a Vite single-page application and can be deployed to static frontend platforms.
+The branch builds as a Vite single-page application.
 
-Typical settings:
+Typical static-host settings:
 
 ```text
-Install command: npm ci
-Build command: npm run build
-Output directory: dist
+Install: npm ci
+Build: npm run build
+Output: dist
 ```
 
-Because the app uses `BrowserRouter`, the host must rewrite unknown application routes to `index.html`.
+Because React Router uses `BrowserRouter`, the deployment host must rewrite unknown application routes to `index.html`.
 
-No repository-specific production deployment configuration is currently committed on this branch.
+## Design System
 
-## Important Configuration
+The reset design system lives in `src/index.css`.
 
-- `vite.config.js` enables React and Tailwind CSS.
-- `src/index.css` contains shared design tokens and global UI rules.
-- `src/data/destinations.js` is the current local content source.
-- React Router owns client-side routing.
-- Framer Motion powers page and section animation.
-- `prefers-reduced-motion` is respected globally.
+The current visual direction uses:
 
-## Screenshots and Demo
+- deep forest/navy surfaces rather than generic SaaS blue
+- warm sand/ember highlights
+- editorial typography with selective serif accents
+- cinematic full-bleed photography
+- asymmetric destination composition
+- restrained borders instead of heavy shadows
+- product-workspace layouts for AI/planning screens
+- motion primarily for transitions, reveal and state change
 
-A dedicated screenshot set is not currently committed. For hackathon presentation, capture verified screenshots from the running build, especially the hero, destination discovery, planner, generated itinerary, disruption/replan state, Manzilo chat, and mobile navigation.
+## Accessibility
+
+Current baseline includes:
+
+- semantic navigation
+- keyboard-focus treatment
+- labeled form controls
+- accessible switch semantics
+- reduced-motion support
+- descriptive image alt text where images are meaningful
+- skip-to-content navigation
+
+Further production work should add automated accessibility testing.
+
+## CI
+
+`.github/workflows/frontend-ci.yml` runs on pushes and pull requests targeting `frontend`:
+
+1. `npm ci`
+2. `npm run lint`
+3. `npm run build`
 
 ## Future Improvements
 
-- Connect real weather, transport, venue, and mapping providers through a backend
-- Replace mock itinerary generation with a production planning service
-- Add authenticated user accounts
-- Persist trips in a database
-- Add server-side validation and rate limiting
-- Add automated component and end-to-end tests
-- Add production observability and error reporting
-- Add map-based discovery and route visualization
-- Add verified booking integrations
+- production authentication
+- server-side trip persistence
+- real mapping/geospatial service
+- live weather and transit integrations
+- production AI/LLM integration for Manzilo
+- server-side validation and rate limiting
+- end-to-end and component tests
+- verified booking/partner integrations
+- production analytics and error reporting
 
 ## Contributors
 
 Repository: `goyalparth61-netizen/Ankahi-Manzil`
 
-The current `frontend` branch history includes work by Archi Sharma (`@archisharma158-cmd`). Use GitHub's repository history for the authoritative contributor list as the project evolves.
-
-## Contributing
-
-See `CONTRIBUTING.md`.
+Use GitHub repository history as the authoritative contributor record.
 
 ## License
 
-No license file is currently present in this branch. Do not assume reuse rights beyond what the repository owner explicitly grants.
+No license file is currently present on this branch.
