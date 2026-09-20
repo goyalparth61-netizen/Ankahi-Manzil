@@ -25,11 +25,11 @@ export default function Profile() {
 
   return (
     <PageTransition>
-      <div className="pt-24 lg:pt-28 pb-24 relative">
-        <div className="container-max mx-auto px-4 lg:px-8 max-w-5xl">
+      <div className="profile-page app-page relative">
+        <div className="page-shell max-w-6xl">
           
           {/* Traveler Header Card */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 border border-border-subtle mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="travel-panel rounded-[1.75rem] p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
               <div className="relative">
                 <img
@@ -98,7 +98,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-[1fr_360px] gap-8">
+          <div className="grid lg:grid-cols-[1fr_380px] gap-6 lg:gap-8">
             
             {/* Left: Preferences & Agent Settings */}
             <div className="space-y-6">
