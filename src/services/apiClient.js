@@ -1,4 +1,4 @@
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? 'https://ankahi-manzil.onrender.com/api' : 'http://localhost:8000/api')
 const API_BASE_URL = rawBaseUrl.replace(/\/$/, '')
 const API_USER_ID = import.meta.env.VITE_API_USER_ID || ''
 
