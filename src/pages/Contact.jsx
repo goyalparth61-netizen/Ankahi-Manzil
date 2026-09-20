@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Copy, Linkedin, Mail, MessageSquareText, Send } from 'lucide-react'
+import { Check, Copy, ExternalLink, Mail, MessageSquareText, Send } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
 
 const teamEmail = 'goyalparth61@gmail.com'
@@ -85,7 +85,7 @@ export default function Contact() {
               whileHover={{ x: 4 }}
             >
               <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
-                <Linkedin size={14} />
+                <ExternalLink size={14} />
                 Parth Goyal
               </div>
               <p className="mt-2 text-sm text-text-secondary">B.Tech CSE — Cyber Security</p>
@@ -102,7 +102,7 @@ export default function Contact() {
               whileHover={{ x: 4 }}
             >
               <div className="flex items-center gap-2 text-xs font-bold text-am-purple">
-                <Linkedin size={14} />
+                <ExternalLink size={14} />
                 Archi Sharma
               </div>
               <p className="mt-2 text-sm text-text-secondary">B.Tech CSE — AI & ML</p>
