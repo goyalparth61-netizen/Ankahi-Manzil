@@ -33,8 +33,8 @@ export default function Destinations() {
               transition={{ delay: 0.1, duration: 0.6 }}
               className="font-[family-name:var(--font-heading)] text-3xl sm:text-4xl lg:text-5xl font-bold"
             >
-              Handpicked Destinations{' '}
-              <span className="gradient-text-brand">for You</span>
+              Go where the crowd thins{' '}
+              <span className="gradient-text-brand">and the story starts</span>
             </motion.h2>
           </div>
 
@@ -55,7 +55,7 @@ export default function Destinations() {
 
         {/* Cards Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
-          {destinations.map((dest, i) => (
+          {destinations.slice(0, 4).map((dest, i) => (
             <DestinationCard key={dest.id} destination={dest} index={i} />
           ))}
         </div>
