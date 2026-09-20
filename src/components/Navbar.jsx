@@ -6,9 +6,9 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 const links = [
   { to: '/destinations', label: 'Explore' },
   { to: '/features', label: 'Manzilo AI' },
-  { to: '/plan', label: 'Plan' },
-  { to: '/trips', label: 'My Trips' },
-  { to: '/about', label: 'Story' },
+  { to: '/history', label: 'History' },
+  { to: '/team', label: 'Team' },
+  { to: '/contact', label: 'Contact' },
 ]
 
 export default function Navbar() {
@@ -36,7 +36,13 @@ export default function Navbar() {
           transition={{ duration: .55, ease: [0.22, 1, 0.36, 1] }}
         >
           <Link to="/" className="brand" aria-label="Ankahi Manzil home">
-            <span className="brand-mark"><Compass size={17} /></span>
+            <motion.span
+              className="brand-mark"
+              whileHover={{ rotate: -8, scale: 1.04 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+            >
+              <Compass size={17} />
+            </motion.span>
             <span className="brand-word">Ankahi <span>Manzil</span></span>
           </Link>
 
@@ -45,7 +51,7 @@ export default function Navbar() {
               <NavLink
                 key={link.to}
                 to={link.to}
-                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                className={({ isActive }) => `nav-link motion-underline ${isActive ? 'active' : ''}`}
               >
                 {link.label}
               </NavLink>
@@ -53,11 +59,13 @@ export default function Navbar() {
           </div>
 
           <div className="nav-actions">
-            <Link to="/features" className="button-ghost">
-              <Sparkles size={14} />
-              Meet Manzilo
+            <Link to="/trips" className="button-ghost">
+              My Trips
             </Link>
-            <Link to="/plan" className="button-primary">Start a journey</Link>
+            <Link to="/plan" className="button-primary">
+              <Sparkles size={14} />
+              Start a journey
+            </Link>
             <button
               type="button"
               className="nav-menu button-ghost"
@@ -74,23 +82,31 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            className="fixed inset-x-3 top-[5.3rem] z-[79] rounded-[1.2rem] border border-white/10 bg-[#091612]/95 p-3 shadow-2xl backdrop-blur-2xl lg:hidden"
+            initial={{ opacity: 0, y: -12, scale: .98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: .98 }}
+            transition={{ duration: .22 }}
+            className="fixed inset-x-3 top-[5.3rem] z-[79] rounded-[1.2rem] border border-white/10 bg-[#091612]/96 p-3 shadow-2xl backdrop-blur-2xl lg:hidden"
           >
-            {links.map((link) => (
-              <NavLink
+            {links.map((link, index) => (
+              <motion.div
                 key={link.to}
-                to={link.to}
-                className={({ isActive }) => `block rounded-xl px-4 py-3 text-sm font-bold ${isActive ? 'bg-white/7 text-white' : 'text-text-secondary'}`}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * .035 }}
               >
-                {link.label}
-              </NavLink>
+                <NavLink
+                  to={link.to}
+                  className={({ isActive }) => `block rounded-xl px-4 py-3 text-sm font-bold ${isActive ? 'bg-white/7 text-white' : 'text-text-secondary'}`}
+                >
+                  {link.label}
+                </NavLink>
+              </motion.div>
             ))}
-            <Link to="/profile" className="mt-1 block rounded-xl px-4 py-3 text-sm font-bold text-text-secondary">
-              Travel preferences
-            </Link>
+            <div className="my-2 h-px bg-white/8" />
+            <Link to="/plan" className="block rounded-xl px-4 py-3 text-sm font-bold text-am-gold">Plan a journey</Link>
+            <Link to="/trips" className="block rounded-xl px-4 py-3 text-sm font-bold text-text-secondary">My Trips</Link>
+            <Link to="/profile" className="block rounded-xl px-4 py-3 text-sm font-bold text-text-secondary">Travel preferences</Link>
           </motion.div>
         )}
       </AnimatePresence>
