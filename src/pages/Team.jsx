@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Linkedin, Mail, Shield, Sparkles, BrainCircuit } from 'lucide-react'
+import { ExternalLink, Mail, Shield, Sparkles, BrainCircuit } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
 
 const teamEmail = 'goyalparth61@gmail.com'
@@ -83,7 +83,7 @@ export default function Team() {
                       rel="noreferrer"
                       className="button-primary"
                     >
-                      <Linkedin size={15} />
+                      <ExternalLink size={15} />
                       LinkedIn
                     </a>
                     <a
