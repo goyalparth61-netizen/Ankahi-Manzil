@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { MapPin, Star } from 'lucide-react'
+import { MapPin, Star, Clock3, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function DestinationCard({ destination, index = 0 }) {
@@ -43,9 +43,18 @@ export default function DestinationCard({ destination, index = 0 }) {
                   {destination.name}
                 </h3>
               </div>
-              <p className="line-clamp-1 text-sm leading-6 text-text-secondary">
-                {destination.categories.join(' • ')}
+              <p className="mb-2 line-clamp-2 text-sm leading-5 text-text-secondary">
+                {destination.description}
               </p>
+              <div className="flex items-center justify-between gap-3 text-[11px] text-text-muted">
+                <span className="flex min-w-0 items-center gap-1.5 truncate">
+                  <Clock3 size={12} className="shrink-0 text-am-cyan" />
+                  {destination.suggestedDays}
+                </span>
+                <span className="flex shrink-0 items-center gap-1 font-semibold text-am-orange">
+                  Explore <ArrowUpRight size={12} />
+                </span>
+              </div>
             </div>
           </div>
         </div>
