@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Bot, Compass, Send, Sparkles, Trash2 } from 'lucide-react'
+import { ArrowRight, Compass, Send, Sparkles, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { chatWithManzilo } from '../services/manziloService'
 import PageTransition from '../components/layout/PageTransition'
+import ManziloLogo from '../components/ManziloLogo'
 
 const quick = [
   'Can I add paragliding tomorrow?',
@@ -146,7 +147,7 @@ export default function ManziloChat() {
           <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
               <div className="eyebrow mb-4">
-                <Bot size={13} className="text-am-cyan" />
+                <ManziloLogo className="manzilo-logo manzilo-logo-sm" />
                 Conversation workspace
               </div>
               <h1 className="display-sm max-w-[12ch]">
@@ -168,7 +169,7 @@ export default function ManziloChat() {
             </div>
             <div className="ai-pane-body">
               <div className="flex items-center gap-3">
-                <span className="ai-orb" />
+                <ManziloLogo className="manzilo-logo manzilo-logo-sm" />
                 <div>
                   <p className="text-sm font-semibold">Manzilo</p>
                   <p className={`text-[10px] ${source === 'backend' ? 'text-am-green' : 'text-am-gold'}`}>
@@ -207,7 +208,7 @@ export default function ManziloChat() {
           <main className="ai-pane flex min-h-[38rem] flex-col">
             <div className="ai-pane-header flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span className="ai-orb" />
+                <ManziloLogo className="manzilo-logo manzilo-logo-sm" />
                 <div>
                   <p className="text-sm font-semibold">Manzilo conversation</p>
                   <p className="text-[10px] text-text-muted">Persistent backend memory when connected</p>
