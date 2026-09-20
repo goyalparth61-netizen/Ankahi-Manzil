@@ -11,6 +11,7 @@ import MyTrips from './pages/MyTrips'
 import TripDetails from './pages/TripDetails'
 import ManziloChat from './pages/ManziloChat'
 import Profile from './pages/Profile'
+import NotFound from './pages/NotFound'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/trips/:id" element={<TripDetails />} />
         <Route path="/manzilo" element={<ManziloChat />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   )
