@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft, ArrowRight, CalendarDays, Clock3, Compass, IndianRupee,
@@ -5,11 +6,26 @@ import {
 } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { destinations } from '../data/destinations'
+import { getDestinationBySlug } from '../services/destinationService'
 import PageTransition from '../components/layout/PageTransition'
 
 export default function DestinationDetails() {
   const { slug } = useParams()
-  const destination = destinations.find((item) => item.slug === slug)
+  const localDestination = destinations.find((item) => item.slug === slug)
+  const [destination, setDestination] = useState(localDestination)
+  const [source, setSource] = useState('local')
+
+  useEffect(() => {
+    let active = true
+    getDestinationBySlug(slug).then((result) => {
+      if (!active || !result?.success) return
+      setDestination(result.data)
+      setSource(result.source || 'local')
+    })
+    return () => {
+      active = false
+    }
+  }, [slug])
 
   if (!destination) {
     return (
@@ -48,6 +64,9 @@ export default function DestinationDetails() {
               <MapPin size={12} className="text-am-orange" />
               {destination.categories.join(' • ')}
             </div>
+            <span className={`mb-4 inline-flex rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[.13em] ${source === 'backend' ? 'border-am-green/25 bg-am-green/10 text-am-green' : 'border-am-gold/20 bg-am-gold/10 text-am-gold'}`}>
+              {source === 'backend' ? 'FastAPI data' : 'local fallback'}
+            </span>
             <h1 className="display max-w-[9ch]">{destination.name}</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/72">{destination.description}</p>
 
