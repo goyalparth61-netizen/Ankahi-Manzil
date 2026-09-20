@@ -3,9 +3,11 @@ name: Full Stack CI
 on:
   push:
     branches:
+      - main
       - frontend
   pull_request:
     branches:
+      - main
       - frontend
 
 jobs:
