@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Compass, Menu, Sparkles, X } from 'lucide-react'
+import { Menu, Sparkles, X } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
+import BrandLogo from './BrandLogo'
 
 const links = [
   { to: '/destinations', label: 'Explore' },
@@ -37,7 +38,7 @@ export default function Navbar() {
               whileHover={{ rotate: -8, scale: 1.04 }}
               transition={{ type: 'spring', stiffness: 260, damping: 18 }}
             >
-              <Compass size={17} />
+              <BrandLogo className="h-full w-full object-cover" />
             </motion.span>
             <span className="brand-word">Ankahi <span>Manzil</span></span>
           </Link>
