@@ -1,5 +1,7 @@
 import Hero from '../components/Hero'
 import Stats from '../components/Stats'
+import WhyAnkahiManzil from '../components/WhyAnkahiManzil'
+import TripPreview from '../components/TripPreview'
 import AgentWorkflow from '../components/AgentWorkflow'
 import Destinations from '../components/Destinations'
 import ManziloPreview from '../components/ManziloPreview'
@@ -11,8 +13,10 @@ export default function Home() {
     <PageTransition>
       <Hero />
       <Stats />
-      <AgentWorkflow compact />
       <Destinations />
+      <WhyAnkahiManzil />
+      <AgentWorkflow compact />
+      <TripPreview />
       <ManziloPreview />
       <CTA />
     </PageTransition>
