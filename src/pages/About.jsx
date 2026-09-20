@@ -40,7 +40,7 @@ export default function About() {
             <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,17,15,.96),rgba(7,17,15,.62)_52%,rgba(7,17,15,.12))]" />
             <div className="relative flex min-h-[38rem] max-w-3xl flex-col justify-center p-7 sm:p-10 lg:p-14">
               <Compass size={26} className="text-am-gold" />
-              <blockquote className="mt-7 font-[family-name:var(--font-heading)] text-3xl leading-tight tracking-[-.04em] sm:text-5xl">
+              <blockquote className="mt-7 font-[family-name:var(--font-heading)] text-2xl leading-tight tracking-[-.035em] sm:text-4xl">
                 “Every journey contains an untold destination — even when the path shifts.”
               </blockquote>
               <p className="mt-6 max-w-xl text-sm leading-7 text-white/68">
@@ -70,7 +70,30 @@ export default function About() {
             ))}
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-3">
+          <motion.div
+            className="surface rounded-art mt-10 grid gap-5 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-[.16em] text-am-gold">Built by Team CiPher</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-.035em]">The story is also about the people building it.</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-text-secondary">
+                Explore the product history, meet Parth Goyal and Archi Sharma, or contact Team CiPher directly.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/history" className="button-ghost">History</Link>
+              <Link to="/team" className="button-ghost">Team</Link>
+              <Link to="/contact" className="button-primary">
+                Contact
+                <ArrowRight size={14} />
+              </Link>
+            </div>
+          </motion.div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
             <Link to="/destinations" className="button-primary">
               Explore the atlas
               <ArrowRight size={15} />
