@@ -56,7 +56,7 @@ export default function Features() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.7 }}
-            className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 max-w-3xl mx-auto"
+            className="font-[family-name:var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-8 max-w-3xl mx-auto"
           >
             Everything your journey needs.{' '}
             <span className="gradient-text-brand">Powered by intelligence.</span>
@@ -73,11 +73,11 @@ export default function Features() {
         </div>
       </section>
 
-      <div className="container-max mx-auto px-4 lg:px-8 space-y-24 lg:space-y-32 pb-20">
+      <div className="container-max mx-auto px-4 lg:px-8 space-y-28 lg:space-y-36 pb-24">
 
         {/* 01 — AI Personalized Trip Planning */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div>
               <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
                 <FeatureNumber n={1} />
@@ -96,7 +96,7 @@ export default function Features() {
                 ))}
               </div>
             </div>
-            <div className="glass-card rounded-2xl p-6 border border-border-subtle">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-am-orange/12 flex items-center justify-center border border-am-orange/20">
                   <CalendarDays size={20} className="text-am-orange" />
@@ -133,7 +133,7 @@ export default function Features() {
 
         {/* 02 — Smart Day-by-Day Itinerary */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 lg:order-1">
               <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-am-cyan" />
@@ -178,7 +178,7 @@ export default function Features() {
 
         {/* 03 — Budget Intelligence */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div>
               <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
                 <FeatureNumber n={3} />
@@ -190,7 +190,7 @@ export default function Features() {
                 affects your spending plan.
               </p>
             </div>
-            <div className="glass-card rounded-2xl p-6 border border-border-subtle">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-border-subtle">
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {[
                   { label: 'Total Budget', value: '₹20,000', color: '#F6A623' },
@@ -233,7 +233,7 @@ export default function Features() {
 
         {/* 04 — Route Optimization */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2 lg:order-1">
               <div className="flex items-center gap-2 mb-5">
                 <Route size={18} className="text-am-teal" />
@@ -284,7 +284,7 @@ export default function Features() {
 
         {/* 05 — Live Monitoring */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div>
               <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
                 <FeatureNumber n={5} />
@@ -295,7 +295,7 @@ export default function Features() {
                 so it can alert you before problems become disruptions.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {[
                 { icon: CloudRain, label: 'Weather', status: 'Clear skies', ok: true, color: '#2697FF' },
                 { icon: Route, label: 'Transport', status: 'On schedule', ok: true, color: '#18D5B5' },
@@ -304,7 +304,7 @@ export default function Features() {
                 { icon: Layers, label: 'Availability', status: 'Confirmed', ok: true, color: '#8B5CF6' },
                 { icon: ShieldAlert, label: 'Conflicts', status: 'None found', ok: true, color: '#16C7D9' },
               ].map((item) => (
-                <div key={item.label} className="glass-card rounded-xl p-4 border border-border-subtle">
+                <div key={item.label} className="glass-card rounded-xl p-5 border border-border-subtle">
                   <item.icon size={18} style={{ color: item.color }} className="mb-2" />
                   <p className="text-sm font-medium text-text-primary mb-0.5">{item.label}</p>
                   <p className="text-xs text-am-green">{item.status}</p>
@@ -316,8 +316,8 @@ export default function Features() {
 
         {/* 06 — Disruption Detection */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="glass-card rounded-2xl p-6 border border-am-orange/20 order-2 lg:order-1">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-orange/20 order-2 lg:order-1">
               <div className="flex items-center gap-2 mb-4">
                 <AlertTriangle size={18} className="text-am-orange" />
                 <span className="text-sm font-bold text-am-orange tracking-wider">⚠ WEATHER ALERT</span>
@@ -353,7 +353,7 @@ export default function Features() {
 
         {/* 07 — Automatic Replanning */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div>
               <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
                 <FeatureNumber n={7} />
@@ -410,7 +410,7 @@ export default function Features() {
 
         {/* 08 — Manzilo AI */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div className="glass-card rounded-2xl overflow-hidden border border-border-subtle order-2 lg:order-1">
               <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-am-cyan to-am-purple flex items-center justify-center">
@@ -421,7 +421,7 @@ export default function Features() {
                   <p className="text-xs text-am-green">Online</p>
                 </div>
               </div>
-              <div className="p-5 space-y-4">
+              <div className="p-6 sm:p-7 space-y-5">
                 {[
                   'Can I add paragliding tomorrow?',
                   'What happens if my flight gets delayed?',
@@ -456,7 +456,7 @@ export default function Features() {
 
         {/* 09 — Conflict Detection */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div>
               <h2 className="font-[family-name:var(--font-heading)] text-2xl lg:text-3xl font-bold mb-4">
                 <FeatureNumber n={9} />
@@ -468,7 +468,7 @@ export default function Features() {
                 venues closing before your arrival.
               </p>
             </div>
-            <div className="glass-card rounded-2xl p-6 border border-am-blue/20">
+            <div className="glass-card rounded-2xl p-7 sm:p-8 border border-am-blue/20">
               <div className="flex items-center gap-2 mb-4">
                 <ShieldAlert size={18} className="text-am-blue" />
                 <span className="text-sm font-bold text-am-blue">⚠ Schedule Conflict</span>
@@ -500,7 +500,7 @@ export default function Features() {
 
         {/* 10 — Backup Options */}
         <SectionBlock>
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-2 lg:py-4">
             <div className="glass-card rounded-2xl p-6 border border-border-subtle order-2 lg:order-1">
               <p className="text-xs font-medium text-text-muted mb-4">DISRUPTION MANAGEMENT</p>
               <div className="space-y-3">
@@ -546,11 +546,11 @@ export default function Features() {
       {/* Bottom CTA */}
       <section className="section-padding bg-navy-900/30">
         <div className="container-max mx-auto text-center">
-          <SectionBlock className="max-w-2xl mx-auto">
-            <h2 className="font-[family-name:var(--font-heading)] text-3xl lg:text-4xl font-bold mb-4">
+          <SectionBlock className="max-w-2xl mx-auto flex flex-col items-center text-center">
+            <h2 className="font-[family-name:var(--font-heading)] text-3xl lg:text-4xl font-bold mb-6">
               Ready to let Manzilo plan your journey?
             </h2>
-            <p className="text-text-secondary mb-8">
+            <p className="text-text-secondary mb-9 max-w-xl mx-auto leading-relaxed">
               Experience intelligent travel planning that adapts to you.
             </p>
             <Link to="/plan" className="btn-primary text-base inline-flex items-center gap-2 px-8 py-4">
