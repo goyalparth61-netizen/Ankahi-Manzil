@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Map, MessageCircle } from 'lucide-react'
+import { Menu, X, Map, MessageCircle, UserRound, Sparkles } from 'lucide-react'
 import { navLinks } from '../data/destinations'
 
 export default function Navbar() {
@@ -29,7 +29,7 @@ export default function Navbar() {
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      <div className="page-shell flex h-16 lg:h-20 items-center justify-between">
+      <div className="page-shell flex h-16 lg:h-[76px] items-center justify-between">
         <Link to="/" className="flex shrink-0 items-center gap-2.5 group" aria-label="Ankahi Manzil home">
           <div className="relative flex h-9 w-9 items-center justify-center">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -65,6 +65,21 @@ export default function Navbar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2.5">
+          <Link
+            to="/manzilo"
+            className="hidden xl:inline-flex h-10 items-center gap-2 rounded-full border border-border-subtle bg-navy-800/45 px-3.5 text-sm font-medium text-text-secondary hover:border-am-cyan/25 hover:text-am-cyan"
+            aria-label="Chat with Manzilo"
+          >
+            <Sparkles size={15} />
+            Manzilo
+          </Link>
+          <Link
+            to="/profile"
+            className="hidden xl:flex h-10 w-10 items-center justify-center rounded-full border border-border-subtle bg-navy-800/45 text-text-secondary hover:border-border-light hover:text-text-primary"
+            aria-label="Open traveler profile"
+          >
+            <UserRound size={17} />
+          </Link>
           <Link to="/plan" className="hidden md:inline-flex btn-primary text-sm">Start Planning <span aria-hidden="true">→</span></Link>
           <button
             type="button"
@@ -94,6 +109,7 @@ export default function Navbar() {
               <div className="my-2 h-px bg-border-subtle" />
               <NavLink to="/trips" className={({ isActive }) => `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-navy-800 text-am-orange' : 'text-text-secondary hover:bg-navy-800/60 hover:text-text-primary'}`}><Map size={16} /> My Trips</NavLink>
               <NavLink to="/manzilo" className={({ isActive }) => `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-navy-800 text-am-cyan' : 'text-text-secondary hover:bg-navy-800/60 hover:text-text-primary'}`}><MessageCircle size={16} /> Chat with Manzilo</NavLink>
+              <NavLink to="/profile" className={({ isActive }) => `flex items-center gap-2.5 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-navy-800 text-am-orange' : 'text-text-secondary hover:bg-navy-800/60 hover:text-text-primary'}`}><UserRound size={16} /> Traveler Profile</NavLink>
               <Link to="/plan" className="btn-primary mt-3 w-full text-sm">Start Planning <span aria-hidden="true">→</span></Link>
             </div>
           </motion.div>
