@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  AlertTriangle, ArrowRight, Bookmark, Bot, Check, Compass, IndianRupee,
+  AlertTriangle, ArrowRight, Bookmark, Check, Compass, IndianRupee,
   RefreshCw, Sparkles, Users
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { destinations } from '../data/destinations'
 import { createTripPlan } from '../services/tripService'
 import PageTransition from '../components/layout/PageTransition'
+import ManziloLogo from '../components/ManziloLogo'
 
 const styles = [
   ['slow', 'Slow & immersive'],
@@ -276,7 +277,7 @@ export default function TripPlanner() {
                 {!plan ? (
                   <div className="grid min-h-[28rem] place-items-center p-8 text-center">
                     <div className="max-w-md">
-                      <Bot size={26} className="mx-auto text-am-cyan" />
+                      <ManziloLogo className="manzilo-logo manzilo-logo-lg mx-auto" />
                       <h3 className="mt-5 text-2xl font-semibold">Your route appears here.</h3>
                       <p className="mt-3 text-sm leading-7 text-text-secondary">
                         Set the trip intent, then compose. The generated sample itinerary remains local to this browser until you save it.
@@ -337,7 +338,7 @@ export default function TripPlanner() {
           <aside className="space-y-3">
             <div className="app-panel app-panel-pad">
               <div className="flex items-center gap-2 text-xs font-bold text-am-cyan">
-                <Bot size={14} />
+                <ManziloLogo className="manzilo-logo manzilo-logo-sm" />
                 Manzilo context
               </div>
               <p className="mt-3 text-sm leading-6 text-text-secondary">
