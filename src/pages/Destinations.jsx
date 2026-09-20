@@ -1,236 +1,151 @@
-import { useMemo, useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import { ArrowRight, Compass, MapPin, Search, SlidersHorizontal, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import {
-  ArrowRight, Compass, MapPin, Search, SlidersHorizontal, Star
-} from 'lucide-react'
-import { destinations, allCategories } from '../data/destinations'
+import { allCategories, destinations } from '../data/destinations'
 import PageTransition from '../components/layout/PageTransition'
 
-function DestinationEditorialCard({ destination, index, inView }) {
-  const featured = index % 6 === 0 || index % 6 === 3
-
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 28 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: Math.min(index * .06, .45), duration: .55 }}
-      className={featured ? 'lg:col-span-2' : ''}
-    >
-      <Link
-        to={`/destinations/${destination.slug}`}
-        className={`destination-editorial-card group block ${featured ? 'featured' : ''}`}
-        aria-label={`Explore ${destination.name}`}
-      >
-        <img
-          src={destination.image}
-          alt={`${destination.name} travel destination`}
-          className="destination-image"
-          loading="lazy"
-          onError={(event) => {
-            event.currentTarget.onerror = null
-            event.currentTarget.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80'
-          }}
-        />
-
-        <div className="absolute left-5 top-5 z-10 flex items-center gap-2">
-          <span className="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white/80 backdrop-blur-md">
-            {destination.categories[0]}
-          </span>
-          <span className="flex items-center gap-1 rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
-            <Star size={12} className="fill-am-gold text-am-gold" />
-            {destination.rating}
-          </span>
-        </div>
-
-        <div className="destination-copy">
-          <div className="mb-3 flex items-end justify-between gap-4">
-            <div>
-              <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-white/55">
-                <MapPin size={12} className="text-am-orange" />
-                India
-              </p>
-              <h2 className={`font-[family-name:var(--font-heading)] font-bold tracking-tight text-white ${featured ? 'text-3xl sm:text-4xl' : 'text-2xl'}`}>
-                {destination.name}
-              </h2>
-            </div>
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition-transform duration-300 group-hover:translate-x-1">
-              <ArrowRight size={16} />
-            </span>
-          </div>
-
-          <p className={`text-sm leading-6 text-white/68 ${featured ? 'max-w-2xl' : 'line-clamp-2'}`}>
-            {destination.description}
-          </p>
-
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] font-semibold text-white/55">
-            <span>{destination.suggestedDays}</span>
-            <span className="h-1 w-1 rounded-full bg-white/25" />
-            <span>{destination.bestTime}</span>
-            <span className="h-1 w-1 rounded-full bg-white/25" />
-            <span className="text-am-gold">{destination.budget}</span>
-          </div>
-        </div>
-      </Link>
-    </motion.article>
-  )
-}
+const spans = ['span-7', 'span-5', 'span-4', 'span-8', 'span-4', 'span-5', 'span-7', 'span-4', 'span-4', 'span-4', 'span-7', 'span-5']
 
 export default function Destinations() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeFilter, setActiveFilter] = useState('All')
-  const resultsRef = useRef(null)
-  const inView = useInView(resultsRef, { once: true, margin: '-50px' })
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('All')
 
-  const filteredDestinations = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase()
-
+  const filtered = useMemo(() => {
+    const search = query.trim().toLowerCase()
     return destinations.filter((destination) => {
-      const matchesSearch =
-        !query ||
-        destination.name.toLowerCase().includes(query) ||
-        destination.description.toLowerCase().includes(query) ||
-        destination.categories.some((category) => category.toLowerCase().includes(query))
-
-      const matchesFilter =
-        activeFilter === 'All' || destination.categories.includes(activeFilter)
-
-      return matchesSearch && matchesFilter
+      const textMatch =
+        !search ||
+        destination.name.toLowerCase().includes(search) ||
+        destination.description.toLowerCase().includes(search) ||
+        destination.categories.some((item) => item.toLowerCase().includes(search))
+      const categoryMatch = category === 'All' || destination.categories.includes(category)
+      return textMatch && categoryMatch
     })
-  }, [searchQuery, activeFilter])
+  }, [query, category])
 
   return (
     <PageTransition>
-      <section className="editorial-hero">
-        <div className="page-shell relative z-10">
-          <div className="grid items-end gap-10 lg:grid-cols-[1.15fr_.85fr]">
-            <div className="hero-copy">
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: .5 }}
-                className="kicker mb-5"
-              >
-                <Compass size={14} className="text-am-orange" />
-                Destination atlas
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: .06, duration: .65 }}
-                className="display-title"
-              >
-                Travel by feeling,
-                <span className="block gradient-text-warm">not by checklist.</span>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: .16, duration: .55 }}
-                className="copy-lg mt-7 max-w-2xl"
-              >
-                Search by place, mood, or experience. Ankahi Manzil helps you move from
-                inspiration to a destination that actually fits the journey you want.
-              </motion.p>
+      <section className="page-section pt-32 lg:pt-40">
+        <div className="page-shell">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-end">
+            <div>
+              <div className="eyebrow mb-5">
+                <Compass size={13} className="text-am-orange" />
+                Explore India by feeling
+              </div>
+              <h1 className="display-sm max-w-[12ch]">
+                The atlas is not a list.
+                <span className="block serif-accent">It is an invitation.</span>
+              </h1>
+              <p className="lede mt-6 max-w-2xl">
+                Search a place, an experience, or simply a mood. The layout shifts emphasis instead of
+                pretending every destination matters equally.
+              </p>
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: .22, duration: .55 }}
-              className="travel-panel rounded-[1.5rem] p-5 sm:p-6"
-            >
-              <div className="mb-4 flex items-center gap-2 text-xs font-semibold text-text-secondary">
-                <SlidersHorizontal size={14} className="text-am-cyan" />
-                Discover your way
-              </div>
-
-              <div className="discovery-search relative rounded-2xl">
-                <Search size={17} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+            <div className="surface rounded-art p-4 sm:p-5">
+              <div className="relative">
+                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" />
                 <input
                   type="search"
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="Try “mountains”, “culture”, “Goa”…"
+                  className="input pl-10"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search mountains, culture, Goa…"
                   aria-label="Search destinations"
-                  className="w-full rounded-2xl border-0 bg-transparent py-4 pl-11 pr-4 text-sm outline-none"
                 />
               </div>
 
-              <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                {allCategories.map((category) => (
+              <div className="mt-4 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.14em] text-text-muted">
+                <SlidersHorizontal size={12} />
+                Travel mood
+              </div>
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+                {allCategories.map((item) => (
                   <button
-                    key={category}
+                    key={item}
                     type="button"
-                    onClick={() => setActiveFilter(category)}
-                    className="discovery-chip"
-                    data-active={activeFilter === category}
-                    aria-pressed={activeFilter === category}
+                    className="ai-chip"
+                    data-active={category === item}
+                    onClick={() => setCategory(item)}
                   >
-                    {category}
+                    {item}
                   </button>
                 ))}
               </div>
-
-              <div className="mt-4 flex items-center justify-between text-xs text-text-muted">
-                <span>{filteredDestinations.length} places match your mood</span>
-                {(searchQuery || activeFilter !== 'All') && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery('')
-                      setActiveFilter('All')
-                    }}
-                    className="font-semibold text-am-orange hover:text-am-warm"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      <section ref={resultsRef} className="pb-24 lg:pb-32">
-        <div className="page-shell">
-          <div className="mb-8 flex items-end justify-between gap-5 border-b border-white/7 pb-5">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[.15em] text-text-muted">Curated collection</p>
-              <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
-                {activeFilter === 'All' ? 'All destinations' : activeFilter}
-              </h2>
             </div>
-            <Link to="/plan" className="hidden items-center gap-2 text-sm font-semibold text-am-cyan hover:text-am-teal sm:inline-flex">
-              Turn a place into a plan
-              <ArrowRight size={15} />
-            </Link>
           </div>
 
-          {filteredDestinations.length === 0 ? (
-            <div className="travel-panel rounded-[1.5rem] px-6 py-20 text-center">
-              <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-am-orange/10 text-am-orange">
-                <MapPin size={20} />
-              </div>
-              <h2 className="text-2xl font-bold">No route found yet.</h2>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
-                Try a broader mood or clear the current filters. The best detours are usually one search away.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-5 lg:grid-cols-3">
-              {filteredDestinations.map((destination, index) => (
-                <DestinationEditorialCard
+          <div className="my-10 flex flex-wrap items-center justify-between gap-4 border-y border-white/8 py-4">
+            <p className="text-sm text-text-secondary">
+              <span className="font-semibold text-white">{filtered.length}</span> places in view
+            </p>
+            {(query || category !== 'All') && (
+              <button
+                type="button"
+                className="text-xs font-bold text-am-orange"
+                onClick={() => {
+                  setQuery('')
+                  setCategory('All')
+                }}
+              >
+                Reset discovery
+              </button>
+            )}
+          </div>
+
+          {filtered.length > 0 ? (
+            <div className="editorial-grid">
+              {filtered.map((destination, index) => (
+                <motion.div
                   key={destination.id}
-                  destination={destination}
-                  index={index}
-                  inView={inView}
-                />
+                  initial={{ opacity: 0, y: 22 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: .5, delay: Math.min(index * .035, .24) }}
+                  className={'editorial-card ' + spans[index % spans.length]}
+                >
+                  <Link to={'/destinations/' + destination.slug}>
+                    <img src={destination.image} alt={destination.name} loading="lazy" />
+                    <div className="absolute left-4 top-4 z-[2] rounded-full border border-white/12 bg-black/25 px-3 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-white/78 backdrop-blur-md">
+                      {destination.suggestedDays}
+                    </div>
+                    <div className="editorial-card-copy">
+                      <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.15em] text-white/62">
+                        <MapPin size={11} className="text-am-orange" />
+                        {destination.categories.slice(0, 3).join(' • ')}
+                      </div>
+                      <div className="flex items-end justify-between gap-4">
+                        <div>
+                          <h2 className="text-3xl font-semibold tracking-[-.045em]">{destination.name}</h2>
+                          <p>{destination.description}</p>
+                        </div>
+                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/16 bg-white/6">
+                          <ArrowRight size={15} />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
               ))}
             </div>
+          ) : (
+            <div className="surface rounded-art px-6 py-20 text-center">
+              <Sparkles size={24} className="mx-auto text-am-gold" />
+              <h2 className="mt-5 text-2xl font-semibold">Nothing fits that exact search.</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
+                Broaden the mood or clear the filters. Discovery works better when the brief leaves room for surprise.
+              </p>
+            </div>
           )}
+
+          <div className="mt-10 flex justify-center">
+            <Link to="/features" className="button-soft">
+              Let Manzilo choose for me
+              <Sparkles size={14} />
+            </Link>
+          </div>
         </div>
       </section>
     </PageTransition>
